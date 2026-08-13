@@ -1,0 +1,14 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght,YOPQ@100..900,300&display=swap');
+@import "tailwindcss";
+
+
+@theme {
+  /* Overrides the default `font-sans` class */
+  --font-sans: 'Kumbh Sans', sans-serif;
+  
+  /* Or create a custom class like `font-heading` */
+  --font-heading: 'Poppins', sans-serif;
+}
+
+
