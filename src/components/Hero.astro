@@ -2,13 +2,13 @@
 import { Image } from 'astro:assets';
 import heroBg from '../assets/bg-hero.jpg'; 
 import noise from '../assets/nnnoise.svg';
-
+import bgVideo from '../assets/bg.mp4'
 ---
 
 
 
 <section id="Hero" class="min-h-screen flex justify-center">
-    <!-- Background Image -->
+    <!-- Background Image 
     <Image 
         src={heroBg} 
         alt="Hero Background" 
@@ -18,15 +18,26 @@ import noise from '../assets/nnnoise.svg';
         src={noise}
         alt="noise"
 
-        class="absolute inset-0 w-full h-full  blur-xs object-cover object-center -z-19"
+        class="absolute inset-0 w-full h-full object-cover object-center -z-19"
     />
+-->
+  <!-- Background Video Element -->
+    <video 
+        autoplay 
+        loop 
+        muted 
+        playsinline 
+        class="absolute  w-auto min-w-full min-h-full max-w-none object-cover -z-20">
+        <source src={bgVideo} type="video/mp4" />
+        Your browser does not support the video tag.
+    </video>
 
 
     <!--Hero Texts -->
     <div class="text-center content-center">
-        <h1 class="hero-title text-white mix-blend-difference text-8xl/30 tracking-tight text-balance ">
-            <span class="font-Playfair italic font-semibold">Every Connection</span><br>
-            <span class="font-sans font-bold">Has a Story</span>
+        <h1 class="hero-title text-white mix-blend-difference text-8xl/25 tracking-tight text-balance ">
+            <span class="font-Playfair italic ">Every Connection</span><br>
+            <span class="font-Playfair font-bold">Has a Story</span>
         </h1>
     </div>
 
