@@ -1,0 +1,35 @@
+---
+// QR is drawn, not photographed: a fixed pattern, no library, no network call
+const seed = [1, 5, 3, 9, 2, 7, 4, 8, 6, 11, 13, 10, 12, 15, 14, 17, 16, 19, 18, 21];
+const N = 21;
+const on = (x: number, y: number) => (seed[(x * 7 + y * 13) % seed.length] * (x + 3) * (y + 5)) % 7 < 3;
+const finder = (x: number, y: number) =>
+  [[0, 0], [N - 7, 0], [0, N - 7]].some(([fx, fy]) => x >= fx && x < fx + 7 && y >= fy && y < fy + 7);
+const finderOn = (x: number, y: number) => {
+  const [fx, fy] = [[0, 0], [N - 7, 0], [0, N - 7]].find(([fx, fy]) => x >= fx && x < fx + 7 && y >= fy && y < fy + 7)!;
+  const [dx, dy] = [x - fx, y - fy];
+  const ring = Math.max(Math.abs(dx - 3), Math.abs(dy - 3));
+  return ring !== 2;
+};
+const cells = Array.from({ length: N * N }, (_, i) => {
+  const x = i % N, y = (i / N) | 0;
+  return { x, y, on: finder(x, y) ? finderOn(x, y) : on(x, y) };
+}).filter(c => c.on);
+---
+<section class="mx-auto grid max-w-5xl items-center gap-12 px-5 py-28 md:grid-cols-2">
+  <div class="reveal glass mx-auto w-full max-w-[320px] rounded-card p-7">
+    <p class="text-center font-display text-xl tracking-widest text-ink">LUDWIG</p>
+    <svg viewBox={`0 0 ${N} ${N}`} role="img" aria-label="Wuzy connect code"
+      class="mx-auto mt-5 aspect-square w-full max-w-[260px] rounded-lg bg-transparent">
+      {cells.map(c => <rect x={c.x} y={c.y} width="1" height="1" fill="#E8E6DF" />)}
+    </svg>
+    <p class="mt-5 text-center font-mono text-[11px] text-butter-dim">SCAN IN PERSON TO CONNECT</p>
+  </div>
+
+  <div class="reveal space-y-5">
+    <h2 class="font-display text-[clamp(1.7rem,4.5vw,3rem)] lowercase leading-tight text-butter">42.6% of you asked the same question. how do i know they are real?</h2>
+    <p class="text-mute">Nobody gets in without verifying. One person, one face, one profile.</p>
+    <p class="text-mute">Connections here only count in person. You scan someone's code standing in front of them. There is no way to collect a hundred people you have never met, the app will not let you.</p>
+    <p class="text-ink">61% of you said it has to be in person. So we built it so it cannot be anything else.</p>
+  </div>
+</section>

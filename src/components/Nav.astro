@@ -1,0 +1,13 @@
+---
+import { eventsLive } from '../data/site';
+---
+<header class="fixed inset-x-0 top-0 z-50">
+  <nav class="glass mx-auto flex max-w-6xl items-center justify-between rounded-full px-3 py-2 text-xs lowercase sm:mt-3 sm:px-5 sm:py-3 sm:text-sm">
+    <a href="/" class="font-display text-xl uppercase tracking-wide text-butter sm:text-2xl">WUZY</a>
+    <div class="flex items-center gap-3 text-mute sm:gap-5">
+      <a href="#how" class="hidden hover:text-ink sm:inline">how it works</a>
+      <span class="font-mono text-[10px] sm:text-xs">events <span class="text-butter">[{eventsLive}]</span></span>
+      <a href="#seat" class="whitespace-nowrap rounded-full bg-butter px-3 py-1.5 font-medium text-void hover:bg-butter-deep sm:px-4 sm:py-2">get early access</a>
+    </div>
+  </nav>
+</header>

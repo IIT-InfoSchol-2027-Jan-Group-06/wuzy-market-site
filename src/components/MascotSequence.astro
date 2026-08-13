@@ -1,0 +1,44 @@
+---
+// ponytail: two DOM halves scrubbed on scroll instead of a 30 frame sprite sheet.
+// The sheet was never shot; the walk-in and the snap both read without it.
+---
+<section class="relative h-[220vh]">
+  <div class="sticky top-0 flex h-screen flex-col items-center justify-center gap-10 overflow-hidden">
+    <div class="relative flex h-44 w-full items-center justify-center">
+      <img id="mascotYellow" src="/media/mascot.png" alt="" class="absolute h-40 w-auto will-change-transform" />
+      <img id="mascotWhite" src="/media/mascot.png" alt="" class="absolute h-40 w-auto brightness-[3] grayscale will-change-transform" />
+      <span id="mascotStar" class="absolute font-display text-6xl text-butter opacity-0">*</span>
+    </div>
+    <div class="reveal max-w-md px-5 text-center">
+      <h2 class="font-display text-4xl lowercase text-butter">two halves. one click.</h2>
+      <p class="mt-3 text-mute">That is the whole product. We find the piece that fits the shape you are already making.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const y = document.getElementById('mascotYellow')!;
+  const w = document.getElementById('mascotWhite')!;
+  const star = document.getElementById('mascotStar')!;
+  const host = y.closest('section')!;
+  const SNAP = 0.72;
+
+  const place = (p: number) => {
+    const t = Math.min(1, p / SNAP);
+    // scaleX lives here, not in a class: setting style.transform would drop it
+    const gap = Math.min(innerWidth * 0.36, 340) * (1 - t);
+    const hop = p < SNAP ? Math.abs(Math.sin(p * 26)) * -14 : 0;
+    y.style.transform = `translate(${-gap - 44}px, ${hop}px)`;
+    w.style.transform = `translate(${gap + 44}px, ${p < SNAP ? -hop : 0}px) scaleX(-1)`;
+    star.style.opacity = String(p > SNAP && p < SNAP + 0.09 ? 1 : 0);
+    star.style.transform = `scale(${1 + (p - SNAP) * 6})`;
+  };
+
+  const step = () => {
+    const r = host.getBoundingClientRect();
+    place(Math.min(1, Math.max(0, -r.top / (r.height - innerHeight))));
+  };
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) place(1);
+  else { addEventListener('scroll', () => requestAnimationFrame(step), { passive: true }); step(); }
+</script>

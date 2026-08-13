@@ -1,0 +1,50 @@
+---
+import { formEndpoint } from '../data/site';
+---
+<section id="seat" class="mx-auto max-w-xl px-5 py-28 text-center">
+  <h2 class="font-display text-[clamp(2rem,6vw,3.5rem)] lowercase leading-tight text-ink">wuzy opens in colombo first.</h2>
+  <p class="mt-4 text-mute">Small groups. Verified people. Something on every weekend.</p>
+
+  <form id="seatForm" class="mt-9 space-y-3" method="post" action={formEndpoint}>
+    <input type="email" name="email" required placeholder="your email" autocomplete="email"
+      class="w-full rounded-full border border-olive-edge bg-void-2 px-5 py-3.5 placeholder:text-mute focus:border-butter" />
+    <select name="city" required
+      class="w-full rounded-full border border-olive-edge bg-void-2 px-5 py-3.5 text-mute focus:border-butter">
+      <option value="">your city</option>
+      <option>Colombo</option><option>Gampaha</option><option>Kandy</option><option>Galle</option><option>somewhere else</option>
+    </select>
+    <button class="w-full rounded-full bg-butter py-3.5 font-semibold text-void hover:bg-butter-deep">save me a seat</button>
+  </form>
+
+  <p id="seatNote" class="mt-4 text-xs text-mute">no spam. one email when we open in your city. that is the deal.</p>
+
+  <div class="mt-20 flex flex-wrap justify-center gap-6 text-xs text-mute">
+    <a href="/privacy" class="hover:text-ink">privacy</a>
+    <a href="/terms" class="hover:text-ink">terms</a>
+    <a href="mailto:hello@wuzy.app" class="hover:text-ink">hello@wuzy.app</a>
+    <span>Group 06 / IIT</span>
+  </div>
+</section>
+
+<div class="flex h-[60svh] items-center justify-center">
+  <p class="text-sm lowercase text-butter">caught up with life</p>
+</div>
+
+<script>
+  const form = document.getElementById('seatForm') as HTMLFormElement;
+  const note = document.getElementById('seatNote')!;
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = form.querySelector('button')!;
+    btn.disabled = true; btn.textContent = 'saving';
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      if (!res.ok) throw new Error(String(res.status));
+      form.innerHTML = '<p class="py-3.5 font-display text-2xl lowercase text-butter">seat saved.</p>';
+      note.textContent = 'one email when we open in your city. that is the deal.';
+    } catch {
+      btn.disabled = false; btn.textContent = 'save me a seat';
+      note.textContent = 'that did not send. mail hello@wuzy.app and we will add you.';
+    }
+  });
+</script>
