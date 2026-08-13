@@ -8,7 +8,7 @@
   --font-sans: 'Kumbh Sans', sans-serif;
   
   /* Or create a custom class like `font-heading` */
-  --font-heading: 'Poppins', sans-serif;
+  --font-heading: '', sans-serif;
 }
 
 
