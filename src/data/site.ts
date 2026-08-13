@@ -5,7 +5,7 @@ export const slots = [
   { key: 'day', opts: ['Saturday', 'Sunday', 'next week'] }
 ];
 
-export const clips = ['football', 'gig', 'reading', 'run', 'games', 'cook'];
+export const clips = ['football', 'gjig', 'reading', 'run', 'games', 'cook'];
 
 export const negations = [
   'not a dating app.',

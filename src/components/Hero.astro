@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import heroBg from '../assets/bg-hero.jpg'; 
+import noise from '../assets/nnnoise.svg';
+
 ---
 
 
@@ -10,12 +12,22 @@ import heroBg from '../assets/bg-hero.jpg';
     <Image 
         src={heroBg} 
         alt="Hero Background" 
-        class="absolute inset-0 w-full h-full object-cover object-center -z-20"
+        class="absolute inset-0 w-full h-full  blur-xs object-cover object-center -z-20"
     />
+    <Image 
+        src={noise}
+        alt="noise"
+
+        class="absolute inset-0 w-full h-full  blur-xs object-cover object-center -z-19"
+    />
+
 
     <!--Hero Texts -->
     <div class="text-center content-center">
-        <h1 class="hero-title text-amber-50 font-sans font-bold text-8xl/30 tracking-tight text-balance ">EVERY CONNECTION<br> HAS STORY</h1>
+        <h1 class="hero-title text-white mix-blend-difference text-8xl/30 tracking-tight text-balance ">
+            <span class="font-Playfair italic font-semibold">Every Connection</span><br>
+            <span class="font-sans font-bold">Has a Story</span>
+        </h1>
     </div>
 
 </section>
