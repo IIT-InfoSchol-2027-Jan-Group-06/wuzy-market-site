@@ -1,57 +1,76 @@
 ---
-import { Image } from 'astro:assets';
-import heroBg from '../assets/bg-hero.jpg'; 
-import noise from '../assets/nnnoise.svg';
-import bgVideo from '../assets/bg.mp4'
+import { stats, negations } from '../data/site';
 ---
 
+<section id="hero" class="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20">
+  <div class="w-full max-w-[1150px] text-center">
+    <h1 class="hero-title font-control-compressed uppercase leading-[0.85] text-whiteout">
+      <span class="block text-[clamp(56px,9vw,120px)]">every connection</span>
+      <span class="block text-[clamp(56px,9vw,120px)]">
+        has a <span class="font-control-cursive font-normal lowercase text-twilight-blue">
+          <span id="cycle-word" class="font-control-cursive">story.</span>
+        </span>
+      </span>
+    </h1>
 
+    <p class="hero-copy mx-auto mt-6 max-w-xl text-base font-medium leading-relaxed text-whiteout/60">
+      Wuzy matches you to communities, clubs and events that fit your vibe. Drop stories, grab
+      tickets, and never walk in alone.
+    </p>
 
-<section id="Hero" class="min-h-screen flex justify-center">
-    <!-- Background Image 
-    <Image 
-        src={heroBg} 
-        alt="Hero Background" 
-        class="absolute inset-0 w-full h-full  blur-xs object-cover object-center -z-20"
-    />
-    <Image 
-        src={noise}
-        alt="noise"
-
-        class="absolute inset-0 w-full h-full object-cover object-center -z-19"
-    />
--->
-  <!-- Background Video Element -->
-    <video 
-        autoplay 
-        loop 
-        muted 
-        playsinline 
-        class="absolute  w-auto min-w-full min-h-full max-w-none object-cover -z-20">
-        <source src={bgVideo} type="video/mp4" />
-        Your browser does not support the video tag.
-    </video>
-
-
-    <!--Hero Texts -->
-    <div class="text-center content-center">
-        <h1 class="hero-title text-white mix-blend-difference text-8xl/25 tracking-tight text-balance ">
-            <span class="font-Playfair italic ">Every Connection</span><br>
-            <span class="font-Playfair font-bold">Has a Story</span>
-        </h1>
+    <div class="hero-cta mt-10 flex flex-wrap items-center justify-center gap-4">
+      <a
+        href="#waitlist"
+        class="rounded-lg border border-whiteout px-5 py-3 text-sm font-medium text-whiteout transition-colors hover:bg-whiteout hover:text-ink"
+      >
+        Join the waitlist
+      </a>
+      <a
+        href="#features"
+        class="rounded-lg border border-whiteout/40 px-5 py-3 text-sm font-medium text-whiteout/80 transition-colors hover:border-whiteout hover:text-whiteout"
+      >
+        See what's inside
+      </a>
     </div>
-
+  </div>
 </section>
 
-
 <script>
-    import {gsap} from "gsap"
-    const herpSplit = 
-    gsap.from(".hero-title", {
-    y: 50,
-    opacity: 0,
-    duration: 1,
-    ease: "power3.out"
-  });
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.from('.hero-title span', {
+    y: 60, opacity: 0, duration: 1, stagger: 0.12, ease: 'power4.out',
+  });
+  gsap.from('.hero-copy', { y: 24, opacity: 0, duration: 0.8, delay: 0.4, ease: 'power3.out' });
+  gsap.from('.hero-cta a', { y: 16, opacity: 0, duration: 0.7, stagger: 0.12, delay: 0.55, ease: 'power3.out' });
+
+  const words = ['story.', 'vibe.', 'crew.', 'home.', 'plan.', 'reason.'];
+  let index = 0;
+  const cycleWord = document.getElementById('cycle-word');
+
+  const swap = () => {
+    index = (index + 1) % words.length;
+    gsap.to(cycleWord, {
+      y: -30,
+      opacity: 0,
+      duration: 0.3,
+      ease: 'power2.in',
+      onComplete: () => {
+        cycleWord.textContent = words[index];
+        gsap.fromTo(
+          cycleWord,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }
+        );
+      },
+    });
+  };
+
+  gsap.delayedCall(4, function repeat() {
+    swap();
+    gsap.delayedCall(2.6, repeat);
+  });
 </script>

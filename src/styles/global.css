@@ -1,14 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght,YOPQ@100..900,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-
 @theme {
+  /* Air — Colors */
+  --color-whiteout: #ffffff;
+  --color-haze: #f5f5f5;
+  --color-ink: #1b1b1b;
+  --color-black-void: #000000;
+  --color-twilight-blue: #426188;
+  --color-signal-blue: #2b7fff;
 
-  --font-Playfair: 'Playfair Display', sans-serif;
-  --font-serif: 'Times New Roman', sans-serif;
-  
- 
+  /* Air — Typography */
+  --font-control: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-control-compressed: 'Anton', ui-sans-serif, system-ui, sans-serif;
+  --font-control-cursive: 'Caveat', ui-serif, cursive;
+
+  /* Air — Radii */
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-lg-2: 11px;
+  --radius-xl: 14px;
+  --radius-cards: 12px;
+  --radius-pills: 9999px;
 }
 
+html {
+  scroll-behavior: smooth;
+}
 
+body {
+  font-family: var(--font-control);
+  color: var(--color-whiteout);
+  background-color: var(--color-black-void);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}

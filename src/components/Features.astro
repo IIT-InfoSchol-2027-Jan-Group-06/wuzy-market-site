@@ -1,0 +1,179 @@
+---
+import { screens } from '../data/site';
+---
+
+<section id="features" class="relative">
+  <div class="mx-auto max-w-[1150px] px-5 pt-24 pb-6 text-center">
+    <h2 class="reveal mx-auto max-w-3xl font-control text-[clamp(30px,4.5vw,56px)] font-medium leading-[1.08] tracking-tight text-whiteout">
+      Everything your crew needs, in one app — stories, tickets, clubs, and the people you'd rather
+      not <span class="font-control-cursive font-normal lowercase text-twilight-blue">miss.</span>
+    </h2>
+    <p class="reveal mx-auto mt-5 max-w-xl text-base font-medium leading-relaxed text-whiteout/60">
+      Keep scrolling — each one walks through on its own.
+    </p>
+  </div>
+
+  <div class="feature-scroll relative">
+    <div class="feature-sticky flex min-h-screen items-center overflow-hidden">
+      <div class="mx-auto flex w-full max-w-[1150px] items-center px-5">
+        {[
+          { n: '01', e: '📸', t: 'add stories', d: 'Share what you\'re up to with the people who actually care to see it.' },
+          { n: '02', e: '🎟️', t: 'buy tickets', d: 'Grab event tickets in one tap. Your digital pass lives right in the app.' },
+          { n: '03', e: '🌍', t: 'find clubs & join', d: 'Match with communities, clubs and crews that fit your vibe — join in one tap.' },
+          { n: '04', e: '🤝', t: 'catch up with friends', d: 'See who\'s around, plan a meetup, and actually land in the same room.' },
+        ].map((f) => (
+          <div class="feature-slide pointer-events-none absolute inset-x-0 mx-auto w-full max-w-[1150px] px-5">
+            <div class="grid items-center gap-10 lg:grid-cols-2">
+              <div class="feature-copy order-2 lg:order-1">
+                <span class="feature-num text-sm font-medium text-whiteout/40">{f.n}</span>
+                <h3 class="feature-title mt-4 font-control text-[clamp(36px,6vw,80px)] font-medium leading-[1.02] tracking-tight text-whiteout">
+                  {f.t}
+                </h3>
+                <p class="feature-desc mt-5 max-w-md text-base font-normal leading-relaxed text-whiteout/60">
+                  {f.d}
+                </p>
+              </div>
+              <div class="feature-visual order-1 flex justify-center lg:order-2">
+                <div class="flex w-56 flex-col gap-3 rounded-xl bg-haze p-3 text-ink">
+                  <div class="flex items-center justify-between">
+                    <span class="text-3xl">{f.e}</span>
+                    <span class="text-sm font-medium text-ink/40">{f.n}</span>
+                  </div>
+                  <div class="aspect-[9/16] w-full rounded-lg bg-twilight-blue/20"></div>
+                  <p class="text-xs font-medium leading-tight text-ink">{f.t} in the app</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="relative mx-auto max-w-[1150px] px-5 py-24">
+    <div class="reveal grid items-center gap-10 border-t border-whiteout/10 pt-16 lg:grid-cols-2">
+      <div>
+        <p class="text-sm font-medium uppercase tracking-[0.12em] text-whiteout/50">the whole plan</p>
+        <h3 class="mt-3 font-control text-[clamp(28px,4vw,44px)] font-medium leading-[1.05] tracking-tight text-whiteout">
+          your ticket, <span class="font-control-cursive font-normal lowercase text-twilight-blue">your proof.</span>
+        </h3>
+        <p class="mt-4 max-w-md text-base font-normal leading-relaxed text-whiteout/60">
+          Every event you go to gets captured — the ticket, the moment, the people. It becomes a
+          wall of everything you've actually done.
+        </p>
+        <a
+          href="#waitlist"
+          class="mt-6 inline-flex items-center gap-2 rounded-lg border border-whiteout px-5 py-3 text-sm font-medium text-whiteout transition-colors hover:bg-whiteout hover:text-ink"
+        >
+          start collecting →
+        </a>
+      </div>
+
+      <div class="flex justify-center gap-4">
+        {screens.slice(0, 3).map((s, i) => (
+          <div
+            class={`flex w-32 flex-col gap-3 rounded-xl bg-haze p-2.5 ${
+              i === 1 ? 'mt-6' : 'mb-6'
+            }`}
+          >
+            <div class="aspect-[9/16] w-full rounded-lg bg-twilight-blue/20"></div>
+            <p class="text-xs font-medium leading-tight text-ink">{s.cap}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.utils.toArray('.reveal').forEach((el) => {
+    gsap.from(el, {
+      y: 40,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 80%', once: true },
+    });
+  });
+
+  const slides = gsap.utils.toArray('.feature-slide');
+  const scroller = document.querySelector('.feature-scroll');
+  const sticky = document.querySelector('.feature-sticky');
+
+  if (slides.length) {
+    slides.forEach((s, i) => {
+      const copy = s.querySelector('.feature-copy');
+      const title = s.querySelector('.feature-title');
+      const num = s.querySelector('.feature-num');
+      const desc = s.querySelector('.feature-desc');
+      const visual = s.querySelector('.feature-visual');
+
+      if (i === 0) {
+        gsap.set(s, { autoAlpha: 1, scale: 1, yPercent: 0 });
+        gsap.set([title, num, desc, visual], { autoAlpha: 1, y: 0 });
+        return;
+      }
+      gsap.set(s, { autoAlpha: 0, scale: 0.9, yPercent: 14, filter: 'blur(8px)' });
+      gsap.set([title, num, desc, visual], { autoAlpha: 0, y: 40 });
+    });
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: scroller,
+        start: 'top top',
+        end: () => '+=' + slides.length * window.innerHeight,
+        pin: sticky,
+        scrub: true,
+        anticipatePin: 1,
+      },
+    });
+
+    slides.forEach((s, i) => {
+      if (i === 0) return;
+      const prev = slides[i - 1];
+      const prevCopy = prev.querySelector('.feature-copy');
+      const prevTitle = prev.querySelector('.feature-title');
+      const prevNum = prev.querySelector('.feature-num');
+      const prevDesc = prev.querySelector('.feature-desc');
+      const prevVisual = prev.querySelector('.feature-visual');
+
+      const copy = s.querySelector('.feature-copy');
+      const title = s.querySelector('.feature-title');
+      const num = s.querySelector('.feature-num');
+      const desc = s.querySelector('.feature-desc');
+      const visual = s.querySelector('.feature-visual');
+
+      tl.to(prevCopy, { y: -30, autoAlpha: 0, duration: 0.4, ease: 'power2.in' })
+        .to(
+          [prevTitle, prevNum, prevDesc, prevVisual],
+          {
+            y: -60,
+            autoAlpha: 0,
+            scale: 0.92,
+            filter: 'blur(6px)',
+            duration: 0.5,
+            ease: 'power2.in',
+          },
+          '<'
+        )
+        .to(prev, { scale: 0.94, autoAlpha: 0, yPercent: -6, filter: 'blur(10px)', duration: 0.55, ease: 'power2.in' }, '<')
+        .fromTo(
+          s,
+          { autoAlpha: 0, scale: 0.86, yPercent: 18, filter: 'blur(12px)' },
+          { autoAlpha: 1, scale: 1, yPercent: 0, filter: 'blur(0px)', duration: 0.55, ease: 'power2.out' }
+        )
+        .fromTo(
+          [title, num, desc, visual],
+          { autoAlpha: 0, y: 70, scale: 0.9 },
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: 'power2.out' },
+          '<0.15'
+        );
+    });
+  }
+</script>

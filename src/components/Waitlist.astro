@@ -1,0 +1,70 @@
+---
+import { formEndpoint } from '../data/site';
+---
+
+<section id="waitlist" class="relative px-5 py-24">
+  <div class="mx-auto w-full max-w-[760px] text-center">
+    <p class="reveal text-sm font-medium uppercase tracking-[0.12em] text-whiteout/50">
+      get early access
+    </p>
+    <h2 class="reveal mt-3 font-control-compressed uppercase leading-[0.9] text-whiteout">
+      <span class="block text-[clamp(48px,8vw,90px)]">save your</span>
+      <span class="block text-[clamp(48px,8vw,90px)]">
+        <span class="font-control-cursive font-normal lowercase text-twilight-blue">seat.</span>
+      </span>
+    </h2>
+    <p class="reveal mx-auto mt-5 max-w-md text-base font-medium leading-relaxed text-whiteout/60">
+      Be first in when Wuzy launches near you. Drop your email and we'll text you the second it's live.
+    </p>
+
+    <form
+      class="reveal mt-10 flex flex-col items-stretch gap-3 rounded-xl bg-whiteout p-3 text-ink sm:flex-row"
+      action={formEndpoint}
+      method="POST"
+    >
+      <input
+        type="email"
+        name="email"
+        required
+        placeholder="your@email.com"
+        class="w-full flex-1 rounded-md bg-haze px-3 py-3 text-base font-medium text-ink placeholder:text-ink/40 outline-none"
+      />
+      <button
+        type="submit"
+        class="rounded-lg bg-ink px-6 py-3 text-sm font-medium text-whiteout transition-opacity hover:opacity-80"
+      >
+        join waitlist
+      </button>
+    </form>
+
+    <p class="reveal mt-5 text-sm font-normal text-whiteout/50">✓ no spam · ✓ instant heads-up · ✓ first access</p>
+
+    <div class="reveal mt-10 flex items-center justify-center gap-3">
+      <div class="flex -space-x-2">
+        {[0, 1, 2, 3].map((c) => (
+          <span class="flex h-9 w-9 items-center justify-center rounded-full border border-whiteout/20 bg-haze text-xs font-medium">
+            😊
+          </span>
+        ))}
+      </div>
+      <p class="text-sm font-normal text-whiteout/60">joining the waitlist right now</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.utils.toArray('.reveal').forEach((el) => {
+    gsap.from(el, {
+      y: 40,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 80%', once: true },
+    });
+  });
+</script>

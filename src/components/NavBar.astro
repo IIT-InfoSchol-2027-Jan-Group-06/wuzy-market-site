@@ -1,18 +1,24 @@
-<section>
-    <nav class="text-white mix-blend-difference fixed">
-        <ul>
-            <li>home</li>
-            
-            <li>about</li>
-            <li>contact</li>
-            <li>fqs</li>
+---
+import { eventsLive } from '../data/site';
+---
 
-        </ul>
-        <button class="bg-blue-600">
-            Primary Action
-        </button>
-      
-    </nav>
-</section>
+<header class="fixed inset-x-0 top-0 z-50 border-b border-whiteout/10">
+  <nav class="mx-auto flex h-18 max-w-[1150px] items-center justify-between px-5">
+    <a href="/" class="font-control text-sm font-medium tracking-[0.12em] text-whiteout">
+      WUZY
+    </a>
 
+    <div class="hidden items-center gap-8 text-sm font-medium text-whiteout/60 md:flex">
+      <a href="#about" class="transition-colors hover:text-whiteout">About</a>
+      <a href="#features" class="transition-colors hover:text-whiteout">Features</a>
+      <a href="#waitlist" class="transition-colors hover:text-whiteout">Waitlist</a>
+    </div>
 
+    <a
+      href="#waitlist"
+      class="rounded-lg border border-whiteout px-4 py-2 text-sm font-medium text-whiteout transition-colors hover:bg-whiteout hover:text-ink"
+    >
+      Start for free
+    </a>
+  </nav>
+</header>

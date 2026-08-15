@@ -1,0 +1,99 @@
+---
+import { bubbles } from '../data/site';
+---
+
+<section id="about" class="relative px-5 py-24">
+  <div class="mx-auto w-full max-w-[1150px]">
+    <div class="text-center">
+      <p class="mb-3 text-sm font-medium uppercase tracking-[0.12em] text-whiteout/50">
+        what is wuzy?
+      </p>
+      <h2 class="font-control-compressed uppercase leading-[0.9] text-whiteout">
+        <span class="block text-[clamp(44px,7vw,80px)]">your people</span>
+        <span class="block text-[clamp(44px,7vw,80px)]">
+          are closer than you <span class="font-control-cursive font-normal lowercase text-twilight-blue">think.</span>
+        </span>
+      </h2>
+      <p class="mx-auto mt-5 max-w-2xl text-base font-medium leading-relaxed text-whiteout/60">
+        Every plan you've skipped because you didn't want to walk in alone? Wuzy fixes that. We match
+        you to the communities, clubs and events already happening near you — so you always have a
+        reason to show up.
+      </p>
+    </div>
+
+    <div class="mt-12 grid items-center gap-10 lg:grid-cols-2">
+      <div class="order-2 space-y-3 lg:order-1">
+        {[
+          { e: '🔎', t: 'find your vibe', d: 'Communities and clubs matched to your interests — not random strangers.' },
+          { e: '🎟️', t: 'grab a ticket', d: 'One tap to buy into any event. Your digital pass lives in the app.' },
+          { e: '💬', t: 'keep the crew', d: 'Chat before, during and after — the plan never dies.' },
+        ].map((f) => (
+          <div class="flex items-start gap-4 rounded-xl bg-haze p-5 text-ink">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-whiteout text-xl">
+              {f.e}
+            </div>
+            <div>
+              <h3 class="text-lg font-medium text-ink">{f.t}</h3>
+              <p class="mt-1 text-sm font-normal leading-relaxed text-ink/60">{f.d}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="order-1 flex justify-center lg:order-2">
+        <div class="w-[340px] rounded-xl bg-haze p-4 text-ink">
+          <div class="mb-4 flex items-center justify-between rounded-lg bg-whiteout px-4 py-3">
+            <div class="flex items-center gap-3">
+              <span class="flex h-10 w-10 items-center justify-center rounded-full bg-haze text-lg">🧑‍🤝‍🧑</span>
+              <div>
+                <p class="text-sm font-medium leading-none text-ink">saturday crew</p>
+                <p class="mt-1 text-xs font-normal text-ink/50">4 going · near you</p>
+              </div>
+            </div>
+            <span class="rounded-full bg-whiteout px-3 py-1 text-xs font-medium text-ink">going ✓</span>
+          </div>
+
+          <div class="flex flex-col gap-2.5">
+            {bubbles.map((b, i) => (
+              <div
+                class={`max-w-[85%] rounded-lg px-4 py-2.5 text-sm font-normal ${
+                  i % 2 === 0
+                    ? 'self-start rounded-bl-sm bg-whiteout text-ink'
+                    : 'self-end rounded-br-sm bg-ink text-whiteout'
+                }`}
+              >
+                {b}
+              </div>
+            ))}
+          </div>
+
+          <div class="mt-4 rounded-lg bg-whiteout p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-ink">6am run · marine drive</p>
+                <p class="text-xs font-normal text-ink/50">saturday · 3 spots left</p>
+              </div>
+              <span class="rounded-lg bg-ink px-4 py-2 text-xs font-medium text-whiteout">grab</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 grid gap-4 sm:grid-cols-3">
+      {[
+        { n: '100+', l: 'communities', d: 'to find your people' },
+        { n: '1 tap', l: 'ticket buying', d: 'to grab your spot' },
+        { n: '∞', l: 'reasons', d: 'to actually show up' },
+      ].map((s) => (
+        <div class="rounded-xl bg-haze p-6 text-center text-ink transition-transform hover:-translate-y-1">
+          <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-lg bg-whiteout text-lg font-medium">
+            {s.n}
+          </div>
+          <h3 class="text-lg font-medium text-ink">{s.l}</h3>
+          <p class="mt-1 text-sm font-normal text-ink/60">{s.d}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
