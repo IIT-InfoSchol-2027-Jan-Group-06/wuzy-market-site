@@ -1,0 +1,111 @@
+---
+const stats = [
+  { n: '72.9%', t: 'have skipped something they actually wanted to go to. Walking in alone is worse than staying home.' },
+  { n: '60.6%', t: 'say they cannot find people who like the same things they do. They exist — there has just never been a reason to be in the same room.' },
+  { n: '52.9%', t: 'will talk to almost anyone, the second there is a shared reason to. So Wuzy’s entire job is to build the reason.' },
+];
+---
+
+<section id="about" class="relative px-5 py-28">
+  <div class="mx-auto w-full max-w-[1150px]">
+    <!-- Label + intrd -->
+    <div class="about-head mx-auto max-w-3xl text-center">
+      <p class="about-label text-sm font-medium uppercase tracking-[0.12em] text-whiteout/50">
+        the problem
+      </p>
+      <h2 class="mt-4 font-control text-[clamp(36px,5.5vw,68px)] font-medium leading-[1.08] tracking-tight text-whiteout">
+        <!-- Words light up grey → white one-by-one as you scroll -->
+        {'everyone’s free,'.split(' ').map((w) => (
+          <span class="inline-block overflow-hidden align-top">
+            <span class="about-word about-lit inline-block will-change-transform text-[#707070]">{w}&nbsp;</span>
+          </span>
+        ))}
+        <span class="block">
+          {'nobody’s going.'.split(' ').map((w) => (
+            <span class="inline-block overflow-hidden align-top">
+              <span class="about-word about-lit inline-block will-change-transform text-[#707070]">{w}&nbsp;</span>
+            </span>
+          ))}
+        </span>
+      </h2>
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-16 grid gap-6 md:grid-cols-3">
+      {stats.map((s) => (
+        <div class="about-card rounded-xl border border-whiteout/10 bg-whiteout/5 p-6 backdrop-blur-xl">
+          <p class="font-control-compressed text-[clamp(44px,5vw,60px)] uppercase leading-none text-whiteout">
+            {s.n}
+          </p>
+          <p class="mt-4 text-sm font-normal leading-relaxed text-whiteout/60">
+            {s.t}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-16 border-t border-whiteout/10 pt-12 text-center">
+      <a
+        href="#waitlist"
+        class="btn-glass-yellow !rounded-full px-7"
+      >
+        join the waitlist
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Section fades up as it enters view.
+  gsap.from('.about-label', {
+    y: 24,
+    autoAlpha: 0,
+    duration: 0.7,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.about-label', start: 'top 85%', once: true },
+  });
+
+  // Headline words light up grey → white, tied to scroll progress.
+  const lit = gsap.utils.toArray<HTMLElement>('.about-lit');
+  if (lit.length) {
+    const wordStep = 0.08;
+    // Tune so the scroll distance matches the word count:
+    // smaller factor = words finish faster, stats arrive sooner.
+    const scrollFactor = 1.1;
+    const headEnd = lit.length * wordStep * window.innerHeight * scrollFactor;
+
+    gsap.to(lit, {
+      color: '#ffffff',
+      duration: wordStep,
+      stagger: wordStep,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.about-head',
+        start: 'top 75%',
+        end: () => '+=' + headEnd,
+        scrub: true,
+      },
+    });
+
+    // Stats wait until the words have all lit up, then stagger in.
+    gsap.from('.about-card', {
+      y: 40,
+      autoAlpha: 0,
+      duration: 0.8,
+      stagger: 0.12,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '.about-head',
+        start: () => 'top ' + (75 - (headEnd / window.innerHeight) * 100) + '%',
+        end: () => '+=600',
+        once: true,
+      },
+    });
+  }
+</script>
