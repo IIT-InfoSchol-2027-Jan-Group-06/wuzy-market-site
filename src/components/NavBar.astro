@@ -2,13 +2,13 @@
 import { eventsLive } from '../data/site';
 ---
 
-<header class="fixed inset-x-0 top-0 z-50 border-b border-whiteout/10">
-  <nav class="mx-auto flex h-18 max-w-[1150px] items-center justify-between px-5">
+<header class="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
+  <nav class="flex w-full max-w-md items-center justify-between gap-4 rounded-full border border-whiteout/15 bg-whiteout/10 px-5 py-2 backdrop-blur-xl">
     <a href="/" class="font-control text-sm font-medium tracking-[0.12em] text-whiteout">
       WUZY
     </a>
 
-    <div class="hidden items-center gap-8 text-sm font-medium text-whiteout/60 md:flex">
+    <div class="hidden items-center gap-5 text-sm font-medium text-whiteout/70 sm:flex">
       <a href="#about" class="transition-colors hover:text-whiteout">About</a>
       <a href="#features" class="transition-colors hover:text-whiteout">Features</a>
       <a href="#waitlist" class="transition-colors hover:text-whiteout">Waitlist</a>
@@ -16,9 +16,9 @@ import { eventsLive } from '../data/site';
 
     <a
       href="#waitlist"
-      class="rounded-lg border border-whiteout px-4 py-2 text-sm font-medium text-whiteout transition-colors hover:bg-whiteout hover:text-ink"
+      class="btn-glass-yellow shrink-0 !rounded-full px-4 !py-1.5 text-sm"
     >
-      Start for free
+      Join waitlist
     </a>
   </nav>
 </header>
