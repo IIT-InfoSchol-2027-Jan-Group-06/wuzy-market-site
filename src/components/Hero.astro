@@ -1,5 +1,5 @@
 ---
-import { stats, negations } from '../data/site';
+
 ---
 
 <section id="hero" class="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20">
@@ -43,7 +43,7 @@ import { stats, negations } from '../data/site';
 
   const words = ['story.', 'vibe.', 'crew.', 'home.', 'plan.', 'reason.'];
   let index = 0;
-  const cycleWord = document.getElementById('cycle-word');
+  const cycleWord = document.getElementById('cycle-word') as HTMLElement;
 
   const swap = () => {
     index = (index + 1) % words.length;

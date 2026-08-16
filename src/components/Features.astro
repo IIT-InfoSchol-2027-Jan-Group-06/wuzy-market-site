@@ -1,10 +1,17 @@
 ---
-import { screens } from '../data/site';
+// ── Frontmatter: data used to render the section ─────────────────────────────
+// Phone mockup images (added locally to the build via Vite/Astro imports)
 import homeMock from '../assets/mockups/home.png';
 import eventMock from '../assets/mockups/event-info.png';
 import profileMock from '../assets/mockups/profile.png';
 import progressMock from '../assets/mockups/progress.png';
 
+// The 4 feature "slides". Each maps to a pinned screen:
+//   n   → slide number label
+//   e   → emoji (kept here for reference, not rendered)
+//   t   → slide headline
+//   d   → slide sub-copy
+//   mock → the phone screenshot shown next to the headline
 const features = [
   { n: '01', e: '📸', t: 'add stories', d: 'Share what you\'re up to with the people who actually care to see it.', mock: homeMock },
   { n: '02', e: '🎟️', t: 'buy tickets', d: 'Grab event tickets in one tap. Your digital pass lives right in the app.', mock: eventMock },
@@ -14,38 +21,55 @@ const features = [
 ---
 
 <section id="features" class="relative">
-  <div class="feature-intro flex min-h-screen items-center px-5 pt-24 pb-16">
-    <div class="mx-auto w-full max-w-[1150px] text-center">
-      <h2 class="mx-auto max-w-3xl font-control text-[clamp(30px,4.5vw,56px)] font-medium leading-[1.08] tracking-tight text-whiteout">
-        {'Everything your crew needs, in one app — stories, tickets, clubs, and the people you\'d rather not'.split(' ').map((w) => (
-          <span class="inline-block overflow-hidden align-top">
-            <span class="intro-word intro-lit inline-block will-change-transform text-[#707070]">{w}&nbsp;</span>
-          </span>
-        ))}
-        <span class="inline-block overflow-hidden align-top">
-          <span class="intro-word intro-lit inline-block will-change-transform text-[#707070]">
-            <span class="font-control-cursive font-normal lowercase text-[#5a708f]">miss.</span>
-          </span>
-        </span>
-      </h2>
-      <p class="mx-auto mt-5 max-w-xl text-base font-medium leading-relaxed text-whiteout/60">
-        {'Keep scrolling — each one walks through on its own.'.split(' ').map((w) => (
-          <span class="inline-block overflow-hidden align-top">
-            <span class="intro-word inline-block will-change-transform">{w}&nbsp;</span>
-          </span>
-        ))}
-      </p>
-    </div>
-  </div>
-
+  <!-- ── Pinned scroll area (intro + feature slides) ──────────────────────
+       This whole block is pinned by ScrollTrigger so it stays on screen
+       while you scroll. The intro text fades out, then the 4 slides
+       crossfade one into the next. -->
   <div class="feature-scroll relative">
-    <div class="feature-sticky flex min-h-screen items-center overflow-hidden">
+    <div class="feature-sticky flex min-h-screen items-center justify-center overflow-hidden">
+
+      <!-- ── Intro overlay: "Everything your crew needs…" ──────────────────
+           Absolutely positioned over the slides. Words start grey and are
+           lit up white one-by-one as you scroll (.intro-lit is animated). -->
+      <div class="feature-intro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 pb-16">
+        <div class="mx-auto w-full max-w-[1150px] text-center">
+          <h2 class="mx-auto max-w-3xl font-control text-[clamp(30px,4.5vw,56px)] font-medium leading-[1.08] tracking-tight text-whiteout">
+            <!-- Split the headline into per-word spans so each word can animate independently -->
+            {'Everything your crew needs, in one app — stories, tickets, clubs, and the people you\'d rather not'.split(' ').map((w) => (
+              <span class="inline-block overflow-hidden align-top">
+                <!-- intro-lit → the word gets its color tweened by GSAP -->
+                <span class="intro-word intro-lit inline-block will-change-transform text-[#707070]">{w}&nbsp;</span>
+              </span>
+            ))}
+            <!-- Trailing cursive word "miss." in the brand blue -->
+            <span class="inline-block overflow-hidden align-top">
+              <span class="intro-word intro-lit inline-block will-change-transform text-[#707070]">
+                <span class="font-control-cursive font-normal lowercase text-[#5a708f]">miss.</span>
+              </span>
+            </span>
+          </h2>
+          <!-- Sub-copy under the headline (also word-split, but not color-animated) -->
+          <p class="mx-auto mt-5 max-w-xl text-base font-medium leading-relaxed text-whiteout/60">
+            {'Keep scrolling — each one walks through on its own.'.split(' ').map((w) => (
+              <span class="inline-block overflow-hidden align-top">
+                <span class="intro-word inline-block will-change-transform">{w}&nbsp;</span>
+              </span>
+            ))}
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Feature slides ─────────────────────────────────────────────────
+           All slides are absolutely positioned on top of each other.
+           GSAP controls visibility: only one is visible at a time. -->
       <div class="mx-auto flex w-full max-w-[1150px] items-center px-5">
         {features.map((f) => (
           <div class="feature-slide pointer-events-none absolute inset-x-0 mx-auto w-full max-w-[1150px] px-5">
             <div class="grid items-center gap-10 lg:grid-cols-2">
+              <!-- Left: headline + description (moves below visual on mobile) -->
               <div class="feature-copy order-2 lg:order-1">
                 <h3 class="feature-title mt-4 font-control text-[clamp(36px,6vw,80px)] font-medium leading-[1.02] tracking-tight text-whiteout">
+                  <!-- Split headline into words so GSAP can stagger them in -->
                   {f.t.split(' ').map((w) => (
                     <span class="inline-block overflow-hidden align-top">
                       <span class="feature-word inline-block will-change-transform">{w}&nbsp;</span>
@@ -56,6 +80,7 @@ const features = [
                   {f.d}
                 </p>
               </div>
+              <!-- Right: phone mockup screenshot -->
               <div class="feature-visual order-1 flex justify-center [perspective:1200px] lg:order-2">
                 <img
                   src={f.mock.src}
@@ -69,49 +94,6 @@ const features = [
       </div>
     </div>
   </div>
-
-  <div class="relative mx-auto max-w-[1150px] px-5 py-24">
-    <div class="reveal grid items-center gap-10 border-t border-whiteout/10 pt-16 lg:grid-cols-2">
-      <div>
-        <p class="plan-label text-sm font-medium uppercase tracking-[0.12em] text-whiteout/50">the whole plan</p>
-        <h3 class="mt-3 font-control text-[clamp(28px,4vw,44px)] font-medium leading-[1.05] tracking-tight text-whiteout">
-          {'your ticket,'.split(' ').map((w) => (
-            <span class="inline-block overflow-hidden align-top">
-              <span class="plan-word inline-block will-change-transform">{w}&nbsp;</span>
-            </span>
-          ))}
-          <span class="inline-block overflow-hidden align-top">
-            <span class="plan-word inline-block will-change-transform">
-              <span class="font-control-cursive font-normal lowercase text-twilight-blue">your proof.</span>
-            </span>
-          </span>
-        </h3>
-        <p class="plan-desc mt-4 max-w-md text-base font-normal leading-relaxed text-whiteout/60">
-          Every event you go to gets captured — the ticket, the moment, the people. It becomes a
-          wall of everything you've actually done.
-        </p>
-        <a
-          href="#waitlist"
-          class="plan-cta btn-glass-yellow mt-6"
-        >
-          start collecting →
-        </a>
-      </div>
-
-      <div class="flex justify-center gap-4">
-        {screens.slice(0, 3).map((s, i) => (
-          <div
-            class={`flex w-32 flex-col gap-3 rounded-xl bg-haze p-2.5 ${
-              i === 1 ? 'mt-6' : 'mb-6'
-            }`}
-          >
-            <div class="aspect-[9/16] w-full rounded-lg bg-twilight-blue/20"></div>
-            <p class="text-xs font-medium leading-tight text-ink">{s.cap}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
 </section>
 
 <script>
@@ -120,7 +102,8 @@ const features = [
 
   gsap.registerPlugin(ScrollTrigger);
 
-  gsap.utils.toArray('.reveal').forEach((el) => {
+  // ── Simple scroll-reveal for elements marked .reveal (the whole-plan block) ──
+  gsap.utils.toArray<HTMLElement>('.reveal').forEach((el) => {
     gsap.from(el, {
       y: 40,
       opacity: 0,
@@ -130,77 +113,25 @@ const features = [
     });
   });
 
-  const intro = document.querySelector('.feature-intro');
-  const introWords = gsap.utils.toArray('.intro-word');
+  // ── Main pinned timeline (intro text + 4 slides) ───────────────────────────
+  const slides = gsap.utils.toArray<HTMLElement>('.feature-slide');
+  const scroller = document.querySelector<HTMLElement>('.feature-scroll'); // trigger element
+  const sticky = document.querySelector<HTMLElement>('.feature-sticky');   // element that gets pinned
+  const intro = document.querySelector<HTMLElement>('.feature-intro');     // intro overlay
+  const lit = gsap.utils.toArray<HTMLElement>('.intro-lit');               // words to light up
 
-  if (intro && introWords.length) {
-    const lit = gsap.utils.toArray('.intro-lit');
-    const wordStep = 0.15;
-    const tl = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: intro,
-        start: 'top top',
-        end: () => '+=' + window.innerHeight * (lit.length * wordStep + 0.1),
-        pin: true,
-        scrub: true,
-        anticipatePin: 1,
-      },
-    });
+  if (slides.length && sticky) {
+    // Timeline "time" is mapped to scroll distance via scrub.
+    // wordStep = seconds of timeline per word lit up (also ~scroll amount).
+    const wordStep = 0.035;
+    // Total time the intro takes: light up every word + 3 steps to fade out.
+    const introDur = lit.length * wordStep + wordStep * 3;
 
-    lit.forEach((w, i) => {
-      const inner = w.querySelector('span') || w;
-      const target =
-        inner.classList.contains('text-[#5a708f]')
-          ? '#426188'
-          : '#ffffff';
-      tl.to(inner, { color: target, duration: wordStep }, i * wordStep);
-    });
-
-    tl.to(intro, {
-      autoAlpha: 0,
-      yPercent: -15,
-      duration: wordStep * 0.6,
-      ease: 'power2.in',
-    });
-  }
-
-  gsap.from('.plan-label', {
-    y: 30,
-    autoAlpha: 0,
-    duration: 0.8,
-    ease: 'power3.out',
-    scrollTrigger: { trigger: '.plan-label', start: 'top 85%', once: true },
-  });
-  gsap.utils.toArray('.plan-word').forEach((w, i) => {
-    gsap.from(w, {
-      yPercent: 110,
-      autoAlpha: 0,
-      rotate: 4,
-      duration: 0.9,
-      delay: i * 0.08,
-      ease: 'power4.out',
-      scrollTrigger: { trigger: '.plan-word', start: 'top 85%', once: true },
-    });
-  });
-  gsap.from('.plan-desc, .plan-cta', {
-    y: 30,
-    autoAlpha: 0,
-    duration: 0.8,
-    stagger: 0.15,
-    ease: 'power3.out',
-    scrollTrigger: { trigger: '.plan-desc', start: 'top 88%', once: true },
-  });
-
-  const slides = gsap.utils.toArray('.feature-slide');
-  const scroller = document.querySelector('.feature-scroll');
-  const sticky = document.querySelector('.feature-sticky');
-
-  if (slides.length) {
-    slides.forEach((s, i) => {
-      const words = s.querySelectorAll('.feature-word');
-      const desc = s.querySelector('.feature-desc');
-      const img = s.querySelector('.feature-visual img');
+    // Hide every slide (and its inner parts) up front, so GSAP owns visibility.
+    slides.forEach((s) => {
+      const words = s.querySelectorAll<HTMLElement>('.feature-word');
+      const desc = s.querySelector<HTMLElement>('.feature-desc');
+      const img = s.querySelector<HTMLElement>('.feature-visual img');
 
       gsap.set(s, { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)' });
       gsap.set(words, { autoAlpha: 0, y: 70, rotate: 5 });
@@ -208,48 +139,76 @@ const features = [
       gsap.set(img, { autoAlpha: 0, scale: 0.7 });
     });
 
+    // The pinned timeline: pins .feature-sticky while the user scrolls.
+    // end = total scroll distance the pin lasts (intro + one viewport per slide).
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        end: () => '+=' + (slides.length + 1) * window.innerHeight * 1.5,
+        end: () => '+=' + (introDur + (slides.length + 1) * 0.9) * window.innerHeight,
         pin: sticky,
-        scrub: true,
+        scrub: true,        // progress follows scroll 1:1
         anticipatePin: 1,
       },
     });
 
+    // Phase 1 — light up the intro words one by one (grey → white / blue).
+    lit.forEach((w, i) => {
+      const inner = w.querySelector('span') || w;
+      const target =
+        inner.classList.contains('text-[#5a708f]')
+          ? '#426188'      // "miss." → twilight blue
+          : '#ffffff';     // everything else → white
+      tl.to(inner, { color: target, duration: wordStep }, i * wordStep);
+    });
+
+    // Phase 2 — fade the intro overlay out (slightly upward).
+    tl.to(
+      intro,
+      {
+        autoAlpha: 0,
+        yPercent: -10,
+        duration: wordStep * 3,
+        ease: 'power1.inOut',
+      },
+      (lit.length - 1) * wordStep
+    );
+
+    // Phase 3 — bring in the FIRST slide right as the intro fades.
     const first = slides[0];
-    const firstWords = first.querySelectorAll('.feature-word');
-    const firstDesc = first.querySelector('.feature-desc');
-    const firstImg = first.querySelector('.feature-visual img');
+    const firstWords = first.querySelectorAll<HTMLElement>('.feature-word');
+    const firstDesc = first.querySelector<HTMLElement>('.feature-desc');
+    const firstImg = first.querySelector<HTMLElement>('.feature-visual img');
 
     tl.fromTo(
       first,
       { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)' },
-      { scale: 1, autoAlpha: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }
+      { scale: 1, autoAlpha: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' },
+      introDur - 0.2   // start slightly before the intro finishes fading
     )
       .fromTo(
         firstWords,
         { autoAlpha: 0, y: 75, rotate: 6 },
         { autoAlpha: 1, y: 0, rotate: 0, duration: 0.6, ease: 'power3.out', stagger: 0.09 },
-        '<0.2'
+        '<0.2'   // '<' = relative to previous tween's start, +0.2s
       )
       .fromTo(firstDesc, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '<0.3')
       .fromTo(firstImg, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power3.out' }, '<0.15');
 
+    // Phase 4 — for each following slide: hide the previous one, show the next.
     slides.forEach((s, i) => {
       if (i === 0) return;
       const prev = slides[i - 1];
-      const prevWords = prev.querySelectorAll('.feature-word');
-      const prevDesc = prev.querySelector('.feature-desc');
-      const prevImg = prev.querySelector('.feature-visual img');
+      const prevWords = prev.querySelectorAll<HTMLElement>('.feature-word');
+      const prevDesc = prev.querySelector<HTMLElement>('.feature-desc');
+      const prevImg = prev.querySelector<HTMLElement>('.feature-visual img');
 
-      const words = s.querySelectorAll('.feature-word');
-      const desc = s.querySelector('.feature-desc');
-      const img = s.querySelector('.feature-visual img');
+      const words = s.querySelectorAll<HTMLElement>('.feature-word');
+      const desc = s.querySelector<HTMLElement>('.feature-desc');
+      const img = s.querySelector<HTMLElement>('.feature-visual img');
 
+      // Exit animation for the previous slide…
       tl.to(prev, { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)', duration: 0.6, ease: 'power2.in' })
         .to(
           prevWords,
@@ -262,6 +221,7 @@ const features = [
           { scale: 0.6, autoAlpha: 0, duration: 0.5, ease: 'power2.in' },
           '<0.2'
         )
+        // …then the entrance animation for the current slide.
         .fromTo(
           s,
           { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)' },
@@ -283,10 +243,11 @@ const features = [
         );
     });
 
+    // Phase 5 — exit the LAST slide so the plan section can scroll into view.
     const last = slides[slides.length - 1];
-    const lastWords = last.querySelectorAll('.feature-word');
-    const lastDesc = last.querySelector('.feature-desc');
-    const lastImg = last.querySelector('.feature-visual img');
+    const lastWords = last.querySelectorAll<HTMLElement>('.feature-word');
+    const lastDesc = last.querySelector<HTMLElement>('.feature-desc');
+    const lastImg = last.querySelector<HTMLElement>('.feature-visual img');
 
     tl.to(last, { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)', duration: 0.6, ease: 'power2.in' })
       .to(
