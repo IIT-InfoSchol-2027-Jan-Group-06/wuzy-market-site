@@ -41,10 +41,10 @@ const features = [
                 <span class="intro-word intro-lit inline-block will-change-transform text-[#707070]">{w}&nbsp;</span>
               </span>
             ))}
-            <!-- Trailing cursive word "miss." in the brand blue -->
+            <!-- Trailing cursive word "miss." in the brand blue (starts grey, lights blue) -->
             <span class="inline-block overflow-hidden align-top">
               <span class="intro-word intro-lit inline-block will-change-transform text-[#707070]">
-                <span class="font-control-cursive font-normal lowercase text-[#5a708f]">miss.</span>
+                <span class="intro-blue font-control-cursive font-normal lowercase">miss.</span>
               </span>
             </span>
           </h2>
@@ -127,6 +127,20 @@ const features = [
     // Total time the intro takes: light up every word + 3 steps to fade out.
     const introDur = lit.length * wordStep + wordStep * 3;
 
+    // Reveal the intro as the section scrolls into view after the hero.
+    gsap.from('.feature-intro h2, .feature-intro p', {
+      y: 50,
+      autoAlpha: 0,
+      duration: 1,
+      stagger: 0.15,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: scroller,
+        start: 'top 85%',
+        once: true,
+      },
+    });
+
     // Hide every slide (and its inner parts) up front, so GSAP owns visibility.
     slides.forEach((s) => {
       const words = s.querySelectorAll<HTMLElement>('.feature-word');
@@ -145,8 +159,8 @@ const features = [
       defaults: { ease: 'none' },
       scrollTrigger: {
         trigger: scroller,
-        start: 'top top',
-        end: () => '+=' + (introDur + (slides.length + 1) * 0.9) * window.innerHeight,
+        start: 'center center',
+        end: () => '+=' + (introDur + slides.length * 0.7) * window.innerHeight,
         pin: sticky,
         scrub: true,        // progress follows scroll 1:1
         anticipatePin: 1,
@@ -157,7 +171,7 @@ const features = [
     lit.forEach((w, i) => {
       const inner = w.querySelector('span') || w;
       const target =
-        inner.classList.contains('text-[#5a708f]')
+        inner.classList.contains('intro-blue')
           ? '#426188'      // "miss." → twilight blue
           : '#ffffff';     // everything else → white
       tl.to(inner, { color: target, duration: wordStep }, i * wordStep);
