@@ -1,0 +1,61 @@
+---
+const socials = [
+  { label: 'instagram', href: 'https://instagram.com' },
+  { label: 'twitter / x', href: 'https://twitter.com' },
+  { label: 'tiktok', href: 'https://tiktok.com' },
+  { label: 'discord', href: 'https://discord.com' },
+];
+
+const links = [
+  { label: 'About', href: '#about' },
+  { label: 'Features', href: '#features' },
+  { label: 'Waitlist', href: '#waitlist' },
+];
+---
+
+<footer class="relative px-5 pt-16 pb-10">
+  <div class="mx-auto w-full max-w-[1150px] text-center">
+    <!-- Brand -->
+    <a href="/" class="font-control text-lg font-medium tracking-[0.12em] text-whiteout">
+      WUZY
+    </a>
+    <p class="mx-auto mt-3 max-w-sm text-sm font-normal leading-relaxed text-whiteout/50">
+      find your people, go places.
+    </p>
+
+    <!-- Social links -->
+    <div class="mt-8 flex items-center justify-center gap-3">
+      {socials.map((s) => (
+        <a
+          href={s.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-whiteout/15 bg-whiteout/5 text-sm font-medium text-whiteout/70 backdrop-blur-xl transition-colors hover:bg-whiteout/10 hover:text-whiteout"
+        >
+          {s.label.slice(0, 1).toUpperCase()}
+        </a>
+      ))}
+    </div>
+
+    <!-- Page links -->
+    <nav class="mt-8 flex items-center justify-center gap-6 text-sm font-medium text-whiteout/70">
+      {links.map((l) => (
+        <a href={l.href} class="transition-colors hover:text-whiteout">
+          {l.label}
+        </a>
+      ))}
+    </nav>
+
+    <!-- Divider + legal -->
+    <div class="mt-12 border-t border-whiteout/10 pt-6">
+      <p class="text-xs font-normal text-whiteout/40">
+        © {new Date().getFullYear()} Wuzy. all rights reserved.
+      </p>
+      <div class="mt-3 flex items-center justify-center gap-5 text-xs font-normal text-whiteout/40">
+        <a href="#" class="transition-colors hover:text-whiteout">privacy</a>
+        <a href="#" class="transition-colors hover:text-whiteout">terms</a>
+        <a href="#" class="transition-colors hover:text-whiteout">contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
