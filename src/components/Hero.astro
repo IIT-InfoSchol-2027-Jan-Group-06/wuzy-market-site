@@ -2,18 +2,19 @@
 
 ---
 
-<section id="hero" class="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20">
+<section id="hero" class="hero-grad relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20">
   <div class="w-full max-w-[1150px] text-center">
-    <h1 class="hero-title font-control-compressed uppercase leading-[0.85] text-whiteout">
-      <span class="block text-[clamp(56px,9vw,120px)]">every connection</span>
-      <span class="block text-[clamp(56px,9vw,120px)]">
-        has a <span class="font-control-cursive font-normal lowercase text-twilight-blue">
+    <p class="hero-kicker font-script text-[clamp(28px,3.5vw,40px)] text-ember">listen.</p>
+    <h1 class="hero-title mt-2 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] text-charcoal">
+      <span class="block">every connection</span>
+      <span class="block">
+        has a <span class="font-control-cursive lowercase text-ember">
           <span id="cycle-word" class="font-control-cursive">story.</span>
         </span>
       </span>
     </h1>
 
-    <p class="hero-copy mx-auto mt-6 max-w-xl text-base font-medium leading-relaxed text-whiteout/60">
+    <p class="hero-copy mx-auto mt-6 max-w-xl text-base font-normal leading-relaxed tracking-[-0.01em] text-charcoal/70">
       Wuzy matches you to communities, clubs and events that fit your vibe. Drop stories, grab
       tickets, and never walk in alone.
     </p>
@@ -35,6 +36,7 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
+  gsap.from('.hero-kicker', { y: 24, opacity: 0, duration: 0.8, ease: 'power3.out' });
   gsap.from('.hero-title span', {
     y: 60, opacity: 0, duration: 1, stagger: 0.12, ease: 'power4.out',
   });

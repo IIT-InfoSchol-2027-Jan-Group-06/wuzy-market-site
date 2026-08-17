@@ -16,10 +16,10 @@ const links = [
 <footer class="relative px-5 pt-16 pb-10">
   <div class="mx-auto w-full max-w-[1150px] text-center">
     <!-- Brand -->
-    <a href="/" class="font-control text-lg font-medium tracking-[0.12em] text-whiteout">
+    <a href="/" class="font-control text-lg font-bold tracking-[0.08em] text-charcoal">
       WUZY
     </a>
-    <p class="mx-auto mt-3 max-w-sm text-sm font-normal leading-relaxed text-whiteout/50">
+    <p class="mx-auto mt-3 max-w-sm text-sm font-normal leading-relaxed text-steel">
       find your people, go places.
     </p>
 
@@ -30,7 +30,7 @@ const links = [
           href={s.href}
           target="_blank"
           rel="noopener noreferrer"
-          class="flex h-10 w-10 items-center justify-center rounded-full border border-whiteout/15 bg-whiteout/5 text-sm font-medium text-whiteout/70 backdrop-blur-xl transition-colors hover:bg-whiteout/10 hover:text-whiteout"
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/45 text-sm font-bold text-charcoal shadow-[rgba(19,19,22,0.08)_0px_2px_16px_-6px,inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-xl transition-colors hover:bg-white/75 hover:text-graphite"
         >
           {s.label.slice(0, 1).toUpperCase()}
         </a>
@@ -38,23 +38,23 @@ const links = [
     </div>
 
     <!-- Page links -->
-    <nav class="mt-8 flex items-center justify-center gap-6 text-sm font-medium text-whiteout/70">
+    <nav class="mt-8 flex items-center justify-center gap-6 text-sm font-semibold text-charcoal">
       {links.map((l) => (
-        <a href={l.href} class="transition-colors hover:text-whiteout">
+        <a href={l.href} class="transition-colors hover:text-graphite">
           {l.label}
         </a>
       ))}
     </nav>
 
     <!-- Divider + legal -->
-    <div class="mt-12 border-t border-whiteout/10 pt-6">
-      <p class="text-xs font-normal text-whiteout/40">
+    <div class="mt-12 border-t border-silk pt-6">
+      <p class="text-xs font-normal text-steel">
         © {new Date().getFullYear()} Wuzy. all rights reserved.
       </p>
-      <div class="mt-3 flex items-center justify-center gap-5 text-xs font-normal text-whiteout/40">
-        <a href="#" class="transition-colors hover:text-whiteout">privacy</a>
-        <a href="#" class="transition-colors hover:text-whiteout">terms</a>
-        <a href="#" class="transition-colors hover:text-whiteout">contact</a>
+      <div class="mt-3 flex items-center justify-center gap-5 text-xs font-semibold text-graphite">
+        <a href="#" class="transition-colors hover:text-charcoal">privacy</a>
+        <a href="#" class="transition-colors hover:text-charcoal">terms</a>
+        <a href="#" class="transition-colors hover:text-charcoal">contact</a>
       </div>
     </div>
   </div>

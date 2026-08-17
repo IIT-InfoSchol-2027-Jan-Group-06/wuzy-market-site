@@ -2,31 +2,31 @@
 import { formEndpoint } from '../data/site';
 ---
 
-<section id="waitlist" class="relative px-5 py-28">
+<section id="waitlist" class="waitlist-grad relative px-5 py-28">
   <div class="mx-auto w-full max-w-[760px] text-center">
     <!-- Label -->
-    <p class="waitlist-label text-sm font-medium uppercase tracking-[0.12em] text-whiteout/50">
+    <p class="waitlist-label text-sm font-medium uppercase tracking-[0.08em] text-ember">
       get early access
     </p>
 
     <!-- Headline (words reveal one-by-one) -->
-    <h2 class="mt-4 font-control-compressed uppercase leading-[0.9] text-whiteout">
-      <span class="block text-[clamp(48px,8vw,90px)]">
+    <h2 class="mt-4 font-control font-light leading-[1.2] tracking-[-0.02em] text-charcoal">
+      <span class="block text-[clamp(48px,7.5vw,84px)]">
         {'save your'.split(' ').map((w) => (
-          <span class="inline-block overflow-hidden align-top">
+          <span class="inline-block align-top">
             <span class="waitlist-word inline-block will-change-transform">{w}&nbsp;</span>
           </span>
         ))}
       </span>
-      <span class="block text-[clamp(48px,8vw,90px)]">
+      <span class="block text-[clamp(48px,7.5vw,84px)]">
         <span class="waitlist-word inline-block will-change-transform">
-          <span class="font-control-cursive font-normal lowercase text-twilight-blue">seat.</span>
+          <span class="font-control-cursive lowercase text-ember">seat.</span>
         </span>
       </span>
     </h2>
 
     <!-- Sub copy -->
-    <p class="waitlist-desc mx-auto mt-5 max-w-md text-base font-medium leading-relaxed text-whiteout/60">
+    <p class="waitlist-desc mx-auto mt-5 max-w-md text-base font-normal leading-relaxed tracking-normal text-charcoal/70">
       Be first in when Wuzy launches near you. Drop your email and we'll text you the second it's live.
     </p>
 
@@ -43,7 +43,7 @@ import { formEndpoint } from '../data/site';
         name="email"
         required
         placeholder="your@email.com"
-        class="w-full flex-1 !rounded-full border border-whiteout/15 bg-whiteout/10 px-5 py-3 text-base font-medium text-whiteout placeholder:text-whiteout/40 backdrop-blur-xl outline-none transition-colors focus:border-whiteout/40"
+        class="w-full flex-1 !rounded-full border border-white/15 bg-white/[0.06] px-5 py-3 text-base font-medium text-charcoal placeholder:text-charcoal/40 outline-none backdrop-blur-xl transition-colors focus:border-ember/60 focus:bg-white/[0.1]"
       />
       <button
         type="submit"
@@ -54,9 +54,9 @@ import { formEndpoint } from '../data/site';
     </form>
 
     <!-- Success state (shown via JS after submit) -->
-    <div id="waitlist-success" class="mx-auto mt-10 hidden max-w-xl rounded-xl border border-whiteout/10 bg-whiteout/5 p-6 backdrop-blur-xl">
-      <p class="font-control text-lg font-medium text-whiteout">you're in ✓</p>
-      <p class="mt-2 text-sm font-normal text-whiteout/60">
+    <div id="waitlist-success" class="mx-auto mt-10 hidden max-w-xl rounded-[32px] border border-white/15 bg-white/[0.06] p-6 shadow-card backdrop-blur-xl">
+      <p class="font-control text-lg font-medium text-charcoal">you're in ✓</p>
+      <p class="mt-2 text-sm font-normal text-charcoal/70">
         we'll text the moment Wuzy goes live near you. keep your phone close.
       </p>
     </div>
