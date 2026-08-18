@@ -114,6 +114,13 @@ body::after {
     radial-gradient(900px 500px at 90% -4%, rgba(255, 231, 131, 0.06), transparent 58%);
 }
 
+/* Pricing — warm glow behind the premium column, top-left lift */
+.pricing-grad {
+  background-image:
+    radial-gradient(820px 460px at 68% 8%, rgba(255, 231, 131, 0.06), transparent 58%),
+    radial-gradient(700px 400px at 10% 96%, rgba(255, 231, 131, 0.04), transparent 58%);
+}
+
 /* Waitlist — gentle bottom glow only */
 .waitlist-grad {
   background-image:

@@ -1,0 +1,201 @@
+---
+// ── Frontmatter: the free-vs-premium comparison matrix ───────────────────────
+// ONE array drives both cards, so adding a capability later is a single line.
+//   label   → what the capability is
+//   free    → value on the free plan (false = not included, string = limit)
+//   premium → value on premium
+// The free card renders every row (dashes included — the gaps are the pitch).
+// The premium card renders only the rows where premium differs, under an
+// "everything in free, plus" header, so it reads as pure upside.
+const rows = [
+  { label: 'connect with people', free: '10 a day', premium: 'unlimited' },
+  { label: "see who's actually pulling up", free: false, premium: true },
+  { label: 'spot your people before you walk in', free: false, premium: true },
+
+  // ponytail: placeholder rows so the cards have body — swap the copy when the
+  // real premium feature set is settled. Shape is already correct.
+  { label: 'first dibs on ticket drops', free: false, premium: true },
+  { label: 'get put on in discovery', free: false, premium: true },
+  { label: 'story archive', free: '7 days', premium: 'forever' },
+  { label: 'join clubs & crews', free: true, premium: true },
+  { label: 'cop event tickets', free: true, premium: true },
+];
+
+// Rows where premium actually beats free — the upgrade list.
+const upgrades = rows.filter((r) => r.free !== r.premium);
+---
+
+<section id="pricing" class="pricing-grad relative scroll-mt-24 px-5 py-28">
+  <div class="mx-auto w-full max-w-[980px]">
+    <!-- Label -->
+    <p class="pricing-label text-center text-sm font-medium uppercase tracking-[0.08em] text-ember">
+      free vs premium
+    </p>
+
+    <!-- Headline (words reveal one-by-one, matching the other sections) -->
+    <h2 class="mt-4 text-center font-control font-light leading-[1.2] tracking-[-0.02em] text-charcoal">
+      <span class="block text-[clamp(38px,6vw,68px)]">
+        {'unlock your'.split(' ').map((w) => (
+          <span class="inline-block align-top">
+            <span class="pricing-word inline-block will-change-transform">{w}&nbsp;</span>
+          </span>
+        ))}
+      </span>
+      <span class="block text-[clamp(38px,6vw,68px)]">
+        <span class="pricing-word inline-block will-change-transform">
+          <span class="font-control-cursive lowercase text-ember">main character era.</span>
+        </span>
+      </span>
+    </h2>
+
+    <!-- Sub copy -->
+    <p class="pricing-desc mx-auto mt-5 max-w-lg text-center text-base font-normal leading-relaxed tracking-normal text-charcoal/70">
+      free gets you in the door. premium gets you the guest list, the group chat,
+      and zero limits.
+    </p>
+
+    <!-- ── Plan cards ───────────────────────────────────────────────────
+         Side-by-side on desktop, stacked on mobile. The premium card is
+         deliberately louder: ember hairline, warm fill, lifted, badged. -->
+    <div class="mt-14 grid grid-cols-1 items-start gap-5 md:grid-cols-2 md:gap-6">
+
+      <!-- ── Free ─────────────────────────────────────────────────────── -->
+      <div class="pricing-card rounded-[24px] border border-white/10 bg-white/[0.03] p-7 shadow-card backdrop-blur-xl sm:p-8">
+        <p class="text-sm font-medium uppercase tracking-[0.08em] text-steel">free</p>
+        <p class="mt-3 font-control text-[40px] font-light leading-none tracking-[-0.03em] text-charcoal">
+          $0
+        </p>
+        <p class="mt-3 text-sm font-normal leading-relaxed text-charcoal/60">
+          enough to find the party. capped where it counts.
+        </p>
+
+        <ul class="mt-7 space-y-3.5">
+          {rows.map((r) => (
+            <li class="flex items-start gap-3">
+              {r.free === false ? (
+                <span class="mt-[7px] h-px w-3.5 shrink-0 bg-charcoal/25" aria-hidden="true"></span>
+              ) : (
+                <svg viewBox="0 0 20 20" fill="none" class="mt-[2px] h-[17px] w-[17px] shrink-0 text-steel" aria-hidden="true">
+                  <path d="M4.5 10.5l3.5 3.5 7.5-7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              )}
+              <span class={`text-[15px] leading-snug ${r.free === false ? 'text-charcoal/35 line-through decoration-charcoal/20' : 'text-charcoal/85'}`}>
+                {r.label}
+                {typeof r.free === 'string' && (
+                  <span class="ml-1.5 font-medium text-steel">— {r.free}</span>
+                )}
+              </span>
+              <span class="sr-only">{r.free === false ? 'not included' : 'included'}</span>
+            </li>
+          ))}
+        </ul>
+
+        <a
+          href="#waitlist"
+          class="mt-8 flex min-h-[46px] w-full items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 text-[15px] font-medium text-charcoal backdrop-blur-xl transition-colors hover:border-white/25 hover:bg-white/[0.1]"
+        >
+          start free
+        </a>
+      </div>
+
+      <!-- ── Premium ──────────────────────────────────────────────────── -->
+      <div class="pricing-card relative rounded-[24px] border border-ember/40 bg-ember/[0.05] p-7 shadow-[0_0_0_1px_rgba(255,231,131,0.12),0_24px_64px_-24px_rgba(255,231,131,0.28),0_24px_48px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl sm:p-8 md:-mt-3">
+        <!-- Badge — a vibe, not a stat. No fabricated "most popular" claim. -->
+        <span class="absolute -top-3 left-7 rounded-full border border-ember/50 bg-ember px-3 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-bone sm:left-8">
+          the move
+        </span>
+
+        <p class="text-sm font-medium uppercase tracking-[0.08em] text-ember">premium</p>
+        <p class="mt-3 font-control text-[40px] font-light leading-none tracking-[-0.03em] text-charcoal">
+          tbd
+          <span class="ml-2 align-middle text-base font-normal text-charcoal/45">at launch</span>
+        </p>
+        <p class="mt-3 text-sm font-normal leading-relaxed text-charcoal/60">
+          no limits, no guessing who's in the room.
+        </p>
+
+        <p class="mt-7 text-xs font-semibold uppercase tracking-[0.08em] text-charcoal/45">
+          everything in free, plus
+        </p>
+        <ul class="mt-4 space-y-3.5">
+          {upgrades.map((r) => (
+            <li class="flex items-start gap-3">
+              <svg viewBox="0 0 20 20" fill="none" class="mt-[2px] h-[17px] w-[17px] shrink-0 text-ember" aria-hidden="true">
+                <path d="M4.5 10.5l3.5 3.5 7.5-7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span class="text-[15px] leading-snug text-charcoal">
+                {r.label}
+                {typeof r.premium === 'string' && (
+                  <span class="ml-1.5 font-semibold text-ember">— {r.premium}</span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <a href="#waitlist" class="btn-glass-yellow mt-8 !flex min-h-[46px] w-full !rounded-full px-6">
+          put me on the list
+        </a>
+      </div>
+    </div>
+
+    <!-- Honest urgency: this genuinely is a pre-launch waitlist. No countdown
+         timers, no invented signup counts — fabricated scarcity reads as fake. -->
+    <p class="pricing-note mt-8 text-center text-sm font-normal text-charcoal/50">
+      pricing drops at launch. the waitlist sees it first — and gets in first.
+    </p>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Label fades in.
+  gsap.from('.pricing-label', {
+    y: 24,
+    autoAlpha: 0,
+    duration: 0.7,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.pricing-label', start: 'top 85%', once: true },
+  });
+
+  // Headline words rise into place.
+  const words = gsap.utils.toArray<HTMLElement>('.pricing-word');
+  if (words.length) {
+    gsap.from(words, {
+      yPercent: 110,
+      autoAlpha: 0,
+      rotate: 4,
+      duration: 0.9,
+      stagger: 0.09,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: '.pricing-label', start: 'top 80%', once: true },
+    });
+  }
+
+  // Sub-copy and closing note.
+  gsap.from('.pricing-desc, .pricing-note', {
+    y: 30,
+    autoAlpha: 0,
+    duration: 0.8,
+    stagger: 0.12,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.pricing-desc', start: 'top 88%', once: true },
+  });
+
+  // Cards rise in, premium a beat after free.
+  const cards = gsap.utils.toArray<HTMLElement>('.pricing-card');
+  if (cards.length) {
+    gsap.from(cards, {
+      y: 40,
+      autoAlpha: 0,
+      duration: 0.8,
+      stagger: 0.14,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.pricing-card', start: 'top 85%', once: true },
+    });
+  }
+</script>
