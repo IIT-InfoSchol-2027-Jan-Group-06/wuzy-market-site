@@ -56,11 +56,15 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
 
     <!-- ── Plan cards ───────────────────────────────────────────────────
          Side-by-side on desktop, stacked on mobile. The premium card is
-         deliberately louder: ember hairline, warm fill, lifted, badged. -->
-    <div class="mt-14 grid grid-cols-1 items-start gap-5 md:grid-cols-2 md:gap-6">
+         deliberately louder: ember hairline, warm fill, drop-glow, badged.
+
+         Both cards stretch to the taller one's height and their feature
+         lists take the slack (flex-1), so the two CTAs sit on the same
+         baseline even though free lists eight rows and premium six. -->
+    <div class="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
 
       <!-- ── Free ─────────────────────────────────────────────────────── -->
-      <div class="pricing-card rounded-[24px] border border-white/10 bg-white/[0.03] p-7 shadow-card backdrop-blur-xl sm:p-8">
+      <div class="pricing-card flex flex-col rounded-[24px] border border-white/10 bg-white/[0.03] p-7 shadow-card backdrop-blur-xl sm:p-8">
         <p class="text-sm font-medium uppercase tracking-[0.08em] text-steel">free</p>
         <p class="mt-3 font-control text-[40px] font-light leading-none tracking-[-0.03em] text-charcoal">
           $0
@@ -69,7 +73,7 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
           enough to find the party. capped where it counts.
         </p>
 
-        <ul class="mt-7 space-y-3.5">
+        <ul class="mt-7 flex-1 space-y-3.5">
           {rows.map((r) => (
             <li class="flex items-start gap-3">
               {r.free === false ? (
@@ -99,7 +103,7 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
       </div>
 
       <!-- ── Premium ──────────────────────────────────────────────────── -->
-      <div class="pricing-card relative rounded-[24px] border border-ember/40 bg-ember/[0.05] p-7 shadow-[0_0_0_1px_rgba(255,231,131,0.12),0_24px_64px_-24px_rgba(255,231,131,0.28),0_24px_48px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl sm:p-8 md:-mt-3">
+      <div class="pricing-card relative flex flex-col rounded-[24px] border border-ember/40 bg-ember/[0.05] p-7 shadow-[0_0_0_1px_rgba(255,231,131,0.12),0_24px_64px_-24px_rgba(255,231,131,0.28),0_24px_48px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl sm:p-8">
         <!-- Badge — a vibe, not a stat. No fabricated "most popular" claim. -->
         <span class="absolute -top-3 left-7 rounded-full border border-ember/50 bg-ember px-3 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-bone sm:left-8">
           the move
@@ -117,7 +121,7 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
         <p class="mt-7 text-xs font-semibold uppercase tracking-[0.08em] text-charcoal/45">
           everything in free, plus
         </p>
-        <ul class="mt-4 space-y-3.5">
+        <ul class="mt-4 flex-1 space-y-3.5">
           {upgrades.map((r) => (
             <li class="flex items-start gap-3">
               <svg viewBox="0 0 20 20" fill="none" class="mt-[2px] h-[17px] w-[17px] shrink-0 text-ember" aria-hidden="true">
