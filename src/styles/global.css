@@ -75,6 +75,29 @@ body::after {
   background-size: 240px 240px;
 }
 
+/* ── Ambient warmth ───────────────────────────────────────────
+   A fixed, viewport-sized glow layer sitting behind all content.
+   The per-section glows below are px-sized radials anchored to their
+   own section box, so once ScrollTrigger pinning grew Features to
+   ~6000px and YSCard to ~3600px, their middles fell outside every
+   gradient and rendered pure black. This layer travels with the
+   viewport so no part of the page is ever unlit.
+
+   Deliberately a fixed pseudo-element rather than
+   `background-attachment: fixed`, which iOS Safari ignores. Same
+   technique as the grain layer above. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 720px at 50% -12%, rgba(255, 231, 131, 0.055), transparent 62%),
+    radial-gradient(900px 560px at 100% 104%, rgba(255, 231, 131, 0.04), transparent 60%),
+    radial-gradient(760px 480px at 0% 60%, rgba(255, 231, 131, 0.022), transparent 60%);
+}
+
 /* ── Dark theme gradient surfaces ─────────────────────────────
    The BODY carries the single continuous base gradient so every
    section blends seamlessly — there is no per-section opaque
@@ -90,48 +113,107 @@ body::after {
     linear-gradient(180deg, #000000 0%, #060606 45%, #000000 100%);
 }
 
-/* Hero — faint grid baked in, then warm glows (transparent edges) */
+/* ── Section glows ───────────────────────────────────────────
+   Every section glow rides a masked pseudo-element rather than the
+   section's own background.
+
+   A background box is clipped hard at its edge, so any radial still
+   non-transparent when it reaches that edge draws a visible horizontal
+   seam — which is what all of these did, since most were centred at or
+   outside their own boundary (0%, 100%, 108%, -4%). Masking fades each
+   layer's own alpha to nothing before the edge instead, so sections
+   dissolve into each other no matter how tall pinning makes them.
+
+   Painting an opaque fade over the section does NOT work: the black
+   also hides the ambient layer behind it, which just relocates the seam
+   into a brightness step.
+
+   z-index:-1 keeps the layer beneath section content — Hero, Pricing
+   and Waitlist have unpositioned content that a z-index:0 pseudo-element
+   would paint straight over. */
+.hero-grad,
+.about-grad,
+.features-grad,
+.ys-grad,
+.pricing-grad,
+.waitlist-grad {
+  position: relative;
+}
+
+.hero-grad::before,
+.about-grad::before,
+.features-grad::before,
+.ys-grad::before,
+.pricing-grad::before,
+.waitlist-grad::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--glow);
+  background-size: var(--glow-size, auto);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000000 var(--glow-fade-top, 150px),
+    #000000 calc(100% - var(--glow-fade-bottom, 150px)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000000 var(--glow-fade-top, 150px),
+    #000000 calc(100% - var(--glow-fade-bottom, 150px)),
+    transparent 100%
+  );
+}
+
+/* Hero — faint grid baked in, then warm glows. No top fade: this is the
+   top of the page, with nothing above it to blend into. */
 .hero-grad {
-  background-image:
+  --glow-fade-top: 0px;
+  --glow-fade-bottom: 48%;
+  --glow-size: 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+  --glow:
     radial-gradient(1100px 620px at 50% 22%, rgba(255, 231, 131, 0.09), transparent 60%),
-    radial-gradient(900px 500px at 12% 96%, rgba(255, 231, 131, 0.05), transparent 55%),
-    radial-gradient(900px 500px at 88% 90%, rgba(255, 231, 131, 0.05), transparent 55%),
+    radial-gradient(900px 500px at 12% 62%, rgba(255, 231, 131, 0.05), transparent 55%),
+    radial-gradient(900px 500px at 88% 58%, rgba(255, 231, 131, 0.05), transparent 55%),
     linear-gradient(to right, rgba(244, 239, 212, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(244, 239, 212, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px;
 }
 
 /* About — left-edge and bottom-right warm glows only */
 .about-grad {
-  background-image:
-    radial-gradient(820px 460px at 8% 0%, rgba(255, 231, 131, 0.05), transparent 58%),
-    radial-gradient(760px 420px at 96% 100%, rgba(255, 231, 131, 0.06), transparent 58%);
+  --glow:
+    radial-gradient(820px 460px at 8% 240px, rgba(255, 231, 131, 0.05), transparent 58%),
+    radial-gradient(760px 420px at 96% calc(100% - 240px), rgba(255, 231, 131, 0.06), transparent 58%);
 }
 
 /* Features — soft top-right warmth only */
 .features-grad {
-  background-image:
-    radial-gradient(900px 500px at 90% -4%, rgba(255, 231, 131, 0.06), transparent 58%);
+  --glow:
+    radial-gradient(900px 500px at 90% 300px, rgba(255, 231, 131, 0.06), transparent 58%);
 }
 
 /* YS Cards — gentle top-right + bottom-left warmth only */
 .ys-grad {
-  background-image:
-    radial-gradient(820px 460px at 92% 4%, rgba(255, 231, 131, 0.05), transparent 58%),
-    radial-gradient(760px 420px at 4% 100%, rgba(255, 231, 131, 0.05), transparent 58%);
+  --glow:
+    radial-gradient(820px 460px at 92% 300px, rgba(255, 231, 131, 0.05), transparent 58%),
+    radial-gradient(760px 420px at 4% calc(100% - 320px), rgba(255, 231, 131, 0.05), transparent 58%);
 }
 
 /* Pricing — warm glow behind the premium column, top-left lift */
 .pricing-grad {
-  background-image:
-    radial-gradient(820px 460px at 68% 8%, rgba(255, 231, 131, 0.06), transparent 58%),
-    radial-gradient(700px 400px at 10% 96%, rgba(255, 231, 131, 0.04), transparent 58%);
+  --glow:
+    radial-gradient(820px 460px at 68% 300px, rgba(255, 231, 131, 0.06), transparent 58%),
+    radial-gradient(700px 400px at 10% calc(100% - 280px), rgba(255, 231, 131, 0.04), transparent 58%);
 }
 
 /* Waitlist — gentle bottom glow only */
 .waitlist-grad {
-  background-image:
-    radial-gradient(900px 520px at 50% 108%, rgba(255, 231, 131, 0.07), transparent 62%);
+  --glow:
+    radial-gradient(900px 520px at 50% calc(100% - 140px), rgba(255, 231, 131, 0.07), transparent 62%);
 }
 
 /* Pika whisper-to-shout contract — all headings in the light functional
