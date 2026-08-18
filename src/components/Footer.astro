@@ -30,15 +30,6 @@ const links = [
 ---
 
 <footer class="relative overflow-hidden px-5 pt-16 pb-10">
-  <!-- Dark-blue atmospheric wash + faint brand warmth, sits behind content -->
-  <div
-    aria-hidden="true"
-    class="pointer-events-none absolute inset-x-0 bottom-0 h-72"
-    style="background:
-      radial-gradient(560px 240px at 50% 100%, rgba(37, 99, 235, 0.16), transparent 70%),
-      radial-gradient(420px 200px at 50% 100%, rgba(255, 231, 131, 0.06), transparent 70%);"
-  ></div>
-
   <div class="relative mx-auto w-full max-w-[1150px]">
     <!-- Brand + tagline + socials in one centered row -->
     <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 whitespace-nowrap">
@@ -56,7 +47,7 @@ const links = [
             rel="noopener noreferrer"
             aria-label={s.label}
             title={s.label}
-            class="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-[#101b38]/70 text-charcoal shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl transition-colors hover:border-ember/70 hover:bg-ember/10 hover:text-ember"
+            class="flex h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors hover:text-ember"
           >
             <svg
               viewBox="0 0 24 24"
@@ -81,7 +72,7 @@ const links = [
     </nav>
 
     <!-- Divider + legal -->
-    <div class="mt-12 flex flex-col items-start gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="mt-12 flex flex-col items-start gap-3 pt-6 sm:flex-row sm:items-center sm:justify-between">
       <p class="text-xs font-normal text-steel">
         © {new Date().getFullYear()} Wuzy. all rights reserved.
       </p>
