@@ -260,34 +260,3 @@ h1, h2, h3 {
     rgba(0, 0, 0, 0.55) 0px 12px 32px -8px,
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
-
-/* Navbar CTA — smaller frosted glass pill with brand yellow tint */
-.btn-glass-nav {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: rgba(255, 231, 131, 0.12);
-  color: var(--color-ember);
-  border: 1px solid rgba(255, 231, 131, 0.45);
-  border-radius: 100px;
-  padding: 0.5rem 1.1rem;
-  font-size: 0.8125rem;
-  font-weight: 450;
-  line-height: 1.4;
-  letter-spacing: -0.02em;
-  -webkit-backdrop-filter: blur(16px) saturate(1.5);
-  backdrop-filter: blur(16px) saturate(1.5);
-  box-shadow:
-    rgba(0, 0, 0, 0.45) 0px 8px 24px -8px,
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-glass-nav:hover {
-  background: rgba(255, 231, 131, 0.22);
-  transform: translateY(-1px);
-  box-shadow:
-    rgba(0, 0, 0, 0.55) 0px 12px 32px -8px,
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}

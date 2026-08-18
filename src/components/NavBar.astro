@@ -1,40 +1,40 @@
 ---
-// Header nav. #waitlist is deliberately absent from this list — the CTA on
-// the right already points there, and listing it twice in one pill is noise.
-// The footer nav does carry it, since the footer has no CTA.
+// Header nav. Every destination is a plain link on equal footing, including
+// the waitlist — so all of them pick up the same scroll-spy highlight.
 const links = [
   { label: 'Features', href: '#features' },
   { label: 'Why Wuzy', href: '#why' },
   { label: 'Pricing', href: '#pricing' },
+  { label: 'Join waitlist', href: '#waitlist' },
 ];
 ---
 
 <header class="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
-  <nav class="flex items-center gap-4 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 shadow-[rgba(0,0,0,0.5)_0px_8px_32px_-8px,inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl sm:gap-5 sm:px-5">
+  <nav class="flex max-w-full items-center gap-3 rounded-full border border-white/15 bg-white/[0.06] px-3 py-2 shadow-[rgba(0,0,0,0.5)_0px_8px_32px_-8px,inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl sm:gap-5 sm:px-5">
     <!-- Wordmark in the display face (Archivo Black), not Inter — it reads as
          a logotype rather than as another nav item. -->
     <a
       href="/"
-      class="font-display text-[13px] leading-none tracking-[0.18em] text-charcoal transition-colors hover:text-ember"
+      class="shrink-0 font-display text-[12px] leading-none tracking-[0.16em] text-charcoal transition-colors hover:text-ember sm:text-[13px] sm:tracking-[0.18em]"
     >
       WUZY
     </a>
 
-    <div class="hidden items-center gap-1 md:flex">
+    <!-- Scrolls rather than overflowing if the labels outgrow a narrow
+         viewport, so the pill can never widen the page. -->
+    <div class="flex items-center gap-0 overflow-x-auto [scrollbar-width:none] sm:gap-1 [&::-webkit-scrollbar]:hidden">
       {links.map((l) => (
         <a
           href={l.href}
           data-nav-link
           data-target={l.href.slice(1)}
           aria-current="false"
-          class="rounded-full px-3 py-1.5 text-[13px] font-medium tracking-[-0.01em] text-charcoal/65 transition-colors hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember"
+          class="whitespace-nowrap rounded-full px-2 py-1.5 text-[12px] font-medium tracking-[-0.01em] text-charcoal/65 transition-colors hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember sm:px-3 sm:text-[13px]"
         >
           {l.label}
         </a>
       ))}
     </div>
-
-    <a href="#waitlist" class="btn-glass-nav shrink-0">Join waitlist</a>
   </nav>
 </header>
 
