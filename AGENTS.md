@@ -5,6 +5,10 @@ When starting the dev server, use background mode:
 ```
 astro dev --background
 ```
+## Dont changes
+Dont change the layout or the animations of the website , just change other thing on design aspects 
+
+
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
