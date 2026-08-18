@@ -1,22 +1,82 @@
 ---
+// Header nav. #waitlist is deliberately absent from this list — the CTA on
+// the right already points there, and listing it twice in one pill is noise.
+// The footer nav does carry it, since the footer has no CTA.
+const links = [
+  { label: 'Features', href: '#features' },
+  { label: 'Why Wuzy', href: '#why' },
+  { label: 'Pricing', href: '#pricing' },
+];
 ---
+
 <header class="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
-  <nav class="flex items-center gap-5 rounded-full border border-white/15 bg-white/[0.06] px-5 py-2 shadow-[rgba(0,0,0,0.5)_0px_8px_32px_-8px,inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl">
-    <a href="/" class="font-control text-sm font-bold tracking-[0.08em] text-charcoal">
+  <nav class="flex items-center gap-4 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 shadow-[rgba(0,0,0,0.5)_0px_8px_32px_-8px,inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl sm:gap-5 sm:px-5">
+    <!-- Wordmark in the display face (Archivo Black), not Inter — it reads as
+         a logotype rather than as another nav item. -->
+    <a
+      href="/"
+      class="font-display text-[13px] leading-none tracking-[0.18em] text-charcoal transition-colors hover:text-ember"
+    >
       WUZY
     </a>
 
-    <div class="hidden items-center gap-5 text-sm font-semibold text-charcoal/80 sm:flex">
-      <a href="#about" class="transition-colors hover:text-charcoal">About</a>
-      <a href="#features" class="transition-colors hover:text-charcoal">Features</a>
-      <a href="#waitlist" class="transition-colors hover:text-charcoal">Waitlist</a>
+    <div class="hidden items-center gap-1 md:flex">
+      {links.map((l) => (
+        <a
+          href={l.href}
+          data-nav-link
+          data-target={l.href.slice(1)}
+          aria-current="false"
+          class="rounded-full px-3 py-1.5 text-[13px] font-medium tracking-[-0.01em] text-charcoal/65 transition-colors hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember"
+        >
+          {l.label}
+        </a>
+      ))}
     </div>
 
-    <a
-      href="#waitlist"
-      class="btn-glass-nav shrink-0"
-    >
-      Join waitlist
-    </a>
+    <a href="#waitlist" class="btn-glass-nav shrink-0">Join waitlist</a>
   </nav>
 </header>
+
+<script>
+  // Scroll spy — highlights the nav link for whichever section is crossing
+  // the middle of the viewport.
+  //
+  // IntersectionObserver rather than a scroll handler: it fires only on
+  // threshold crossings, so it costs nothing on a page this long, and it
+  // stays correct through the pinned Features/YSCard sections, whose real
+  // boxes span thousands of pixels.
+  //
+  // The rootMargin collapses the root to a thin band across the viewport
+  // middle, so exactly one section is "current" at a time and it flips at
+  // the point the reader would call the changeover.
+  //
+  // Every section is observed, not just the ones with a link. Sections
+  // without one (hero, waitlist) then clear the highlight rather than
+  // leaving the previous link stuck on — which is what happened when only
+  // linked sections were tracked.
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')
+  );
+
+  if (links.length) {
+    const setActive = (id: string) => {
+      links.forEach((l) =>
+        l.setAttribute('aria-current', String(l.dataset.target === id))
+      );
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: '-45% 0px -45% 0px' }
+    );
+
+    document
+      .querySelectorAll('main section[id]')
+      .forEach((section) => observer.observe(section));
+  }
+</script>
