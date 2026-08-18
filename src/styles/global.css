@@ -260,3 +260,29 @@ h1, h2, h3 {
     rgba(0, 0, 0, 0.55) 0px 12px 32px -8px,
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
+
+/* Nav CTA — the waitlist link. It has to read as a CTA at rest, but an
+   always-ember pill would leave the scroll-spy "current" state with nothing
+   to say, since that state is also ember. So it gets two levels: outlined
+   at rest, solid when it is the active section.
+
+   Kept as plain rules rather than a stack of Tailwind aria- variants: this
+   is the one element that sets a background in BOTH states, so the two are
+   easier to read and reason about side by side, and the attribute selector
+   is plainly the more specific of the pair. */
+.nav-cta {
+  border-color: rgba(255, 231, 131, 0.45);
+  background-color: rgba(255, 231, 131, 0.1);
+  color: var(--color-ember);
+}
+
+.nav-cta:hover {
+  border-color: rgba(255, 231, 131, 0.7);
+  background-color: rgba(255, 231, 131, 0.2);
+}
+
+.nav-cta[aria-current='true'] {
+  border-color: var(--color-ember);
+  background-color: var(--color-ember);
+  color: var(--color-bone);
+}

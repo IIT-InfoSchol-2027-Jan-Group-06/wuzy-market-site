@@ -1,12 +1,28 @@
 ---
-// Header nav. Every destination is a plain link on equal footing, including
-// the waitlist — so all of them pick up the same scroll-spy highlight.
+// Header nav. Every destination takes part in the scroll spy, including the
+// waitlist, so any of them can show as current.
+//
+// The waitlist link is the CTA and needs to read as one at rest, but an
+// always-ember pill would leave the ember "current" state with nothing to
+// say — both states would look the same. So it gets two levels instead:
+// outlined ember at rest, solid ember when it is the active section. The
+// plain links stay quiet and only tint when current.
 const links = [
   { label: 'Features', href: '#features' },
   { label: 'Why Wuzy', href: '#why' },
   { label: 'Pricing', href: '#pricing' },
-  { label: 'Join waitlist', href: '#waitlist' },
+  { label: 'Join waitlist', href: '#waitlist', cta: true },
 ];
+
+// Shared box so every item is the same height — the CTA's border would
+// otherwise make it 2px taller than its neighbours.
+const base =
+  'whitespace-nowrap rounded-full border px-2 py-1.5 text-[12px] font-medium tracking-[-0.01em] transition-colors sm:px-3 sm:text-[13px]';
+
+const plain =
+  'border-transparent text-charcoal/65 hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember';
+
+const cta = 'nav-cta';
 ---
 
 <header class="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
@@ -29,7 +45,7 @@ const links = [
           data-nav-link
           data-target={l.href.slice(1)}
           aria-current="false"
-          class="whitespace-nowrap rounded-full px-2 py-1.5 text-[12px] font-medium tracking-[-0.01em] text-charcoal/65 transition-colors hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember sm:px-3 sm:text-[13px]"
+          class={`${base} ${l.cta ? `${cta} ml-1` : plain}`}
         >
           {l.label}
         </a>
