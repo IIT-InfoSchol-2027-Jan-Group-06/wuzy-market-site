@@ -85,7 +85,7 @@ const features = [
                 <img
                   src={f.mock.src}
                   alt={f.t}
-                  class="w-60 max-w-[50vw] rounded-2xl border border-charcoal/15 object-cover shadow-image"
+                  class="w-60 max-w-[50vw] object-cover"
                 />
               </div>
             </div>
@@ -123,7 +123,7 @@ const features = [
   if (slides.length && sticky) {
     // Timeline "time" is mapped to scroll distance via scrub.
     // wordStep = seconds of timeline per word lit up (also ~scroll amount).
-    const wordStep = 0.035;
+    const wordStep = 0.15;
     // Total time the intro takes: light up every word + 3 steps to fade out.
     const introDur = lit.length * wordStep + wordStep * 3;
 
@@ -132,7 +132,7 @@ const features = [
       y: 50,
       autoAlpha: 0,
       duration: 1,
-      stagger: 0.15,
+      stagger: 0.3,
       ease: 'power3.out',
       scrollTrigger: {
         trigger: scroller,
@@ -160,7 +160,7 @@ const features = [
       scrollTrigger: {
         trigger: scroller,
         start: 'center center',
-        end: () => '+=' + (introDur + slides.length * 0.7) * window.innerHeight,
+        end: () => '+=' + (introDur + slides.length * 0.6) * window.innerHeight,
         pin: sticky,
         scrub: true,        // progress follows scroll 1:1
         anticipatePin: 1,

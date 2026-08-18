@@ -4,11 +4,11 @@
 
 <section id="hero" class="hero-grad relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20">
   <div class="w-full max-w-[1150px] text-center">
-    <p class="hero-kicker font-script text-[clamp(28px,3.5vw,40px)] text-ember">listen.</p>
-    <h1 class="hero-title mt-2 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] text-charcoal">
-      <span class="block">every connection</span>
+  
+    <h1 class="hero-title mt-2 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] font-extrabold text-charcoal">
+      <span class="block">EVERY CONNECTION</span>
       <span class="block">
-        has a <span class="font-control-cursive lowercase text-ember">
+        HAS A <span class="font-control-cursive lowercase text-ember">
           <span id="cycle-word" class="font-control-cursive">story.</span>
         </span>
       </span>
@@ -42,7 +42,7 @@
   });
   gsap.from('.hero-copy', { y: 24, opacity: 0, duration: 0.8, delay: 0.4, ease: 'power3.out' });
   gsap.from('.hero-cta a', { y: 16, opacity: 0, duration: 0.7, stagger: 0.12, delay: 0.55, ease: 'power3.out' });
-
+//words list for the hero
   const words = ['story.', 'vibe.', 'crew.', 'home.', 'plan.', 'reason.'];
   let index = 0;
   const cycleWord = document.getElementById('cycle-word') as HTMLElement;
