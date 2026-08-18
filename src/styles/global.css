@@ -114,6 +114,13 @@ body::after {
     radial-gradient(900px 500px at 90% -4%, rgba(255, 231, 131, 0.06), transparent 58%);
 }
 
+/* YS Cards — gentle top-right + bottom-left warmth only */
+.ys-grad {
+  background-image:
+    radial-gradient(820px 460px at 92% 4%, rgba(255, 231, 131, 0.05), transparent 58%),
+    radial-gradient(760px 420px at 4% 100%, rgba(255, 231, 131, 0.05), transparent 58%);
+}
+
 /* Pricing — warm glow behind the premium column, top-left lift */
 .pricing-grad {
   background-image:

@@ -1,0 +1,144 @@
+---
+// ── Frontmatter: mock data for the "why choose" value cards ─────────────
+// Placeholder copy — swap with real brand reasons when ready.
+const reasons = [
+  {
+    t: 'Made for your crew',
+    d: 'Not another generic feed — Wuzy is built around real people, real places and real plans.',
+  },
+  {
+    t: 'Everything in one tap',
+    d: 'Stories, tickets, clubs and meetups live side-by-side in a single app that feels effortless.',
+  },
+  {
+    t: 'A reason to show up',
+    d: 'Wuzy\'s entire job is giving you the reason to walk into the same room as your people.',
+  },
+];
+---
+
+<section id="why" class="ys-grad relative">
+  <!-- Pinned scroll area: heading stays locked in the center while the
+       cards rise up over it one by one. The section stays pinned until
+       every card has appeared, then normal scrolling resumes. -->
+  <div class="ys-scroll relative">
+    <div class="ys-sticky relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-5">
+      <!-- Locked, centered heading (sits behind the rising cards) -->
+      <div class="ys-head relative z-0 mx-auto max-w-5xl text-center">
+        <h2 class="mt-4 font-control text-[clamp(63px,9.6vw,119px)] font-bold leading-[1.2] tracking-[-0.02em] text-charcoal">
+          <span class="block overflow-hidden">
+            {'why choose'.split(' ').map((w) => (
+              <span class="inline-block align-top">
+                <span class="inline-block will-change-transform">{w}&nbsp;</span>
+              </span>
+            ))}
+          </span>
+          <span class="block overflow-hidden">
+            <span class="inline-block will-change-transform">
+              <span id="ys-cycle-word" class="font-control-cursive lowercase text-ember">wuzy.</span>
+            </span>
+          </span>
+        </h2>
+      </div>
+
+      <!-- Cards rise one-by-one over the locked heading as the user scrolls -->
+      <div class="ys-grid relative z-10 -mt-20 grid w-full max-w-[1200px] gap-7 md:grid-cols-3 lg:-mt-32">
+        {reasons.map((r) => (
+          <div class="ys-card group rounded-[32px] border border-white/20 bg-white/[0.05] p-9 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),rgba(0,0,0,0.5)_0px_16px_40px_-16px] backdrop-blur-2xl backdrop-saturate-150 transition-transform duration-300 hover:-translate-y-2">
+            <h3 class="font-control text-2xl font-bold tracking-[-0.02em] text-charcoal">
+              {r.t}
+            </h3>
+            <p class="mt-3 text-[15px] font-normal leading-relaxed tracking-[-0.01em] text-charcoal/70">
+              {r.d}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const cycleWord = document.getElementById('ys-cycle-word') as HTMLElement;
+
+  // Cycling state shared between the word-swap logic and the pinned scroll.
+  const swapWords = ['wuzy.', 'us.'];
+  let cycleIndex = 0;
+  let cycleStopped = false;
+
+  // Once the cards start covering the locked text, freeze the word on "us."
+  // (it stays visible through the frosted glass) and stop switching.
+  const freezeWordToUs = () => {
+    if (!cycleWord || cycleStopped) return;
+    cycleStopped = true;
+    cycleWord.textContent = 'us.';
+  };
+
+  // Continuously swap "wuzy." with "us." — same GSAP swap as Hero, 30% faster.
+  if (cycleWord) {
+    const swap = () => {
+      if (cycleStopped) return;
+      cycleIndex = (cycleIndex + 1) % swapWords.length;
+      gsap.to(cycleWord, {
+        y: -20,
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power2.in',
+        onComplete: () => {
+          cycleWord.textContent = swapWords[cycleIndex];
+          gsap.fromTo(
+            cycleWord,
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }
+          );
+        },
+      });
+    };
+
+    // Hero intro (4s) + cycle (2.6s), scaled by 0.7 → 2.8s / 1.8s.
+    gsap.delayedCall(2.8, function repeat() {
+      if (cycleStopped) return;
+      swap();
+      gsap.delayedCall(1.8, repeat);
+    });
+  }
+
+  // Pinned, scroll-scrubbed timeline: the heading stays locked while each
+  // card rises up over it one by one. The pin releases once all are done.
+  const scroller = document.querySelector<HTMLElement>('.ys-scroll');
+  const sticky = document.querySelector<HTMLElement>('.ys-sticky');
+  const cards = gsap.utils.toArray<HTMLElement>('.ys-card');
+
+  if (cards.length && scroller && sticky) {
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: scroller,
+        start: 'top top',
+        end: () => '+=' + (0.5 + cards.length * 0.8) * window.innerHeight,
+        pin: sticky,
+        scrub: true,
+        anticipatePin: 1,
+        // Once the cards are covering the locked text, keep the word on "us".
+        onUpdate: (self: { progress: number }) => {
+          if (self.progress >= 0.3) freezeWordToUs();
+        },
+      },
+    });
+
+    // Each card gets its own window in the scrubbed timeline, so they
+    // appear one by one as the user scrolls (diagonally, over the text).
+    cards.forEach((card, i) => {
+      tl.fromTo(
+        card,
+        { y: 200, x: i % 2 === 0 ? -70 : 70, rotate: i % 2 === 0 ? -4 : 4, autoAlpha: 0 },
+        { y: 0, x: 0, rotate: 0, autoAlpha: 1, duration: 0.8, ease: 'power2.out' }
+      );
+    });
+  }
+</script>
