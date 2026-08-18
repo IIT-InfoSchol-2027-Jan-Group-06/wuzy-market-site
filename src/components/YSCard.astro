@@ -87,7 +87,7 @@ const reasons = [
       gsap.to(cycleWord, {
         y: -20,
         opacity: 0,
-        duration: 0.3,
+        duration: 0.02,
         ease: 'power2.in',
         onComplete: () => {
           cycleWord.textContent = swapWords[cycleIndex];
@@ -101,10 +101,10 @@ const reasons = [
     };
 
     // Hero intro (4s) + cycle (2.6s), scaled by 0.7 → 2.8s / 1.8s.
-    gsap.delayedCall(2.8, function repeat() {
+    gsap.delayedCall(0.8, function repeat() {
       if (cycleStopped) return;
       swap();
-      gsap.delayedCall(1.8, repeat);
+      gsap.delayedCall(0.8, repeat);
     });
   }
 
