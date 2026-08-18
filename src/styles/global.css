@@ -14,6 +14,9 @@
   --color-cream: #1a1a1a;
   --color-ember: #ffe783;
   --color-brand: #ffe783;
+  --color-limestone: #f7f6f2;
+  --color-obsidian: #070607;
+  --color-whiteout: #ffffff;
 
   /* Legacy aliases — keep existing class usage working */
   --color-carbon: #f4efd4;

@@ -6,55 +6,42 @@ const socials = [
   { label: 'discord', href: 'https://discord.com' },
 ];
 
-const links = [
-  { label: 'About', href: '#about' },
-  { label: 'Features', href: '#features' },
-  { label: 'Waitlist', href: '#waitlist' },
+const legal = [
+  { label: 'privacy', href: '#' },
+  { label: 'terms', href: '#' },
+  { label: 'contact', href: '#' },
 ];
 ---
 
-<footer class="relative px-5 pt-16 pb-10">
-  <div class="mx-auto w-full max-w-[1150px] text-center">
-    <!-- Brand -->
-    <a href="/" class="font-control text-lg font-bold tracking-[0.08em] text-charcoal">
-      WUZY
-    </a>
-    <p class="mx-auto mt-3 max-w-sm text-sm font-normal leading-relaxed text-steel">
-      find your people, go places.
-    </p>
+<footer class="px-5 pt-16 pb-8">
+  <div class="mx-auto w-full max-w-[1150px]">
+    <!-- Simple brand row -->
+    <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
+      <a href="/" class="font-control text-lg font-bold tracking-[0.08em] text-charcoal">
+        WUZY
+      </a>
 
-    <!-- Social links -->
-    <div class="mt-8 flex items-center justify-center gap-3">
-      {socials.map((s) => (
-        <a
-          href={s.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/45 text-sm font-bold text-charcoal shadow-[rgba(19,19,22,0.08)_0px_2px_16px_-6px,inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-xl transition-colors hover:bg-white/75 hover:text-graphite"
-        >
-          {s.label.slice(0, 1).toUpperCase()}
-        </a>
-      ))}
+      <!-- Social links -->
+      <div class="flex items-center gap-5 text-sm font-medium text-steel">
+        {socials.map((s) => (
+          <a href={s.href} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-ember">
+            {s.label}
+          </a>
+        ))}
+      </div>
     </div>
 
-    <!-- Page links -->
-    <nav class="mt-8 flex items-center justify-center gap-6 text-sm font-semibold text-charcoal">
-      {links.map((l) => (
-        <a href={l.href} class="transition-colors hover:text-graphite">
-          {l.label}
-        </a>
-      ))}
-    </nav>
-
-    <!-- Divider + legal -->
-    <div class="mt-12 border-t border-silk pt-6">
+    <!-- Legal row -->
+    <div class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-charcoal/10 pt-5 sm:flex-row">
       <p class="text-xs font-normal text-steel">
         © {new Date().getFullYear()} Wuzy. all rights reserved.
       </p>
-      <div class="mt-3 flex items-center justify-center gap-5 text-xs font-semibold text-graphite">
-        <a href="#" class="transition-colors hover:text-charcoal">privacy</a>
-        <a href="#" class="transition-colors hover:text-charcoal">terms</a>
-        <a href="#" class="transition-colors hover:text-charcoal">contact</a>
+      <div class="flex items-center gap-5 text-xs font-medium text-steel">
+        {legal.map((l) => (
+          <a href={l.href} class="transition-colors hover:text-charcoal">
+            {l.label}
+          </a>
+        ))}
       </div>
     </div>
   </div>
