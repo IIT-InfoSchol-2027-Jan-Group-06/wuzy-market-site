@@ -29,11 +29,11 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
   <div class="mx-auto w-full max-w-[980px]">
     <!-- Label -->
     <p class="pricing-label text-center text-sm font-medium uppercase tracking-[0.08em] text-ember">
-      free vs premium
+      subscription
     </p>
 
     <!-- Headline (words reveal one-by-one, matching the other sections) -->
-    <h2 class="mt-4 text-center font-display font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+    <h2 class="mt-4 text-center font-display font-normal leading-[1.2] tracking-[0.02em] uppercase text-charcoal">
       <span class="block text-[clamp(38px,6vw,68px)]">
         {'unlock your'.split(' ').map((w) => (
           <span class="inline-block align-top">
@@ -50,8 +50,7 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
 
     <!-- Sub copy -->
     <p class="pricing-desc mx-auto mt-5 max-w-lg text-center text-base font-normal leading-relaxed tracking-normal text-charcoal/70">
-      free gets you in the door. premium gets you the guest list, the group chat,
-      and zero limits.
+      Free lets you find the move. Premium gives you the guest list, unlimited matches, and zero ads.
     </p>
 
     <!-- ── Plan cards ───────────────────────────────────────────────────
@@ -69,9 +68,7 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
         <p class="mt-3 flex items-baseline font-control text-[40px] font-light leading-none tracking-[-0.03em] text-charcoal">
           $0
         </p>
-        <p class="mt-3 text-sm font-normal leading-relaxed text-charcoal/60">
-          enough to find the party. capped where it counts.
-        </p>
+       
 
         <ul class="mt-7 flex-1 space-y-3.5">
           {rows.map((r) => (
@@ -100,7 +97,7 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
           href="#waitlist"
           class="mt-8 flex min-h-[46px] w-full items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 text-[15px] font-medium text-charcoal backdrop-blur-xl transition-colors hover:border-white/25 hover:bg-white/[0.1]"
         >
-          start free
+          get started
         </a>
       </div>
 
@@ -113,11 +110,7 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
 
         <p class="text-sm font-medium uppercase tracking-[0.08em] text-ember">premium</p>
         <p class="mt-3 flex items-baseline font-control text-[40px] font-light leading-none tracking-[-0.03em] text-charcoal">
-          tbd
-          <span class="ml-2 text-base font-normal text-charcoal/45">at launch</span>
-        </p>
-        <p class="mt-3 text-sm font-normal leading-relaxed text-charcoal/60">
-          no limits, no guessing who's in the room.
+          $10/month
         </p>
 
         <p class="mt-7 text-xs font-semibold uppercase tracking-[0.08em] text-charcoal/45">
@@ -150,9 +143,7 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
 
     <!-- Honest urgency: this genuinely is a pre-launch waitlist. No countdown
          timers, no invented signup counts — fabricated scarcity reads as fake. -->
-    <p class="pricing-note mt-8 text-center text-sm font-normal text-charcoal/50">
-      pricing drops at launch. the waitlist sees it first — and gets in first.
-    </p>
+    
   </div>
 </section>
 
