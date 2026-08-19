@@ -37,20 +37,37 @@ const cta = 'nav-cta';
     </a>
 
     <!-- Scrolls rather than overflowing if the labels outgrow a narrow
-         viewport, so the pill can never widen the page. -->
-    <div class="flex items-center gap-0 overflow-x-auto [scrollbar-width:none] sm:gap-1 [&::-webkit-scrollbar]:hidden">
-      {links.map((l) => (
+         viewport, so the pill can never widen the page. The waitlist CTA
+         stays outside the scroll area so it is never clipped. -->
+    <div class="flex min-w-0 items-center gap-0 overflow-x-auto [scrollbar-width:none] sm:gap-1 [&::-webkit-scrollbar]:hidden">
+      {links
+        .filter((l) => !l.cta)
+        .map((l) => (
+          <a
+            href={l.href}
+            data-nav-link
+            data-target={l.href.slice(1)}
+            aria-current="false"
+            class={`${base} ${plain}`}
+          >
+            {l.label}
+          </a>
+        ))}
+    </div>
+
+    {links
+      .filter((l) => l.cta)
+      .map((l) => (
         <a
           href={l.href}
           data-nav-link
           data-target={l.href.slice(1)}
           aria-current="false"
-          class={`${base} ${l.cta ? `${cta} ml-1` : plain}`}
+          class={`${base} ${cta} shrink-0`}
         >
           {l.label}
         </a>
       ))}
-    </div>
   </nav>
 </header>
 
