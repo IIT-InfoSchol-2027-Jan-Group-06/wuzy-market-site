@@ -33,9 +33,9 @@ const features = [
            lit up white one-by-one as you scroll (.intro-lit is animated). -->
       <div class="feature-intro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 pb-16">
         <div class="mx-auto w-full max-w-[1150px] text-center">
-          <h2 class="mx-auto max-w-3xl font-display text-[clamp(30px,4.5vw,56px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+          <h2 class="mx-auto max-w-3xl font-display text-[clamp(30px,4.5vw,56px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal uppercase">
             <!-- Split the headline into per-word spans so each word can animate independently -->
-            {'EVERYTHING YOU NEED IN ONE APP. EVENTS, TICKETS, COMMUNITIES, AND THE CONNECTIONS YOU DONT WANT TO'.split(' ').map((w) => (
+            {'everything you need in one app. events, tickets, communities, and the connections you don\'t want to miss'.split(' ').map((w) => (
               <span class="inline-block align-top">
                 <!-- intro-lit → the word gets its color tweened by GSAP -->
                 <span class="intro-word intro-lit inline-block will-change-transform text-charcoal/40">{w}&nbsp;</span>
