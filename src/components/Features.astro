@@ -20,7 +20,7 @@ const features = [
 ];
 ---
 
-<section id="features" class="features-grad relative">
+<section id="features" class="relative">
   <!-- ── Pinned scroll area (intro + feature slides) ──────────────────────
        This whole block is pinned by ScrollTrigger so it stays on screen
        while you scroll. The intro text fades out, then the 4 slides
@@ -142,7 +142,7 @@ const features = [
       const desc = s.querySelector<HTMLElement>('.feature-desc');
       const img = s.querySelector<HTMLElement>('.feature-visual img');
 
-      gsap.set(s, { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)' });
+      gsap.set(s, { scale: 0.7, autoAlpha: 0 });
       gsap.set(words, { autoAlpha: 0, y: 70, rotate: 5 });
       gsap.set(desc, { autoAlpha: 0, y: 45 });
       gsap.set(img, { autoAlpha: 0, scale: 0.7 });
@@ -192,8 +192,8 @@ const features = [
 
     tl.fromTo(
       first,
-      { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)' },
-      { scale: 1, autoAlpha: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' },
+      { scale: 0.7, autoAlpha: 0 },
+      { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'power2.out' },
       introDur - 0.2   // start slightly before the intro finishes fading
     )
       .fromTo(
@@ -218,7 +218,7 @@ const features = [
       const img = s.querySelector<HTMLElement>('.feature-visual img');
 
       // Exit animation for the previous slide…
-      tl.to(prev, { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)', duration: 0.6, ease: 'power2.in' })
+      tl.to(prev, { scale: 0.7, autoAlpha: 0, duration: 0.6, ease: 'power2.in' })
         .to(
           prevWords,
           { y: -70, rotate: -5, autoAlpha: 0, duration: 0.5, ease: 'power2.in', stagger: 0.05 },
@@ -233,8 +233,8 @@ const features = [
         // …then the entrance animation for the current slide.
         .fromTo(
           s,
-          { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)' },
-          { scale: 1, autoAlpha: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' },
+          { scale: 0.7, autoAlpha: 0 },
+          { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'power2.out' },
           '<0.6'
         )
         .fromTo(
@@ -258,7 +258,7 @@ const features = [
     const lastDesc = last.querySelector<HTMLElement>('.feature-desc');
     const lastImg = last.querySelector<HTMLElement>('.feature-visual img');
 
-    tl.to(last, { scale: 0.7, autoAlpha: 0, filter: 'blur(10px)', duration: 0.6, ease: 'power2.in' })
+    tl.to(last, { scale: 0.7, autoAlpha: 0, duration: 0.6, ease: 'power2.in' })
       .to(
         lastWords,
         { y: -70, rotate: -5, autoAlpha: 0, duration: 0.5, ease: 'power2.in', stagger: 0.05 },

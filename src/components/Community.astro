@@ -21,17 +21,11 @@ const avatars = [
 ];
 ---
 
-<section id="community" class="community-grad relative">
+<section id="community" class="relative">
   <div class="community-scroll relative">
     <!-- Pinned scroll area: the heading locks center-screen while the avatars
          fly out from it one by one to their scattered positions. -->
     <div class="community-sticky relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-5 py-24">
-
-      <!-- ── Hub glow behind the heading ──────────────────────────────── -->
-      <div
-        class="community-hub pointer-events-none absolute left-1/2 top-1/2 z-0 h-[clamp(280px,44vw,580px)] w-[clamp(280px,44vw,580px)] rounded-full opacity-0"
-        style="background: radial-gradient(circle, rgba(255,231,131,0.14), rgba(255,231,131,0.05) 55%, transparent 72%);"
-      ></div>
 
       <!-- ── Locked heading ────────────────────────────────────────────── -->
       <div class="community-title-wrap relative z-10 text-center">
@@ -135,10 +129,9 @@ const avatars = [
       },
     });
 
-    // Intro — label, headline words rise, hub glow in.
+    // Intro — label and headline words rise.
     tl.from('.community-label', { y: 20, autoAlpha: 0, duration: 0.2, ease: 'power2.out' }, 0)
-      .fromTo(words, { yPercent: 120, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.3, stagger: 0.08, ease: 'power2.out' }, 0.05)
-      .to('.community-hub', { autoAlpha: 1, duration: 0.4, ease: 'power1.inOut' }, 0.1);
+      .fromTo(words, { yPercent: 120, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.3, stagger: 0.08, ease: 'power2.out' }, 0.05);
 
     // Sub-copy, then the avatars fly out from the heading one by one.
     tl.from('.community-desc', { y: 20, autoAlpha: 0, duration: 0.25, ease: 'power2.out' }, 0.5);
@@ -170,6 +163,5 @@ const avatars = [
 
     .community-title-wrap h2 { font-size: clamp(32px, 10vw, 48px) !important; }
     .community-desc { font-size: 0.875rem; }
-    .community-hub { height: 78vw !important; width: 78vw !important; }
   }
 </style>
