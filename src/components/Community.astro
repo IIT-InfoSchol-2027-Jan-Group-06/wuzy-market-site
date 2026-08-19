@@ -1,0 +1,175 @@
+---
+// ── Frontmatter: avatar "nodes" scattered around the locked heading ────────
+// The heading locks center-screen while the avatars erupt FROM it and settle
+// at their positions, connected like a node graph. On smaller screens the
+// same layout is kept — avatars are simply repositioned to safe edges and
+// resized via the CSS media query below so nothing overlaps the text.
+//   n   → alt text
+//   x   → horizontal position in % (desktop)
+//   y   → vertical position in % (desktop)
+//   s   → size tier: 'xxl' | 'lg' | 'md' | 'sm' — varied for rhythm
+//   img → avatar photo
+const avatars = [
+  { n: 'Wumpus', x: 16, y: 20, s: 'xxl', img: '/avatars/p1.jpg' },
+  { n: 'Bumble', x: 88, y: 10, s: 'sm', img: '/avatars/p2.jpg' },
+  { n: 'Fizz', x: 8, y: 52, s: 'md', img: '/avatars/p3.jpg' },
+  { n: 'Gnome', x: 92, y: 55, s: 'xxl', img: '/avatars/p4.jpg' },
+  { n: 'Pickle', x: 22, y: 80, s: 'sm', img: '/avatars/p5.jpg' },
+  { n: 'Mango', x: 80, y: 78, s: 'xxl', img: '/avatars/p6.jpg' },
+  { n: 'Nacho', x: 40, y: 18, s: 'lg', img: '/avatars/p7.jpg' },
+  { n: 'Pixel', x: 66, y: 92, s: 'md', img: '/avatars/p8.jpg' },
+];
+---
+
+<section id="community" class="community-grad relative">
+  <div class="community-scroll relative">
+    <!-- Pinned scroll area: the heading locks center-screen while the avatars
+         fly out from it one by one to their scattered positions. -->
+    <div class="community-sticky relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-5 py-24">
+
+      <!-- ── Hub glow behind the heading ──────────────────────────────── -->
+      <div
+        class="community-hub pointer-events-none absolute left-1/2 top-1/2 z-0 h-[clamp(280px,44vw,580px)] w-[clamp(280px,44vw,580px)] rounded-full opacity-0"
+        style="background: radial-gradient(circle, rgba(255,231,131,0.14), rgba(255,231,131,0.05) 55%, transparent 72%);"
+      ></div>
+
+      <!-- ── Locked heading ────────────────────────────────────────────── -->
+      <div class="community-title-wrap relative z-10 text-center">
+        <p class="community-label text-sm font-medium uppercase tracking-[0.08em] text-ember">
+          community
+        </p>
+        <h2 class="mt-4 font-display font-normal leading-[1.05] tracking-[0.02em] uppercase text-charcoal">
+          <span class="community-line-word block overflow-hidden text-[clamp(48px,8vw,112px)]">
+            <span class="community-word block will-change-transform">JOIN</span>
+          </span>
+          <span class="community-line-word block overflow-hidden text-[clamp(48px,8vw,112px)]">
+            <span class="community-word block will-change-transform">
+              <span class="font-control-cursive lowercase text-ember">communities.</span>
+            </span>
+          </span>
+        </h2>
+        <p class="community-desc mx-auto mt-5 max-w-md text-base font-normal leading-relaxed tracking-[-0.01em] text-charcoal/70">
+          Find your people. Pull up with your crew. Somewhere there's a room that's full of yours.
+        </p>
+      </div>
+
+      <!-- ── Avatar nodes ─────────────────────────────────────────────────
+           Each wrapper is anchored on its left/top point and centered with
+           GSAP's xPercent/yPercent. On small screens the CSS media query
+           moves them to safe edge positions and shrinks them, and sync()
+           re-aims the fly-out from the heading to match. -->
+      {avatars.map((a, i) => (
+        <div
+          class={`community-avatar av-${i + 1} pointer-events-none absolute z-20`}
+          style={`left:${a.x}%;top:${a.y}%`}
+        >
+          <div
+            class={`community-avatar-inner size-${a.s} overflow-hidden rounded-full border border-white/25 shadow-[0_0_0_3px_rgba(0,0,0,0.35),0_14px_34px_-10px_rgba(0,0,0,0.85)] ${
+              a.s === 'xxl'
+                ? 'h-[clamp(84px,10vw,136px)] w-[clamp(84px,10vw,136px)]'
+                : a.s === 'lg'
+                  ? 'h-[clamp(50px,5.5vw,80px)] w-[clamp(50px,5.5vw,80px)]'
+                  : a.s === 'md'
+                    ? 'h-[clamp(38px,4vw,60px)] w-[clamp(38px,4vw,60px)]'
+                    : 'h-[clamp(26px,2.8vw,42px)] w-[clamp(26px,2.8vw,42px)]'
+            }`}
+          >
+            <img src={a.img} alt={a.n} class="h-full w-full object-cover" loading="lazy" draggable="false" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const scroller = document.querySelector<HTMLElement>('.community-scroll');
+  const sticky = document.querySelector<HTMLElement>('.community-sticky');
+  const avatars = gsap.utils.toArray<HTMLElement>('.community-avatar');
+  const words = gsap.utils.toArray<HTMLElement>('.community-word');
+
+  if (avatars.length && scroller && sticky) {
+    // Push every avatar back onto the centered heading so the scrub animation
+    // makes them erupt FROM the heading and settle at their positions. The
+    // wrapper is anchored on its left/top point (the -50% xPercent/yPercent
+    // translate makes that point the avatar's center at rest), so dx/dy move
+    // it onto the heading's center. Reading live rects keeps this correct at
+    // every breakpoint, including the mobile repositioning in the CSS below.
+    const sync = () => {
+      const cRect = scroller.getBoundingClientRect();
+      const cw = cRect.width || 1;
+      const ch = cRect.height || 1;
+      const cx = cRect.left + cw / 2;
+      const cy = cRect.top + ch / 2;
+      const rects = avatars.map((av) => av.getBoundingClientRect());
+
+      avatars.forEach((av, i) => {
+        const r = rects[i];
+        const ax = r.left;
+        const ay = r.top;
+        const dx = cx - ax;
+        const dy = cy - ay;
+
+        // Start gathered on the heading, then it flies outward.
+        gsap.set(av, { xPercent: -50, yPercent: -50, x: dx, y: dy, scale: 0.2, autoAlpha: 0 });
+      });
+    };
+
+    sync();
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: scroller,
+        start: 'top top',
+        end: () => '+=' + (0.7 + avatars.length * 0.11 + 0.6) * window.innerHeight,
+        pin: sticky,
+        scrub: true,
+        anticipatePin: 1,
+        onRefresh: () => sync(),
+      },
+    });
+
+    // Intro — label, headline words rise, hub glow in.
+    tl.from('.community-label', { y: 20, autoAlpha: 0, duration: 0.2, ease: 'power2.out' }, 0)
+      .fromTo(words, { yPercent: 120, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.3, stagger: 0.08, ease: 'power2.out' }, 0.05)
+      .to('.community-hub', { autoAlpha: 1, duration: 0.4, ease: 'power1.inOut' }, 0.1);
+
+    // Sub-copy, then the avatars fly out from the heading one by one.
+    tl.from('.community-desc', { y: 20, autoAlpha: 0, duration: 0.25, ease: 'power2.out' }, 0.5);
+
+    avatars.forEach((av, i) => {
+      tl.to(av, { x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.22, ease: 'power2.out' }, 0.35 + i * 0.07);
+    });
+  }
+</script>
+
+<style>
+  /* ── Small screens — keep the scattered node graph, but pull every avatar
+     out to the safe edges and shrink it so none of them cover the centered
+     heading. sync() re-aims the fly-out from the heading to the new spots. */
+  @media (max-width: 1023px) {
+    .av-1 { left: 8% !important; top: 14% !important; }
+    .av-2 { left: 89% !important; top: 22% !important; }
+    .av-3 { left: 5% !important; top: 44% !important; }
+    .av-4 { left: 95% !important; top: 58% !important; }
+    .av-5 { left: 16% !important; top: 78% !important; }
+    .av-6 { left: 91% !important; top: 88% !important; }
+    .av-7 { left: 35% !important; top: 22% !important; }
+    .av-8 { left: 90% !important; top: 40% !important; }
+
+    .community-avatar-inner.size-xxl { height: clamp(44px, 12vw, 72px) !important; width: clamp(44px, 12vw, 72px) !important; }
+    .community-avatar-inner.size-lg { height: clamp(36px, 10vw, 60px) !important; width: clamp(36px, 10vw, 60px) !important; }
+    .community-avatar-inner.size-md { height: clamp(30px, 8vw, 48px) !important; width: clamp(30px, 8vw, 48px) !important; }
+    .community-avatar-inner.size-sm { height: clamp(24px, 6vw, 36px) !important; width: clamp(24px, 6vw, 36px) !important; }
+
+    .community-title-wrap h2 { font-size: clamp(32px, 10vw, 48px) !important; }
+    .community-desc { font-size: 0.875rem; }
+    .community-hub { height: 78vw !important; width: 78vw !important; }
+  }
+</style>
