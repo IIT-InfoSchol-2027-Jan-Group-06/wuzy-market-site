@@ -118,7 +118,7 @@ const features = [
   if (slides.length && sticky) {
     // Timeline "time" is mapped to scroll distance via scrub.
     // wordStep = seconds of timeline per word lit up (also ~scroll amount).
-    const wordStep = 0.15;
+    const wordStep = 0.015;
     // Total time the intro takes: light up every word + 3 steps to fade out.
     const introDur = lit.length * wordStep + wordStep * 3;
 
@@ -149,14 +149,18 @@ const features = [
     });
 
     // The pinned timeline: pins .feature-sticky while the user scrolls.
-    // end = total scroll distance the pin lasts (intro + one viewport per slide).
+    // start 'top top' + pinSpacing:false means no pin-spacer is left behind,
+    // and end = one viewport puts Community's top exactly at the viewport top
+    // the moment the pin releases — so Community appears instantly after the
+    // last feature slide fades out, with no trailing scroll gap.
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
         trigger: scroller,
-        start: 'center center',
-        end: () => '+=' + (introDur + slides.length * 0.6) * window.innerHeight,
+        start: 'top top',
+        end: () => '+=' + window.innerHeight,
         pin: sticky,
+        pinSpacing: false,
         scrub: true,        // progress follows scroll 1:1
         anticipatePin: 1,
       },
@@ -193,17 +197,17 @@ const features = [
     tl.fromTo(
       first,
       { scale: 0.7, autoAlpha: 0 },
-      { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'power2.out' },
+      { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'power2.out' },
       introDur - 0.2   // start slightly before the intro finishes fading
     )
       .fromTo(
         firstWords,
         { autoAlpha: 0, y: 75, rotate: 6 },
-        { autoAlpha: 1, y: 0, rotate: 0, duration: 0.6, ease: 'power3.out', stagger: 0.09 },
+        { autoAlpha: 1, y: 0, rotate: 0, duration: 0.45, ease: 'power3.out', stagger: 0.07 },
         '<0.2'   // '<' = relative to previous tween's start, +0.2s
       )
-      .fromTo(firstDesc, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '<0.3')
-      .fromTo(firstImg, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power3.out' }, '<0.15');
+      .fromTo(firstDesc, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out' }, '<0.3')
+      .fromTo(firstImg, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'power3.out' }, '<0.15');
 
     // Phase 4 — for each following slide: hide the previous one, show the next.
     slides.forEach((s, i) => {
@@ -218,36 +222,36 @@ const features = [
       const img = s.querySelector<HTMLElement>('.feature-visual img');
 
       // Exit animation for the previous slide…
-      tl.to(prev, { scale: 0.7, autoAlpha: 0, duration: 0.6, ease: 'power2.in' })
+      tl.to(prev, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' })
         .to(
           prevWords,
-          { y: -70, rotate: -5, autoAlpha: 0, duration: 0.5, ease: 'power2.in', stagger: 0.05 },
+          { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
           '<0.2'
         )
-        .to(prevDesc, { y: -45, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, '<0.3')
+        .to(prevDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.3')
         .to(
           prevImg,
-          { scale: 0.6, autoAlpha: 0, duration: 0.5, ease: 'power2.in' },
+          { scale: 0.6, autoAlpha: 0, duration: 0.45, ease: 'power2.in' },
           '<0.2'
         )
         // …then the entrance animation for the current slide.
         .fromTo(
           s,
           { scale: 0.7, autoAlpha: 0 },
-          { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'power2.out' },
+          { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'power2.out' },
           '<0.6'
         )
         .fromTo(
           words,
           { autoAlpha: 0, y: 75, rotate: 6 },
-          { autoAlpha: 1, y: 0, rotate: 0, duration: 0.6, ease: 'power3.out', stagger: 0.09 },
+          { autoAlpha: 1, y: 0, rotate: 0, duration: 0.45, ease: 'power3.out', stagger: 0.07 },
           '<0.2'
         )
-        .fromTo(desc, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '<0.3')
+        .fromTo(desc, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out' }, '<0.3')
         .fromTo(
           img,
           { autoAlpha: 0, scale: 0.7 },
-          { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power3.out' },
+          { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'power3.out' },
           '<0.15'
         );
     });
@@ -258,13 +262,13 @@ const features = [
     const lastDesc = last.querySelector<HTMLElement>('.feature-desc');
     const lastImg = last.querySelector<HTMLElement>('.feature-visual img');
 
-    tl.to(last, { scale: 0.7, autoAlpha: 0, duration: 0.6, ease: 'power2.in' })
+    tl.to(last, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' })
       .to(
         lastWords,
-        { y: -70, rotate: -5, autoAlpha: 0, duration: 0.5, ease: 'power2.in', stagger: 0.05 },
+        { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
         '<0.2'
       )
-      .to(lastDesc, { y: -45, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, '<0.3')
-      .to(lastImg, { scale: 0.6, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, '<0.2');
+      .to(lastDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.3')
+      .to(lastImg, { scale: 0.6, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.2');
   }
 </script>
