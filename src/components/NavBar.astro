@@ -29,13 +29,27 @@ const plain =
 const cta = 'nav-cta';
 ---
 
-<header class="fixed inset-x-0 top-0 z-50 flex flex-col items-center px-4 pt-4">
-  <nav class="flex max-w-full items-center gap-3 rounded-full border border-white/15 bg-white/[0.06] px-3 py-2 shadow-[rgba(0,0,0,0.5)_0px_8px_32px_-8px,inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl sm:gap-5 sm:px-5">
+<header class="fixed inset-x-0 top-0 z-50 flex flex-col items-stretch sm:items-center sm:px-4 sm:pt-4">
+  <nav class="nav-pill">
+    <!-- Hamburger toggle — mobile only, sits at the far left. -->
+    <button
+      type="button"
+      data-nav-toggle
+      aria-expanded="false"
+      aria-controls="mobile-nav-menu"
+      aria-label="Toggle menu"
+      class="nav-burger sm:hidden"
+    >
+      <span class="nav-burger-bar"></span>
+      <span class="nav-burger-bar"></span>
+    </button>
+
     <!-- Wordmark in the display face (Archivo Black), not Inter — it reads as
-         a logotype rather than as another nav item. -->
+         a logotype rather than as another nav item. Desktop only; on mobile
+         it's removed so the bar stays clean with just hamburger + CTA. -->
     <a
       href="/"
-      class="shrink-0 font-display text-[12px] leading-none tracking-[0.16em] text-charcoal transition-colors hover:text-ember sm:text-[13px] sm:tracking-[0.18em]"
+      class="hidden shrink-0 font-display text-[12px] leading-none tracking-[0.16em] text-charcoal transition-colors hover:text-ember sm:text-[13px] sm:tracking-[0.18em] sm:inline-block"
     >
       WUZY
     </a>
@@ -58,8 +72,13 @@ const cta = 'nav-cta';
         ))}
     </div>
 
-    <!-- The waitlist CTA stays in the pill on every viewport, outside the
-         hamburger menu, so it is never hidden. -->
+    <!-- Mobile-only spacer: pushes the waitlist CTA to the far right,
+         while the hamburger pins to the left. -->
+    <div class="flex-1 sm:hidden"></div>
+
+    <!-- Waitlist CTA — in the pill on every viewport, outside the
+         hamburger menu so it is never hidden. On mobile it sits at the
+         right edge, opposite the hamburger. -->
     {links
       .filter((l) => l.cta)
       .map((l) => (
@@ -73,19 +92,6 @@ const cta = 'nav-cta';
           {l.label}
         </a>
       ))}
-
-    <!-- Hamburger toggle — mobile only. -->
-    <button
-      type="button"
-      data-nav-toggle
-      aria-expanded="false"
-      aria-controls="mobile-nav-menu"
-      aria-label="Toggle menu"
-      class="nav-burger sm:hidden"
-    >
-      <span class="nav-burger-bar"></span>
-      <span class="nav-burger-bar"></span>
-    </button>
   </nav>
 
   <!-- Mobile menu — drops out of the pill when the hamburger opens. -->
@@ -95,7 +101,6 @@ const cta = 'nav-cta';
     class="nav-panel sm:hidden"
     inert
   >
-    <p class="nav-panel-label">Menu</p>
     <nav class="nav-panel-links">
       {links
         .filter((l) => !l.cta)
@@ -117,6 +122,34 @@ const cta = 'nav-cta';
 </header>
 
 <style>
+  /* ── Nav bar surface ────────────────────────────────────────
+     Mobile: a full-bleed, edge-to-edge solid bar — no glass, no
+     rounded pill. Desktop: the original frosted floating pill. */
+  .nav-pill {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    width: 100%;
+    padding: 10px 16px;
+  }
+
+  @media (min-width: 640px) {
+    .nav-pill {
+      width: max-content;
+      max-width: 100%;
+      gap: 20px;
+      padding: 8px 20px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      box-shadow:
+        rgba(0, 0, 0, 0.5) 0px 8px 32px -8px,
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+  }
+
   /* ── Hamburger button ───────────────────────────────────────
      Mobile only — hidden at sm+ so the desktop pill keeps its
      inline links. Scoped to a media query because this custom
@@ -161,27 +194,20 @@ const cta = 'nav-cta';
   }
 
   /* ── Mobile menu panel ──────────────────────────────────────
-     Frosted glass matching the pill, expanded outward from it.
+     Full-bleed solid sheet matching the corner-to-corner bar.
      Closed by default: opacity + slight drop + pointer-events off.
      A `visibility` step lets the close transition play out before
      the element is truly unreachable. */
   .nav-panel {
-    margin-top: 10px;
+    margin-top: 1px;
     width: 100%;
-    max-width: 22rem;
-    padding: 18px;
-    border-radius: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(7, 6, 7, 0.72);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    backdrop-filter: blur(24px) saturate(1.4);
-    box-shadow:
-      rgba(0, 0, 0, 0.55) 0px 24px 48px -12px,
-      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    padding: 8px 16px 20px;
+    background: #070607;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 24px 48px -12px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-8px) scale(0.98);
-    transform-origin: top center;
+    transform: translateY(-8px);
     transition:
       opacity 0.25s ease,
       transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -191,21 +217,10 @@ const cta = 'nav-cta';
   .nav-panel.open {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
     transition:
       opacity 0.25s ease,
       transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .nav-panel-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--color-charcoal);
-    opacity: 0.4;
-    padding: 0 10px;
-    margin-bottom: 8px;
   }
 
   .nav-panel-links {
