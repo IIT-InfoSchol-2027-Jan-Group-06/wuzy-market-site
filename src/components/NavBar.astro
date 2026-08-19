@@ -7,6 +7,10 @@
 // say — both states would look the same. So it gets two levels instead:
 // outlined ember at rest, solid ember when it is the active section. The
 // plain links stay quiet and only tint when current.
+//
+// Layout: on desktop the plain links sit inline in the pill next to the CTA.
+// On mobile they collapse into a hamburger menu, while the waitlist CTA
+// stays pinned in the pill so it is always visible.
 const links = [
   { label: 'Features', href: '#features' },
   { label: 'Why Wuzy', href: '#why' },
@@ -25,7 +29,7 @@ const plain =
 const cta = 'nav-cta';
 ---
 
-<header class="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
+<header class="fixed inset-x-0 top-0 z-50 flex flex-col items-center px-4 pt-4">
   <nav class="flex max-w-full items-center gap-3 rounded-full border border-white/15 bg-white/[0.06] px-3 py-2 shadow-[rgba(0,0,0,0.5)_0px_8px_32px_-8px,inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl sm:gap-5 sm:px-5">
     <!-- Wordmark in the display face (Archivo Black), not Inter — it reads as
          a logotype rather than as another nav item. -->
@@ -36,10 +40,9 @@ const cta = 'nav-cta';
       WUZY
     </a>
 
-    <!-- Scrolls rather than overflowing if the labels outgrow a narrow
-         viewport, so the pill can never widen the page. The waitlist CTA
-         stays outside the scroll area so it is never clipped. -->
-    <div class="flex min-w-0 items-center gap-0 overflow-x-auto [scrollbar-width:none] sm:gap-1 [&::-webkit-scrollbar]:hidden">
+    <!-- Desktop-only inline links. Hidden on mobile — they live in the
+         hamburger menu instead. -->
+    <div class="hidden min-w-0 items-center gap-1 sm:flex">
       {links
         .filter((l) => !l.cta)
         .map((l) => (
@@ -55,6 +58,8 @@ const cta = 'nav-cta';
         ))}
     </div>
 
+    <!-- The waitlist CTA stays in the pill on every viewport, outside the
+         hamburger menu, so it is never hidden. -->
     {links
       .filter((l) => l.cta)
       .map((l) => (
@@ -68,8 +73,215 @@ const cta = 'nav-cta';
           {l.label}
         </a>
       ))}
+
+    <!-- Hamburger toggle — mobile only. -->
+    <button
+      type="button"
+      data-nav-toggle
+      aria-expanded="false"
+      aria-controls="mobile-nav-menu"
+      aria-label="Toggle menu"
+      class="nav-burger sm:hidden"
+    >
+      <span class="nav-burger-bar"></span>
+      <span class="nav-burger-bar"></span>
+    </button>
   </nav>
+
+  <!-- Mobile menu — drops out of the pill when the hamburger opens. -->
+  <div
+    id="mobile-nav-menu"
+    data-nav-menu
+    class="nav-panel sm:hidden"
+    inert
+  >
+    <p class="nav-panel-label">Menu</p>
+    <nav class="nav-panel-links">
+      {links
+        .filter((l) => !l.cta)
+        .map((l, i) => (
+          <a
+            href={l.href}
+            data-nav-link
+            data-target={l.href.slice(1)}
+            aria-current="false"
+            class="nav-panel-item"
+          >
+            <span class="nav-panel-index">0{i + 1}</span>
+            <span class="nav-panel-text">{l.label}</span>
+            <span class="nav-panel-arrow" aria-hidden="true"></span>
+          </a>
+        ))}
+    </nav>
+  </div>
 </header>
+
+<style>
+  /* ── Hamburger button ───────────────────────────────────────
+     Mobile only — hidden at sm+ so the desktop pill keeps its
+     inline links. Scoped to a media query because this custom
+     rule would otherwise override Tailwind's `sm:hidden`. */
+  @media (max-width: 639.98px) {
+    .nav-burger {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 231, 131, 0.45);
+      background-color: rgba(255, 231, 131, 0.1);
+      color: var(--color-ember);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-burger:hover {
+      background-color: rgba(255, 231, 131, 0.2);
+      border-color: rgba(255, 231, 131, 0.7);
+    }
+
+    .nav-burger-bar {
+      display: block;
+      width: 15px;
+      height: 1.5px;
+      border-radius: 9999px;
+      background-color: var(--color-ember);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+    }
+
+    .nav-burger[aria-expanded='true'] .nav-burger-bar:nth-child(1) {
+      transform: translateY(3.25px) rotate(45deg);
+    }
+
+    .nav-burger[aria-expanded='true'] .nav-burger-bar:nth-child(2) {
+      transform: translateY(-3.25px) rotate(-45deg);
+    }
+  }
+
+  /* ── Mobile menu panel ──────────────────────────────────────
+     Frosted glass matching the pill, expanded outward from it.
+     Closed by default: opacity + slight drop + pointer-events off.
+     A `visibility` step lets the close transition play out before
+     the element is truly unreachable. */
+  .nav-panel {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 22rem;
+    padding: 18px;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(7, 6, 7, 0.72);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+    box-shadow:
+      rgba(0, 0, 0, 0.55) 0px 24px 48px -12px,
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px) scale(0.98);
+    transform-origin: top center;
+    transition:
+      opacity 0.25s ease,
+      transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear 0.28s;
+  }
+
+  .nav-panel.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity 0.25s ease,
+      transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .nav-panel-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-charcoal);
+    opacity: 0.4;
+    padding: 0 10px;
+    margin-bottom: 8px;
+  }
+
+  .nav-panel-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-panel-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 10px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--color-charcoal);
+    transition: background-color 0.18s ease, color 0.18s ease;
+  }
+
+  .nav-panel-item:hover,
+  .nav-panel-item[aria-current='true'] {
+    background-color: rgba(255, 231, 131, 0.08);
+    color: var(--color-ember);
+  }
+
+  .nav-panel-index {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-ember);
+    opacity: 0.55;
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  .nav-panel-item:hover .nav-panel-index,
+  .nav-panel-item[aria-current='true'] .nav-panel-index {
+    opacity: 1;
+  }
+
+  .nav-panel-text {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-panel-item:hover .nav-panel-text,
+  .nav-panel-item[aria-current='true'] .nav-panel-text {
+    transform: translateX(2px);
+  }
+
+  .nav-panel-text {
+    transition: transform 0.2s ease;
+  }
+
+  /* Arrow chevron — springs out on hover/active. */
+  .nav-panel-arrow {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    background:
+      linear-gradient(to right, transparent 50%, currentColor 50%) 0 50% / 50% 1.5px no-repeat,
+      linear-gradient(to bottom right, transparent 50%, currentColor 50%) 0 50% / 50% 50% no-repeat;
+  }
+
+  .nav-panel-item:hover .nav-panel-arrow,
+  .nav-panel-item[aria-current='true'] .nav-panel-arrow {
+    opacity: 0.9;
+    transform: translateX(0);
+  }
+</style>
 
 <script>
   // Scroll spy — highlights the nav link for whichever section is crossing
@@ -111,5 +323,44 @@ const cta = 'nav-cta';
     document
       .querySelectorAll('main section[id]')
       .forEach((section) => observer.observe(section));
+  }
+
+  // Mobile hamburger — opens/closes the menu panel, swaps aria-expanded,
+  // and closes on link tap, outside click, or Escape.
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-nav-menu]');
+
+  if (toggle && menu) {
+    const open = () => {
+      toggle.setAttribute('aria-expanded', 'true');
+      menu.classList.add('open');
+      menu.removeAttribute('inert');
+    };
+
+    const close = () => {
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.classList.remove('open');
+      menu.setAttribute('inert', '');
+    };
+
+    toggle.addEventListener('click', () => {
+      if (toggle.getAttribute('aria-expanded') === 'true') close();
+      else open();
+    });
+
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) close();
+    });
+
+    // Outside click — anywhere that isn't the pill or the menu closes it.
+    document.addEventListener('pointerdown', (e) => {
+      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-nav-toggle], [data-nav-menu]')) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
   }
 </script>
