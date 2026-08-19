@@ -13,10 +13,10 @@ import progressMock from '../assets/mockups/progress.png';
 //   d   → slide sub-copy
 //   mock → the phone screenshot shown next to the headline
 const features = [
-  { n: '01', e: '📸', t: 'add stories', d: 'Share what you\'re up to with the people who actually care to see it.', mock: homeMock },
-  { n: '02', e: '🎟️', t: 'buy tickets', d: 'Grab event tickets in one tap. Your digital pass lives right in the app.', mock: eventMock },
-  { n: '03', e: '🌍', t: 'find clubs & join', d: 'Match with communities, clubs and crews that fit your vibe — join in one tap.', mock: progressMock },
-  { n: '04', e: '🤝', t: 'catch up with friends', d: 'See who\'s around, plan a meetup, and actually land in the same room.', mock: profileMock },
+  { n: '01', e: '📸', t: 'Catch Up With Friends', d: 'Check social feeds, plan meetups, and make a scene.', mock: homeMock },
+  { n: '02', e: '🎟️', t: 'Find Events,Communities & Join', d: 'Discover local events and communities that match your interests, and pull up in one tap.', mock: eventMock },
+  { n: '03', e: '🌍', t: 'Event Discovery & Ticketing', d: 'Discover local events, buy event tickets directly in-app, and check the guest list to see who’s going.', mock: progressMock },
+  { n: '04', e: '🤝', t: 'Gamified Rewards', d: 'Earn badges and in-app coins every time you make a real connection and show up to events.', mock: profileMock },
 ];
 ---
 
@@ -26,7 +26,7 @@ const features = [
        while you scroll. The intro text fades out, then the 4 slides
        crossfade one into the next. -->
   <div class="feature-scroll relative">
-    <div class="feature-sticky flex min-h-screen items-center justify-center overflow-hidden">
+    <div class="feature-sticky flex min-h-screen items-center justify-center overflow-hidden uppercase">
 
       <!-- ── Intro overlay: "Everything your crew needs…" ──────────────────
            Absolutely positioned over the slides. Words start grey and are
