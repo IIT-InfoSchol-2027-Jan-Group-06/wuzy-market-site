@@ -1,28 +1,38 @@
 ---
-// ── Frontmatter: the free-vs-premium comparison matrix ───────────────────────
-// ONE array drives both cards, so adding a capability later is a single line.
-//   label   → what the capability is
-//   free    → value on the free plan (false = not included, string = limit)
-//   premium → value on premium
-// The free card renders every row (dashes included — the gaps are the pitch).
-// The premium card renders only the rows where premium differs, under an
-// "everything in free, plus" header, so it reads as pure upside.
-const rows = [
-  { label: 'connect with people', free: '10 a day', premium: 'unlimited' },
-  { label: "see who's actually pulling up", free: false, premium: true },
-  { label: 'spot your people before you walk in', free: false, premium: true },
+// ── Frontmatter: independent feature lists per plan ──────────────────────────
+// Each tier owns its own features array — editing one plan can never leak text
+// into the other. Shape per item:
+//   id            → stable key for the feature
+//   label         → what the capability is
+//   highlightText → bold callout rendered after the label (e.g. "Unlimited")
+//   isIncluded    → true = active checkmark, false = greyed-out dash
+const freeTierFeatures = [
+  { id: 'connections', label: 'Daily Connections', highlightText: '10 / Day', isIncluded: true },
+  { id: 'ads', label: 'Standard ads displayed', isIncluded: true },
+  { id: 'spot-people', label: 'spot your people before you walk in', isIncluded: false },
 
-  // ponytail: placeholder rows so the cards have body — swap the copy when the
+  // ponytail: placeholder rows so the card has body — swap the copy when the
   // real premium feature set is settled. Shape is already correct.
-  { label: 'first dibs on ticket drops', free: false, premium: true },
-  { label: 'get put on in discovery', free: false, premium: true },
-  { label: 'story archive', free: '7 days', premium: 'forever' },
-  { label: 'join clubs & crews', free: true, premium: true },
-  { label: 'cop event tickets', free: true, premium: true },
+  { id: 'ticket-dibs', label: 'first dibs on ticket drops', isIncluded: false },
+  { id: 'discovery', label: 'get put on in discovery', isIncluded: false },
+  { id: 'story-archive', label: 'story archive', highlightText: '7 days', isIncluded: true },
+  { id: 'clubs', label: 'join clubs & crews', isIncluded: true },
+  { id: 'event-tickets', label: 'cop event tickets', isIncluded: false },
 ];
 
-// Rows where premium actually beats free — the upgrade list.
-const upgrades = rows.filter((r) => r.free !== r.premium);
+// Everything in free, plus these — the upgrade list, edited independently.
+const premiumTierFeatures = [
+  { id: 'connections', label: 'no Connections', highlightText: 'Unlimited', isIncluded: true },
+  { id: 'ads', label: 'Standard ads displayed', highlightText: '100% Ad-free experience', isIncluded: true },
+  { id: 'spot-people', label: 'spot your people before you walk in', isIncluded: true },
+
+  // ponytail: placeholder rows so the card has body — swap the copy when the
+  // real premium feature set is settled. Shape is already correct.
+  { id: 'ticket-dibs', label: 'first dibs on ticket drops', isIncluded: true },
+  { id: 'discovery', label: 'get put on in discovery', isIncluded: true },
+  { id: 'story-archive', label: 'story archive', highlightText: 'forever', isIncluded: true },
+  { id: 'event-tickets', label: 'cop event tickets', isIncluded: true },
+];
 ---
 
 <section id="pricing" class="relative scroll-mt-24 px-5 py-28">
@@ -71,24 +81,24 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
        
 
         <ul class="mt-7 flex-1 space-y-3.5">
-          {rows.map((r) => (
+          {freeTierFeatures.map((feature) => (
             <li class="flex items-center gap-3">
-              {r.free === false ? (
-                <span class="flex h-[18px] w-[18px] shrink-0 items-center justify-center" aria-hidden="true">
-                  <span class="h-px w-3.5 bg-charcoal/25"></span>
-                </span>
-              ) : (
+              {feature.isIncluded ? (
                 <svg viewBox="0 0 20 20" fill="none" class="h-[18px] w-[18px] shrink-0 text-steel" aria-hidden="true">
                   <path d="M4.5 10.5l3.5 3.5 7.5-7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
+              ) : (
+                <span class="flex h-[18px] w-[18px] shrink-0 items-center justify-center" aria-hidden="true">
+                  <span class="h-px w-3.5 bg-charcoal/25"></span>
+                </span>
               )}
-              <span class={`text-[15px] leading-snug ${r.free === false ? 'text-charcoal/35 line-through decoration-charcoal/20' : 'text-charcoal/85'}`}>
-                {r.label}
-                {typeof r.free === 'string' && (
-                  <span class="ml-1.5 font-medium text-steel">— {r.free}</span>
+              <span class={`text-[15px] leading-snug ${feature.isIncluded ? 'text-charcoal/85' : 'text-charcoal/35 line-through decoration-charcoal/20'}`}>
+                {feature.label}
+                {feature.highlightText && (
+                  <span class="ml-1.5 font-medium text-steel">— {feature.highlightText}</span>
                 )}
               </span>
-              <span class="sr-only">{r.free === false ? 'not included' : 'included'}</span>
+              <span class="sr-only">{feature.isIncluded ? 'included' : 'not included'}</span>
             </li>
           ))}
         </ul>
@@ -117,17 +127,24 @@ const upgrades = rows.filter((r) => r.free !== r.premium);
           everything in free, plus
         </p>
         <ul class="mt-4 flex-1 space-y-3.5">
-          {upgrades.map((r) => (
+          {premiumTierFeatures.map((feature) => (
             <li class="flex items-center gap-3">
-              <svg viewBox="0 0 20 20" fill="none" class="h-[18px] w-[18px] shrink-0 text-ember" aria-hidden="true">
-                <path d="M4.5 10.5l3.5 3.5 7.5-7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
+              {feature.isIncluded ? (
+                <svg viewBox="0 0 20 20" fill="none" class="h-[18px] w-[18px] shrink-0 text-ember" aria-hidden="true">
+                  <path d="M4.5 10.5l3.5 3.5 7.5-7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              ) : (
+                <span class="flex h-[18px] w-[18px] shrink-0 items-center justify-center" aria-hidden="true">
+                  <span class="h-px w-3.5 bg-charcoal/25"></span>
+                </span>
+              )}
               <span class="text-[15px] leading-snug text-charcoal">
-                {r.label}
-                {typeof r.premium === 'string' && (
-                  <span class="ml-1.5 font-semibold text-ember">— {r.premium}</span>
+                {feature.label}
+                {feature.highlightText && (
+                  <span class="ml-1.5 font-semibold text-ember">— {feature.highlightText}</span>
                 )}
               </span>
+              <span class="sr-only">{feature.isIncluded ? 'included' : 'not included'}</span>
             </li>
           ))}
         </ul>
