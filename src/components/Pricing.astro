@@ -7,31 +7,28 @@
 //   highlightText → bold callout rendered after the label (e.g. "Unlimited")
 //   isIncluded    → true = active checkmark, false = greyed-out dash
 const freeTierFeatures = [
-  { id: 'connections', label: 'Daily Connections', highlightText: '10 / Day', isIncluded: true },
-  { id: 'ads', label: 'Standard ads displayed', isIncluded: true },
-  { id: 'spot-people', label: 'spot your people before you walk in', isIncluded: false },
+  { id: 'connections', label: 'Ad-supported experience', isIncluded: true },
+  { id: 'ads', label: ' Daily Connections', highlightText: '5 / Day', isIncluded: true },
+  { id: 'spot-people', label: 'Limited to 1 event join per day', isIncluded: true },
 
   // ponytail: placeholder rows so the card has body — swap the copy when the
   // real premium feature set is settled. Shape is already correct.
-  { id: 'ticket-dibs', label: 'first dibs on ticket drops', isIncluded: false },
-  { id: 'discovery', label: 'get put on in discovery', isIncluded: false },
-  { id: 'story-archive', label: 'story archive', highlightText: '7 days', isIncluded: true },
-  { id: 'clubs', label: 'join clubs & crews', isIncluded: true },
-  { id: 'event-tickets', label: 'cop event tickets', isIncluded: false },
+  { id: 'ticket-dibs', label: 'Browse, buy, and secure tickets instantly', isIncluded: true },
+  { id: 'discovery', label: 'Stay connected with the community', isIncluded: true },
 ];
 
 // Everything in free, plus these — the upgrade list, edited independently.
 const premiumTierFeatures = [
-  { id: 'connections', label: 'no Connections', highlightText: 'Unlimited', isIncluded: true },
-  { id: 'ads', label: 'Standard ads displayed', highlightText: '100% Ad-free experience', isIncluded: true },
-  { id: 'spot-people', label: 'spot your people before you walk in', isIncluded: true },
+  { id: 'connections',  highlightText: '100% Ad-free experience', isIncluded: true },
+  { id: 'ads', highlightText: 'Unlimited Daily Connections', isIncluded: true },
+  { id: 'spot-people', highlightText: 'Unlimited event access', isIncluded: true },
 
   // ponytail: placeholder rows so the card has body — swap the copy when the
   // real premium feature set is settled. Shape is already correct.
-  { id: 'ticket-dibs', label: 'first dibs on ticket drops', isIncluded: true },
-  { id: 'discovery', label: 'get put on in discovery', isIncluded: true },
-  { id: 'story-archive', label: 'story archive', highlightText: 'forever', isIncluded: true },
-  { id: 'event-tickets', label: 'cop event tickets', isIncluded: true },
+  { id: 'ticket-dibs', highlightText: 'Unlock full guest list', isIncluded: true },
+  { id: 'discovery', highlightText: 'Match with attendees who share your interests', isIncluded: true },
+  { id: 'story-archive', label: 'Browse, buy, and secure tickets instantly', isIncluded: true },
+  { id: 'event-tickets', label: 'Stay connected with the community', isIncluded: true },
 ];
 ---
 
@@ -95,7 +92,7 @@ const premiumTierFeatures = [
               <span class={`text-[15px] leading-snug ${feature.isIncluded ? 'text-charcoal/85' : 'text-charcoal/35 line-through decoration-charcoal/20'}`}>
                 {feature.label}
                 {feature.highlightText && (
-                  <span class="ml-1.5 font-medium text-steel">— {feature.highlightText}</span>
+                  <span class="ml-1.5 font-medium text-steel">{feature.label ? '— ' : ''}{feature.highlightText}</span>
                 )}
               </span>
               <span class="sr-only">{feature.isIncluded ? 'included' : 'not included'}</span>
@@ -141,7 +138,7 @@ const premiumTierFeatures = [
               <span class="text-[15px] leading-snug text-charcoal">
                 {feature.label}
                 {feature.highlightText && (
-                  <span class="ml-1.5 font-semibold text-ember">— {feature.highlightText}</span>
+                  <span class="ml-1.5 font-semibold text-ember">{feature.label ? '— ' : ''}{feature.highlightText}</span>
                 )}
               </span>
               <span class="sr-only">{feature.isIncluded ? 'included' : 'not included'}</span>
