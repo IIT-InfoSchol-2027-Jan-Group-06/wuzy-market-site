@@ -48,7 +48,16 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* No `scroll-behavior: smooth`. Three sections are pinned with scrub:true,
+     and the browser's smooth-scroll animation drives their timelines at fling
+     speed — one nav click strobed roughly twenty viewports of animation, and
+     anticipatePin mispredicts badly at that velocity. GSAP documents the
+     combination as unsupported. Anchor jumps are instant instead. */
+
+  /* Clears the fixed header on anchor jumps. Previously only #pricing had a
+     scroll-mt, so it and #waitlist — adjacent sections with identical
+     structure — landed 96px apart. */
+  scroll-padding-top: 6rem;
   overflow-x: hidden;
   /* `clip` instead of `hidden`: `hidden` makes the element a scroll
      container, which forces the browser to re-raster fixed overlays on

@@ -13,6 +13,7 @@
 // stays pinned in the pill so it is always visible.
 const links = [
   { label: 'Features', href: '#features' },
+  { label: 'Community', href: '#community' },
   { label: 'Why Wuzy', href: '#why' },
   { label: 'Pricing', href: '#pricing' },
   { label: 'Join waitlist', href: '#waitlist', cta: true },
@@ -311,10 +312,11 @@ const cta = 'nav-cta';
   // middle, so exactly one section is "current" at a time and it flips at
   // the point the reader would call the changeover.
   //
-  // Every section is observed, not just the ones with a link. Sections
-  // without one (hero, waitlist) then clear the highlight rather than
-  // leaving the previous link stuck on — which is what happened when only
-  // linked sections were tracked.
+  // Every section is observed, not just the ones with a link. The only
+  // link-less section left is the hero, which clears the highlight rather
+  // than leaving a link stuck on — which is what happened when only linked
+  // sections were tracked. (#community used to be link-less too, so scrolling
+  // its four-plus viewports dimmed every nav item and read as a broken spy.)
   const links = Array.from(
     document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')
   );

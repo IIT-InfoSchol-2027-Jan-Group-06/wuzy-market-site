@@ -91,6 +91,7 @@ const features = [
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { pinScale } from '../lib/scroll';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -144,7 +145,8 @@ const features = [
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        end: () => '+=' + (2.4 + slides.length * 2.2) * window.innerHeight,
+        end: () =>
+          '+=' + (2.4 + slides.length * 2.2) * pinScale() * window.innerHeight,
         pin: sticky,
         scrub: true,        // progress follows scroll 1:1
         anticipatePin: 1,

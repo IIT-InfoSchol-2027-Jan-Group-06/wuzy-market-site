@@ -79,6 +79,7 @@ const avatars = [
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { pinScale } from '../lib/scroll';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -135,7 +136,8 @@ const avatars = [
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        end: () => '+=' + (buildVH + HOLD_VH) * window.innerHeight,
+        end: () =>
+          '+=' + (buildVH + HOLD_VH) * pinScale() * window.innerHeight,
         pin: sticky,
         scrub: true,
         anticipatePin: 1,
