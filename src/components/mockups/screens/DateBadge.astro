@@ -1,0 +1,25 @@
+---
+// The date chip on an Up Coming row: a white card with the day over the month,
+// deep navy on white so it reads as a torn-off calendar page against whatever
+// the event photo is doing behind it.
+interface Props {
+  day: string;
+  month: string;
+  slotName?: string;
+  hollow?: boolean;
+}
+const { day, month, slotName, hollow = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    'grid h-78 w-66 shrink-0 place-items-center rounded-u-12 bg-white text-center leading-none',
+    hollow && 'invisible',
+  ]}
+  data-slot={slotName}
+>
+  <div>
+    <p class="text-u-30 font-bold text-[#16216e]">{day}</p>
+    <p class="mt-2 text-u-15 font-semibold text-[#16216e]">{month}</p>
+  </div>
+</div>

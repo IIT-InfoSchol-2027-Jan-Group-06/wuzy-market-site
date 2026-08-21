@@ -1,0 +1,43 @@
+---
+// An "Up Coming" row: 330 x 118 of photo with the event name and host over it,
+// and the date badge sitting on the right.
+import DateBadge from './DateBadge.astro';
+
+interface Props {
+  name: string;
+  host: string;
+  avatar: string;
+  photo: string;
+  day: string;
+  month: string;
+  badgeSlot?: string;
+  hollowBadge?: boolean;
+}
+const { name, host, avatar, photo, day, month, badgeSlot, hollowBadge = false } = Astro.props;
+---
+
+<div class="relative h-118 w-330 overflow-hidden rounded-u-14">
+  <img src={photo} alt="" draggable="false" class="size-full object-cover" />
+  <!-- Reads left-heavy, so the scrim is too -->
+  <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/10"></div>
+
+  <!-- Copy and badge share one centred flex row rather than being absolutely
+       placed and pulled back by a transform, so the badge is centred by the
+       layout instead of by arithmetic that has to stay in sync with its height. -->
+  <div class="absolute inset-0 flex items-center justify-between pr-16 pl-18">
+    <div class="flex flex-col gap-8">
+      <p class="text-u-26 font-semibold text-white">{name}</p>
+      <div class="flex items-center gap-8">
+        <img
+          src={avatar}
+          alt=""
+          draggable="false"
+          class="size-24 rounded-full object-cover ring-1 ring-ember/80"
+        />
+        <span class="text-u-16 font-medium text-white/90">{host}</span>
+      </div>
+    </div>
+
+    <DateBadge day={day} month={month} slotName={badgeSlot} hollow={hollowBadge} />
+  </div>
+</div>

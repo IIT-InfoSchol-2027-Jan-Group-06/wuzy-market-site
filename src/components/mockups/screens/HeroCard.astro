@@ -1,0 +1,58 @@
+---
+// The featured event. 335 x 450 design units — badge, heart, time, title,
+// venue, price and the visit button, all one card, which is why it breaks out
+// of the frame as a single piece.
+import Icon from './Icon.astro';
+
+interface Props {
+  slotName?: string;
+  hollow?: boolean;
+}
+const { slotName, hollow = false } = Astro.props;
+---
+
+<div
+  class:list={['relative h-450 w-335 shrink-0 overflow-hidden rounded-u-20', hollow && 'invisible']}
+  data-slot={slotName}
+>
+  <img
+    src="/wuzy/img/discover/hero.png"
+    alt=""
+    draggable="false"
+    class="size-full object-cover"
+  />
+  <!-- The lower half carries five lines of copy, so it needs a real ramp -->
+  <div class="absolute inset-x-0 bottom-0 h-300 bg-gradient-to-t from-black/92 via-black/55 to-transparent"></div>
+
+  <span
+    class="absolute top-20 left-18 flex items-center gap-6 rounded-full bg-black/45
+           px-12 py-6 text-u-14 font-semibold text-[#ff9d8a] ring-1 ring-[#ff9d8a]/45 ring-inset backdrop-blur-sm"
+  >
+    <Icon name="heart" class="size-14" />
+    Selling Fast
+  </span>
+
+  <span class="wz-chrome absolute top-16 right-16 grid size-48 place-items-center rounded-full text-white">
+    <Icon name="heart" class="size-22" />
+  </span>
+
+  <div class="absolute inset-x-0 bottom-0 px-20 pb-22">
+    <p class="text-u-15 font-semibold text-ember">Tonight • 10PM</p>
+    <h3 class="mt-6 text-u-38 leading-[1.1] font-semibold text-white">Neon Nights<br />Festival</h3>
+
+    <p class="mt-10 flex items-center gap-6 text-u-18 font-medium text-white/90">
+      <Icon name="pin" class="size-18 shrink-0" />
+      Echo Warehouse, Brooklyn
+    </p>
+
+    <div class="mt-14 flex items-end justify-between">
+      <div>
+        <p class="text-u-14 font-medium text-white/80">Starting from</p>
+        <p class="text-u-26 font-bold text-ember">$45</p>
+      </div>
+      <span class="wz-chrome grid h-40 place-items-center rounded-full px-26 text-u-18 font-medium text-white">
+        visit
+      </span>
+    </div>
+  </div>
+</div>

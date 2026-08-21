@@ -1,0 +1,93 @@
+---
+// Discover, rebuilt as real DOM.
+//
+// Drawn against a 402-wide artboard, not 360 — the frame reads that off
+// --screen-units, so w-335 here is the 335 measured on the reference. 34 of
+// side padding, a 335 x 450 hero, 330 x 118 rows 18 apart.
+import HeroCard from './HeroCard.astro';
+import EventRow from './EventRow.astro';
+import Icon from './Icon.astro';
+
+interface Props { hollow?: string[] }
+const { hollow = [] } = Astro.props;
+const out = (s: string) => hollow.includes(s);
+
+// Four, not five. The reference runs a fifth off the right edge; at this size
+// it just reads as a chip sliced in half, so the rail ends on the page margin.
+const chips = ['All', 'Music', 'Reading', 'Movie'];
+
+const rows = [
+  { slotName: 'd-aug8',  name: 'Focus live', host: 'jordan', photo: 'row-market.jpg', day: '8',  month: 'AUG' },
+  { slotName: 'd-aug21', name: 'Focus live', host: 'jordan', photo: 'row-party.jpg',  day: '21', month: 'AUG' },
+  { slotName: 'd-sep4',  name: 'Focus live', host: 'jordan', photo: 'row-lasers.jpg', day: '4',  month: 'SEP' },
+];
+
+const img = (f: string) => `/wuzy/img/discover/${f}`;
+---
+
+<div class="wz-screen font-app w-full bg-[#000811] pt-53 pb-150 text-white antialiased select-none">
+  <!-- Header -->
+  <header class="flex items-center justify-between px-34">
+    <h1 class="text-u-34 leading-none font-semibold text-ember">Explore</h1>
+    <span class="wz-chrome grid size-50 place-items-center rounded-full text-white">
+      <Icon name="ticket" class="size-24" />
+    </span>
+  </header>
+
+  <!-- Search -->
+  <div class="mt-16 px-34">
+    <div class="flex h-41 items-center gap-12 rounded-full bg-[#333428] px-16">
+      <Icon name="search" class="size-20 shrink-0 text-white/85" />
+      <span class="text-u-17 font-medium text-white/55">Search</span>
+    </div>
+  </div>
+
+  <div class="mt-19 flex gap-8 overflow-hidden px-34">
+    {chips.map((c, i) => (
+      <span
+        class:list={[
+          'grid h-27 shrink-0 place-items-center rounded-full px-14 text-u-15 font-semibold',
+          i === 0
+            ? 'bg-ember text-[#000811]'
+            // Inset ring, not an outset one. An outset ring paints a second
+            // rounded rect one pixel outside the chip's own, and at this size
+            // — a 27-unit pill is about 15 real pixels — the two radii
+            // disagree by enough that the corners read as squared off. The
+            // active chip looked right only because it has no ring at all.
+            : 'bg-[#40402e] text-ember ring-1 ring-ember/70 ring-inset',
+        ]}
+      >
+        {c}
+      </span>
+    ))}
+  </div>
+
+  <h2 class="mt-42 px-34 text-u-17 font-semibold text-ember">Today</h2>
+
+  <!-- Featured rail — the next card peeks in at the edge -->
+  <div class="mt-34 flex gap-25 overflow-hidden pl-35">
+    <HeroCard slotName="d-hero" hollow={out('d-hero')} />
+    <div class="h-450 w-335 shrink-0 overflow-hidden rounded-u-20">
+      <img src={img('row-lasers.jpg')} alt="" draggable="false" class="size-full object-cover" />
+    </div>
+  </div>
+
+  <h2 class="mt-9 px-34 text-u-17 font-semibold text-ember">Up Coming</h2>
+
+  <div class="mt-21 flex flex-col gap-18 px-34">
+    {rows.map((r) => (
+      <EventRow
+        name={r.name}
+        host={r.host}
+        avatar={img('jordan.jpg')}
+        photo={img(r.photo)}
+        day={r.day}
+        month={r.month}
+        badgeSlot={r.slotName}
+        hollowBadge={out(r.slotName)}
+      />
+    ))}
+  </div>
+
+  <p class="mt-38 text-center text-u-16 font-semibold text-ember">caught up with life</p>
+</div>
