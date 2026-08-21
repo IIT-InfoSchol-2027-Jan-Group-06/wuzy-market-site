@@ -118,7 +118,7 @@ const features = [
   if (slides.length && sticky) {
     // Timeline "time" is mapped to scroll distance via scrub.
     // wordStep = seconds of timeline per word lit up (also ~scroll amount).
-    const wordStep = 0.015;
+    const wordStep = 0.15;
     // Total time the intro takes: light up every word + 3 steps to fade out.
     const introDur = lit.length * wordStep + wordStep * 3;
 
@@ -149,18 +149,19 @@ const features = [
     });
 
     // The pinned timeline: pins .feature-sticky while the user scrolls.
-    // start 'top top' + pinSpacing:false means no pin-spacer is left behind,
-    // and end = one viewport puts Community's top exactly at the viewport top
-    // the moment the pin releases — so Community appears instantly after the
-    // last feature slide fades out, with no trailing scroll gap.
+    // The whole sequence (intro words + 4 slides) is scrubbed across this
+    // distance, so it has to be budgeted per item — same as Community/YSCard.
+    // ~1.2 viewports for the intro copy, ~0.85 per mockup slide. These two
+    // numbers are the pacing knobs; lower them if the section drags.
+    // With default pinSpacing the spacer equals the pin distance, so the pin
+    // releases with Community's top exactly at the viewport top — no gap.
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        end: () => '+=' + window.innerHeight,
+        end: () => '+=' + (1.2 + slides.length * 0.85) * window.innerHeight,
         pin: sticky,
-        pinSpacing: false,
         scrub: true,        // progress follows scroll 1:1
         anticipatePin: 1,
       },

@@ -8,7 +8,7 @@
 //   isIncluded    → true = active checkmark, false = greyed-out dash
 const freeTierFeatures = [
   { id: 'connections', label: 'Ad-supported experience', isIncluded: true },
-  { id: 'ads', label: ' Daily Connections', highlightText: '5 / Day', isIncluded: true },
+  { id: 'ads', label: 'Daily Connections', highlightText: '5 / Day', isIncluded: true },
   { id: 'spot-people', label: 'Limited to 1 event join per day', isIncluded: true },
 
   // ponytail: placeholder rows so the card has body — swap the copy when the
@@ -66,7 +66,7 @@ const premiumTierFeatures = [
 
          Both cards stretch to the taller one's height and their feature
          lists take the slack (flex-1), so the two CTAs sit on the same
-         baseline even though free lists eight rows and premium six. -->
+         baseline even though free lists five rows and premium seven. -->
     <div class="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
 
       <!-- ── Free ─────────────────────────────────────────────────────── -->
@@ -92,7 +92,7 @@ const premiumTierFeatures = [
               <span class={`text-[15px] leading-snug ${feature.isIncluded ? 'text-charcoal/85' : 'text-charcoal/35 line-through decoration-charcoal/20'}`}>
                 {feature.label}
                 {feature.highlightText && (
-                  <span class="ml-1.5 font-medium text-steel">{feature.label ? '— ' : ''}{feature.highlightText}</span>
+                  <span class={`font-medium text-steel ${feature.label ? 'ml-1.5' : ''}`}>{feature.label ? '— ' : ''}{feature.highlightText}</span>
                 )}
               </span>
               <span class="sr-only">{feature.isIncluded ? 'included' : 'not included'}</span>
@@ -138,7 +138,7 @@ const premiumTierFeatures = [
               <span class="text-[15px] leading-snug text-charcoal">
                 {feature.label}
                 {feature.highlightText && (
-                  <span class="ml-1.5 font-semibold text-ember">{feature.label ? '— ' : ''}{feature.highlightText}</span>
+                  <span class={`font-semibold text-ember ${feature.label ? 'ml-1.5' : ''}`}>{feature.label ? '— ' : ''}{feature.highlightText}</span>
                 )}
               </span>
               <span class="sr-only">{feature.isIncluded ? 'included' : 'not included'}</span>
