@@ -3,9 +3,11 @@
 // placeholder as Discover's — they are one component in the app, and used to
 // differ on all four.
 //
-// The fill is the app's translucent-yellow surface: #FFE783 at 0.2 over the
-// #000811 ground, which resolves to the #333428 the Discover search sampled at.
-// Same material, written the way the export states it.
+// The fill is bg-app-surface — the app's translucent-yellow resolved opaque —
+// so the pill is the same colour floating over the marketing page as it is
+// seated over the screen. It was wz-float's bare ground while lifted, which
+// made the floating copy a near-invisible dark slab instead of the search bar
+// the app actually shows.
 import Icon from './Icon.astro';
 
 interface Props { slotName?: string; hollow?: boolean; floating?: boolean }
@@ -14,10 +16,9 @@ const { slotName, hollow = false, floating = false } = Astro.props;
 
 <div
   class:list={[
-    'flex h-48 w-326 items-center gap-12 rounded-app-md bg-ember/20 px-16',
-    // Lifted, it floats over the marketing page — 20% alpha leaves the glyph
-    // sitting on nothing, so it takes a slice of the app's ground with it.
-    floating && 'wz-float',
+    'flex h-48 w-326 items-center gap-12 rounded-app-md bg-app-surface px-16',
+    // Lifted, it gets the same hairline the floating message rows carry.
+    floating && 'ring-1 ring-ember/25 ring-inset',
     hollow && 'invisible',
   ]}
   data-slot={slotName}
