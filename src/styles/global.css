@@ -115,10 +115,13 @@ body::before {
   background-color: #000000;
 }
 
-/* Painted glass for the cards. backdrop-filter here re-rastered on every
+/* Painted glass. backdrop-filter on the pricing cards re-rastered on every
    frame of the CTAs' hover transition and banded the card; nothing sits
-   behind them but the fixed gradient, so the blur was a no-op anyway. */
-.pricing-card {
+   behind them but the fixed gradient, so the blur was a no-op anyway. The
+   why-choose cards share the surface — they keep an opaque-ish fill of their
+   own, since they sit over the locked heading and have to occlude it. */
+.pricing-card,
+.ys-card {
   background-image:
     linear-gradient(
       145deg,
