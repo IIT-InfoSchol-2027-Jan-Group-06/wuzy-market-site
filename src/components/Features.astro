@@ -1,22 +1,22 @@
 ---
 // ── Frontmatter: data used to render the section ─────────────────────────────
-// Phone mockup images (added locally to the build via Vite/Astro imports)
-import homeMock from '../assets/mockups/feed.webp'
-import eventMock from '../assets/mockups/event.webp';
-import profileMock from '../assets/mockups/chat.webp';
-import progressMock from '../assets/mockups/ticket.webp';
+// Live phone mockups — a real bezel, a natively scrollable screen, and UI
+// pieces that float over the page until the screen is scrolled, at which point
+// they fly home into the slots they were cut from. See ./mockups/WuzyFrame.astro.
+import FeedFrame from './mockups/FeedFrame.astro';
+import DiscoverFrame from './mockups/DiscoverFrame.astro';
+import TicketFrame from './mockups/TicketFrame.astro';
+import ChatFrame from './mockups/ChatFrame.astro';
 
 // The 4 feature "slides". Each maps to a pinned screen:
-//   n   → slide number label
-//   e   → emoji (kept here for reference, not rendered)
-//   t   → slide headline
-//   d   → slide sub-copy
-//   mock → the phone screenshot shown next to the headline
+//   t    → slide headline
+//   d    → slide sub-copy
+//   Mock → the live phone frame shown next to the headline
 const features = [
-  { n: '01', e: '📸', t: 'Catch Up With Friends', d: 'Check social feeds, plan meetups, and make a scene.', mock: homeMock },
-  { n: '02', e: '🎟️', t: 'Find Events, Communities & Join', d: 'Discover local events and communities that match your interests, and pull up in one tap.', mock: eventMock },
-  { n: '03', e: '🌍', t: 'Direct in-app Ticketing', d: 'Purchase tickets in seconds and keep all your passes saved in one place with zero redirects.', mock: progressMock },
-  { n: '04', e: '🤝', t: 'Conversations under one roof', d: 'Message people directly or connect in community chats without switching apps.', mock: profileMock },
+  { t: 'Catch Up With Friends', d: 'Check social feeds, plan meetups, and make a scene.', Mock: FeedFrame },
+  { t: 'Find Events, Communities & Join', d: 'Discover local events and communities that match your interests, and pull up in one tap.', Mock: DiscoverFrame },
+  { t: 'Direct in-app Ticketing', d: 'Purchase tickets in seconds and keep all your passes saved in one place with zero redirects.', Mock: TicketFrame },
+  { t: 'Conversations under one roof', d: 'Message people directly or connect in community chats without switching apps.', Mock: ChatFrame },
 ];
 ---
 
@@ -61,9 +61,16 @@ const features = [
       <div class="mx-auto flex w-full max-w-[1150px] items-center px-5">
         {features.map((f) => (
           <div class="feature-slide pointer-events-none absolute inset-x-0 mx-auto w-full max-w-[1150px] px-5">
-            <div class="grid items-center gap-10 lg:grid-cols-2">
+            <!-- `1fr auto` rather than an even split: the phone's floating
+               pieces hang past both edges of the frame (--x runs -9% … 103%),
+               so the visual column has to size to its content and carry a
+               gutter, or the left-hand floats land on the headline.
+               Side-by-side starts at xl, not lg: with a 318px phone plus its
+               gutters the copy track is only ~600px at 1024, and the headline
+               ran straight under the breakouts. Below that, stacked. -->
+          <div class="grid items-center gap-10 xl:grid-cols-[1fr_auto]">
               <!-- Left: headline + description (moves below visual on mobile) -->
-              <div class="feature-copy order-2 lg:order-1">
+              <div class="feature-copy order-2 min-w-0 xl:order-1">
                 <h3 class="feature-title mt-4 font-display text-[clamp(36px,6vw,80px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
                   <!-- Split headline into words so GSAP can stagger them in -->
                   {f.t.split(' ').map((w) => (
@@ -76,13 +83,10 @@ const features = [
                   {f.d}
                 </p>
               </div>
-              <!-- Right: phone mockup screenshot -->
-              <div class="feature-visual order-1 flex justify-center [perspective:1200px] lg:order-2">
-                <img
-                  src={f.mock.src}
-                  alt={f.t}
-                  class="w-60 max-w-[50vw] object-cover"
-                />
+              <!-- Right: the live phone. No perspective here — .wz sets its
+                   own, and the breakouts need the gutter more than the depth. -->
+              <div class="feature-visual order-1 flex justify-center px-[clamp(16px,5vw,92px)] xl:order-2">
+                <f.Mock />
               </div>
             </div>
           </div>
@@ -115,16 +119,58 @@ const features = [
     // begins the moment the last one lands, so everything swaps the instant
     // you scroll instead of holding.
     const dwell = 2.9;
+    // A slide's hold is no longer dead time: it is two beats the same page
+    // scroll drives, back to back.
+    //   homeDur  — the breakouts fly out of the page and into their slots
+    //   screenDur — then the screen itself scrolls its whole runway
+    // Only once both have finished does the slide hand off to the next one.
+    // Nobody has to find the phone and scroll it by hand.
+    const homeDur = 0.9;
+    const screenDur = dwell;
     // Intro beats: every word lit, then held, then faded out.
     const introLit = lit.length * wordStep;
     const introFadeAt = introLit + dwell;
     const introDur = introFadeAt + wordStep * 3;
 
+    // Attach the two beats to a slide, right after its entrance.
+    // `.wz-well` scrolls natively on its own; here the timeline owns it, so
+    // the manual affordance comes off — otherwise a wheel over the phone and
+    // the scrub fight each other for scrollTop.
+    const drive = (s: HTMLElement) => {
+      const wz = s.querySelector<HTMLElement>('.wz');
+      const well = s.querySelector<HTMLElement>('.wz-well');
+      if (!wz || !well) return;
+      well.style.overflowY = 'hidden';
+      well.removeAttribute('tabindex');
+      well.removeAttribute('role');
+      const p = { h: 0, s: 0 };
+      tl.fromTo(
+        p,
+        { h: 0 },
+        {
+          h: 1, duration: homeDur, ease: 'power2.inOut',
+          onUpdate: () => (wz as any).wzHome?.(p.h),
+        },
+        '<0.45'   // overlap the tail of the entrance, don't wait for it
+      ).fromTo(
+        p,
+        { s: 0 },
+        {
+          s: 1, duration: screenDur, ease: 'none',
+          // Measured per frame, not once: the screen SVG is a network request
+          // and the runway does not exist until it has decoded.
+          onUpdate: () => {
+            well.scrollTop = p.s * (well.scrollHeight - well.clientHeight);
+          },
+        }
+      );
+    };
+
     // Hide every slide (and its inner parts) up front, so GSAP owns visibility.
     slides.forEach((s) => {
       const words = s.querySelectorAll<HTMLElement>('.feature-word');
       const desc = s.querySelector<HTMLElement>('.feature-desc');
-      const img = s.querySelector<HTMLElement>('.feature-visual img');
+      const img = s.querySelector<HTMLElement>('.feature-visual .wz');
 
       gsap.set(s, { scale: 0.7, autoAlpha: 0 });
       gsap.set(words, { autoAlpha: 0, y: 70, rotate: 5 });
@@ -136,12 +182,12 @@ const features = [
     // The whole sequence (intro words + 4 slides) is scrubbed across this
     // distance, so it has to be budgeted per item — same as Community/YSCard.
     // Budget terms, not measured output: they land the intro words at ~1.05
-    // viewports and each mockup at ~2.2 — about 1 viewport of transition,
-    // then 1.2 held fully on screen. These are the pacing
-    // knobs; lower them if the section drags.
+    // viewports and each mockup at ~2.8 — roughly half a viewport of entrance,
+    // then the breakouts seating and the screen running its length. These are
+    // the pacing knobs; lower them if the section drags.
     // Scrub splits the distance by timeline time, so the budget alone does
-    // not set the split — wordStep and dwell above are what keep the intro,
-    // the transitions and the holds at those shares.
+    // not set the split — wordStep, homeDur and screenDur above are what keep
+    // the intro, the transitions and the phone beats at those shares.
     // With default pinSpacing the spacer equals the pin distance, so the pin
     // releases with Community's top exactly at the viewport top — no gap.
     const tl = gsap.timeline({
@@ -150,7 +196,7 @@ const features = [
         trigger: scroller,
         start: 'top top',
         end: () =>
-          '+=' + (2.4 + slides.length * 2.2) * pinScale() * window.innerHeight,
+          '+=' + (2.4 + slides.length * 2.8) * pinScale() * window.innerHeight,
         pin: sticky,
         scrub: true,        // progress follows scroll 1:1
         anticipatePin: 1,
@@ -183,7 +229,7 @@ const features = [
     const first = slides[0];
     const firstWords = first.querySelectorAll<HTMLElement>('.feature-word');
     const firstDesc = first.querySelector<HTMLElement>('.feature-desc');
-    const firstImg = first.querySelector<HTMLElement>('.feature-visual img');
+    const firstImg = first.querySelector<HTMLElement>('.feature-visual .wz');
 
     tl.fromTo(
       first,
@@ -200,27 +246,33 @@ const features = [
       .fromTo(firstDesc, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out' }, '<0.3')
       .fromTo(firstImg, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'power3.out' }, '<0.15');
 
+    drive(first);
+
     // Phase 4 — for each following slide: hide the previous one, show the next.
     slides.forEach((s, i) => {
       if (i === 0) return;
       const prev = slides[i - 1];
       const prevWords = prev.querySelectorAll<HTMLElement>('.feature-word');
       const prevDesc = prev.querySelector<HTMLElement>('.feature-desc');
-      const prevImg = prev.querySelector<HTMLElement>('.feature-visual img');
+      const prevImg = prev.querySelector<HTMLElement>('.feature-visual .wz');
 
       const words = s.querySelectorAll<HTMLElement>('.feature-word');
       const desc = s.querySelector<HTMLElement>('.feature-desc');
-      const img = s.querySelector<HTMLElement>('.feature-visual img');
+      const img = s.querySelector<HTMLElement>('.feature-visual .wz');
 
-      // Hold the previous slide on screen, then exit it — children first, and
-      // the container's own fade LAST. It used to fade first, which put the
-      // slide at visibility:hidden 0.7s before its words/desc/image had
-      // finished animating: the exit choreography was never actually seen, and
-      // the pinned screen sat blank until the next slide began.
+      // Exit the previous slide — children first, and the container's own fade
+      // LAST. It used to fade first, which put the slide at visibility:hidden
+      // 0.7s before its words/desc/image had finished animating: the exit
+      // choreography was never actually seen, and the pinned screen sat blank
+      // until the next slide began.
+      // No '+=' hold in front of it any more: drive() has just spent homeDur +
+      // screenDur seating the breakouts and scrolling the screen, so the exit
+      // starts the moment that finishes. That is the whole point — one scroll
+      // runs the phone and then moves on, with no dead beat in between.
       tl.to(
         prevWords,
         { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
-        '+=' + dwell
+        '+=0.15'
       )
         .to(prevDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.1')
         .to(
@@ -250,6 +302,8 @@ const features = [
           { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'power3.out' },
           '<0.15'
         );
+
+      drive(s);
     });
 
     // Phase 5 — fade out the LAST slide before the pin releases, so it's gone
@@ -257,12 +311,12 @@ const features = [
     const last = slides[slides.length - 1];
     const lastWords = last.querySelectorAll<HTMLElement>('.feature-word');
     const lastDesc = last.querySelector<HTMLElement>('.feature-desc');
-    const lastImg = last.querySelector<HTMLElement>('.feature-visual img');
+    const lastImg = last.querySelector<HTMLElement>('.feature-visual .wz');
 
     tl.to(
       lastWords,
       { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
-      '+=' + dwell
+      '+=0.15'
     )
       .to(lastDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.1')
       .to(

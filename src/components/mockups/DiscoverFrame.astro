@@ -1,0 +1,58 @@
+---
+// Slide 02 — "Find Events, Communities & Join". The Discover screen.
+// Floating: Neon Nights card, two date badges. Pinned: nav bar.
+// Numbers transcribed from live-mockup-files/index.html §Discover.
+import WuzyFrame from './WuzyFrame.astro';
+
+const pins = [
+  {
+    style: '--pl:50.000%;--pt:92.522%;--w:calc(var(--fw) * 0.687920)',
+    glass: 'wz-glass--pill',
+    glassStyle: '--pw:290;--ph:50',
+    src: '/wuzy/event_feed__nav.svg',
+    imgStyle: '--l:-2.069%;--t:-12.000%;--ww:104.138%',
+  },
+];
+
+const outs = [
+  {
+    // The whole Neon Nights card — badge, heart, title, venue, price, button.
+    // Its resting offset is small enough that the card mostly covers the slot
+    // it left; pushing --x much further shows the gap.
+    style: '--x:30%;--y:48%;--z:115px;--w:calc(var(--fw) * 0.902693);--hs:0.94340;',
+    data: { 'data-parallax': '-16', 'data-x': '30', 'data-y': '48', 'data-hx': '202.50', 'data-hy': '503.00', 'data-hh': '442.00' },
+    label: 'Featured event',
+    e: '--in-delay:0ms',
+    f: '--amp:12px;--dur:6.8s;--delay:0.2s;--tilt:1.4deg',
+    wrap: 'wz-shadow',
+    src: '/wuzy/event_feed__hero.svg',
+  },
+  {
+    style: '--x:100%;--y:37%;--z:145px;--w:calc(var(--fw) * 0.254412);--hs:0.76923;',
+    data: { 'data-parallax': '20', 'data-x': '100', 'data-y': '37', 'data-hx': '314.85', 'data-hy': '848.50', 'data-hh': '83.00' },
+    label: 'Event date',
+    e: '--in-delay:140ms',
+    f: '--amp:10px;--dur:4.9s;--delay:0.8s;--tilt:2.4deg',
+    wrap: 'wz-shadow',
+    src: '/wuzy/event_feed__date1.svg',
+  },
+  {
+    style: '--x:96%;--y:72%;--z:145px;--w:calc(var(--fw) * 0.254412);--hs:0.76923;',
+    data: { 'data-parallax': '26', 'data-x': '96', 'data-y': '72', 'data-hx': '314.85', 'data-hy': '1120.50', 'data-hh': '83.00' },
+    label: 'Event date',
+    e: '--in-delay:200ms',
+    f: '--amp:11px;--dur:5.4s;--delay:0.1s;--tilt:2deg',
+    wrap: 'wz-shadow',
+    src: '/wuzy/event_feed__date3.svg',
+  },
+];
+---
+
+<WuzyFrame
+  screenW={402}
+  content="/wuzy/event_feed__content.svg"
+  contentAlt="Discover screen of the Wuzy app"
+  wellLabel="Discover screen, scrollable"
+  pins={pins}
+  outs={outs}
+/>

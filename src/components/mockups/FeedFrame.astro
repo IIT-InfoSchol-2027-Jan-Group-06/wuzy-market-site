@@ -1,0 +1,51 @@
+---
+// Slide 01 — "Catch Up With Friends". The Feed screen.
+// Floating: feed card, recommendation poster. Pinned: nav bar.
+// Numbers transcribed from live-mockup-files/index.html §Feed — all computed by
+// the exporter, none eyeballed. See live-mockup-files/README.md.
+import WuzyFrame from './WuzyFrame.astro';
+
+const pins = [
+  {
+    style: '--pl:50.000%;--pt:92.174%;--w:calc(var(--fw) * 0.768177)',
+    glass: 'wz-glass--pill',
+    glassStyle: '--pw:290;--ph:50',
+    src: '/wuzy/home-black__nav.svg',
+    imgStyle: '--l:-2.069%;--t:-12.000%;--ww:104.138%',
+  },
+];
+
+const outs = [
+  {
+    style: '--x:-5%;--y:34%;--z:110px;--w:calc(var(--fw) * 0.644209);--hs:1.31579;',
+    data: { 'data-parallax': '-24', 'data-x': '-5', 'data-y': '34', 'data-hx': '180.00', 'data-hy': '919.50', 'data-hh': '315.00' },
+    label: 'Feed post',
+    e: '--in-delay:0ms',
+    f: '--amp:11px;--dur:6.2s;--delay:0.0s;--tilt:1.4deg',
+    wrap: 'wz-shadow',
+    src: '/wuzy/home-black__card.svg',
+  },
+  {
+    style: '--x:101%;--y:60%;--z:120px;--w:calc(var(--fw) * 0.471502);--hs:1.00000;',
+    data: { 'data-parallax': '20', 'data-x': '101', 'data-y': '60', 'data-hx': '384.00', 'data-hy': '621.00', 'data-hh': '250.00' },
+    label: 'Recommended event',
+    e: '--in-delay:130ms',
+    f: '--amp:10px;--dur:5.5s;--delay:0.6s;--tilt:2deg',
+    wrap: 'wz-shadow',
+    src: '/wuzy/home-black__poster.svg',
+    // The third card is cut off by the screen edge, so Figma never drew its
+    // profile name. Added back at the same baseline as the two beside it.
+    text: 'dutch gp',
+    textStyle: '--l:44.5%;--t:79.4%;--fs:0.062',
+  },
+];
+---
+
+<WuzyFrame
+  screenW={360}
+  content="/wuzy/home-black__content.svg"
+  contentAlt="Feed screen of the Wuzy app"
+  wellLabel="Feed screen, scrollable"
+  pins={pins}
+  outs={outs}
+/>

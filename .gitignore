@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Wuzy frame source drop. index.html + wuzy-frame.css/js stay tracked — the
+# mockup components cite them for every computed number. These two are 13MB of
+# the same bytes in another wrapper: the zip's assets are already extracted to
+# public/wuzy/, and the standalone is index.html with them inlined as base64.
+live-mockup-files/wuzy-frame.zip
+live-mockup-files/wuzy-frame-standalone.html

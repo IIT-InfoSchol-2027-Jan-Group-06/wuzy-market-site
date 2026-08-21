@@ -1,0 +1,66 @@
+---
+// Slide 03 — "Direct in-app Ticketing". The Event detail screen.
+// Floating: title, date/time, map. Pinned: back, share + more.
+// Numbers transcribed from live-mockup-files/index.html §Event.
+//
+// The pinned controls here are top-anchored, so mapping their Figma y through
+// the bezel geometry is correct — unlike the bottom nav on the other screens,
+// which is placed against the well's own lower edge instead.
+import WuzyFrame from './WuzyFrame.astro';
+
+const pins = [
+  {
+    style: '--pl:15.564%;--pt:9.820%;--w:calc(var(--fw) * 0.132444)',
+    glass: 'wz-glass--circle wz-glass--light',
+    glassStyle: '--pw:50;--ph:50',
+    src: '/wuzy/event_info_black__back.svg',
+    imgStyle: '--l:-24.000%;--t:-24.000%;--ww:148.000%',
+  },
+  {
+    style: '--pl:73.840%;--pt:9.820%;--w:calc(var(--fw) * 0.397333)',
+    glass: 'wz-glass--pill wz-glass--light',
+    glassStyle: '--pw:150;--ph:50',
+    src: '/wuzy/event_info_black__acts.svg',
+    imgStyle: '--l:-5.333%;--t:-16.000%;--ww:110.667%',
+  },
+];
+
+const outs = [
+  {
+    style: '--x:-9%;--y:45%;--z:135px;--w:calc(var(--fw) * 0.676261);--hs:0.86957;',
+    data: { 'data-parallax': '-20', 'data-x': '-9', 'data-y': '45', 'data-hx': '125.00', 'data-hy': '424.00', 'data-hh': '88.00' },
+    label: 'Event title',
+    e: '--in-delay:0ms',
+    f: '--amp:10px;--dur:5.7s;--delay:0.0s;--tilt:1.6deg',
+    wrap: 'wz-shadow',
+    src: '/wuzy/event_info_black__title.svg',
+  },
+  {
+    // Bare image — this one reads fine without a surface under it.
+    style: '--x:103%;--y:50%;--z:140px;--w:calc(var(--fw) * 0.407266);--hs:0.80000;',
+    data: { 'data-parallax': '16', 'data-x': '103', 'data-y': '50', 'data-hx': '288.50', 'data-hy': '587.00', 'data-hh': '92.00' },
+    label: 'Event date and time',
+    e: '--in-delay:120ms',
+    f: '--amp:10px;--dur:5.0s;--delay:0.8s;--tilt:2deg',
+    src: '/wuzy/event_info_black__date.svg',
+  },
+  {
+    style: '--x:58%;--y:96%;--z:105px;--w:calc(var(--fw) * 1.109248);--hs:0.86207;',
+    data: { 'data-parallax': '22', 'data-x': '58', 'data-y': '96', 'data-hx': '179.50', 'data-hy': '758.00', 'data-hh': '218.00' },
+    label: 'Venue map',
+    e: '--in-delay:200ms',
+    f: '--amp:8px;--dur:6.9s;--delay:0.2s',
+    wrap: 'wz-shadow',
+    src: '/wuzy/event_info_black__map.svg',
+  },
+];
+---
+
+<WuzyFrame
+  screenW={360}
+  content="/wuzy/event_info_black__content.svg"
+  contentAlt="Event screen of the Wuzy app"
+  wellLabel="Event screen, scrollable"
+  pins={pins}
+  outs={outs}
+/>
