@@ -311,11 +311,13 @@ const cta = 'nav-cta';
   // middle, so exactly one section is "current" at a time and it flips at
   // the point the reader would call the changeover.
   //
-  // Every section is observed, not just the ones with a link. The only
-  // link-less section left is the hero, which clears the highlight rather
-  // than leaving a link stuck on — which is what happened when only linked
-  // sections were tracked. (#community used to be link-less too, so scrolling
-  // its four-plus viewports dimmed every nav item and read as a broken spy.)
+  // Every section is observed, but only some may change the highlight.
+  // #community has no link by design, and it is four-plus viewports tall —
+  // letting it set the current section dimmed every item for that whole
+  // stretch, which reads as the scroll spy breaking. Link-less sections
+  // therefore leave the previous link lit. The hero is the exception: it sits
+  // above the first link, so it clears the highlight instead of leaving one
+  // stuck on.
   const links = Array.from(
     document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')
   );
@@ -327,10 +329,15 @@ const cta = 'nav-cta';
       );
     };
 
+    const changesHighlight = (id: string) =>
+      id === 'hero' || links.some((l) => l.dataset.target === id);
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id);
+          if (entry.isIntersecting && changesHighlight(entry.target.id)) {
+            setActive(entry.target.id);
+          }
         });
       },
       { rootMargin: '-45% 0px -45% 0px' }
