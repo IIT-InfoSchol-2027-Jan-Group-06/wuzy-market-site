@@ -60,6 +60,11 @@ import { formEndpoint } from '../data/site';
         we'll text the moment Wuzy goes live near you. keep your phone close.
       </p>
     </div>
+
+    <!-- Error state (shown via JS if the POST fails) -->
+    <p id="waitlist-error" class="mt-4 hidden text-sm font-medium text-ember" role="alert">
+      that didn't go through. give it another go in a moment.
+    </p>
   </div>
 </section>
 
@@ -106,13 +111,45 @@ import { formEndpoint } from '../data/site';
     scrollTrigger: { trigger: '.waitlist-desc', start: 'top 88%', once: true },
   });
 
-  // Client-side success message (no page reload required).
-  const form = document.getElementById('waitlist-form') as HTMLFormElement;
+  // Submit in the background so we keep the inline success panel instead of
+  // bouncing to the provider's thank-you page.
+  //
+  // This used to call preventDefault() and go straight to "you're in ✓"
+  // without sending anything, so every signup was silently discarded. The
+  // panel now shows only on a 2xx, and a failure says so and gives the form
+  // back rather than pretending it worked.
+  const form = document.getElementById('waitlist-form') as HTMLFormElement | null;
   const success = document.getElementById('waitlist-success');
-  if (form && success) {
-    form.addEventListener('submit', (e) => {
+  const error = document.getElementById('waitlist-error');
+  const submit = form?.querySelector('button[type="submit"]');
+
+  if (form && success && error) {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      gsap.to(form, { autoAlpha: 0, y: -16, duration: 0.3, ease: 'power2.in', onComplete: () => {
+      error.classList.add('hidden');
+      submit?.setAttribute('disabled', '');
+
+      let ok = false;
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        ok = res.ok;
+      } catch {
+        ok = false;
+      }
+
+      submit?.removeAttribute('disabled');
+
+      if (!ok) {
+        error.classList.remove('hidden');
+        gsap.from(error, { autoAlpha: 0, y: 8, duration: 0.3, ease: 'power2.out' });
+        return;
+      }
+
+      gsap.to(form, { autoAlpha: 0, y: -16, duration: 0.3, ease: 'power2.in', overwrite: 'auto', onComplete: () => {
         form.classList.add('hidden');
         success.classList.remove('hidden');
         gsap.from(success, { autoAlpha: 0, y: 16, duration: 0.4, ease: 'power3.out' });

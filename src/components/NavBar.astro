@@ -348,21 +348,40 @@ const cta = 'nav-cta';
   const menu = document.querySelector<HTMLElement>('[data-nav-menu]');
 
   if (toggle && menu) {
+    const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
     const open = () => {
       toggle.setAttribute('aria-expanded', 'true');
       menu.classList.add('open');
       menu.removeAttribute('inert');
+      // Move focus in, so the panel is reachable without tabbing the whole
+      // document — and so close() has somewhere sensible to send it back to.
+      menu.querySelector<HTMLElement>('a, button')?.focus();
     };
 
     const close = () => {
+      if (!isOpen()) return;
+      // `inert` blurs whatever is focused inside the panel. Without handing
+      // focus back to the toggle, a keyboard user pressing Escape is dumped
+      // on <body> and has to tab from the top of the page again.
+      const focusWasInside = menu.contains(document.activeElement);
       toggle.setAttribute('aria-expanded', 'false');
       menu.classList.remove('open');
       menu.setAttribute('inert', '');
+      if (focusWasInside) toggle.focus();
     };
 
     toggle.addEventListener('click', () => {
-      if (toggle.getAttribute('aria-expanded') === 'true') close();
+      if (isOpen()) close();
       else open();
+    });
+
+    // The panel is sm:hidden, so widening past the breakpoint with it open
+    // left aria-expanded="true" on a display:none button and the burger bars
+    // frozen mid-X — and it was still open on the way back down.
+    const desktop = window.matchMedia('(min-width: 640px)');
+    desktop.addEventListener('change', (e) => {
+      if (e.matches) close();
     });
 
     menu.addEventListener('click', (e) => {
@@ -371,13 +390,13 @@ const cta = 'nav-cta';
 
     // Outside click — anywhere that isn't the pill or the menu closes it.
     document.addEventListener('pointerdown', (e) => {
-      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      if (!isOpen()) return;
       const target = e.target as HTMLElement;
       if (!target.closest('[data-nav-toggle], [data-nav-menu]')) close();
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close();
+      if (e.key === 'Escape' && isOpen()) close();
     });
   }
 </script>

@@ -41,5 +41,8 @@ export const stubs = [
 
 export const eventsLive = 7;
 
-// swap for the real Formspree / Worker id before launch
+// TODO(launch blocker): this is still a placeholder. The waitlist form now
+// really POSTs here and only shows "you're in ✓" on a 2xx, so until this is a
+// real Formspree (or Worker) id every signup fails visibly. Swap it before
+// the site goes anywhere near users.
 export const formEndpoint = 'https://formspree.io/f/REPLACE_ME';
