@@ -11,14 +11,14 @@ import { formEndpoint } from '../data/site';
 
     <!-- Headline (words reveal one-by-one) -->
     <h2 class="mt-4 font-display font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
-      <span class="block text-[clamp(48px,7.5vw,84px)]">
+      <span class="block overflow-hidden text-[clamp(48px,7.5vw,84px)]">
         {'CONNECT AND'.split(' ').map((w) => (
           <span class="inline-block align-top">
             <span class="waitlist-word inline-block will-change-transform">{w}&nbsp;</span>
           </span>
         ))}
       </span>
-      <span class="block text-[clamp(48px,7.5vw,84px)]">
+      <span class="block overflow-hidden text-[clamp(48px,7.5vw,84px)]">
         <span class="waitlist-word inline-block will-change-transform">
           <span class="font-control-cursive lowercase text-ember">create stories</span>
         </span>
@@ -97,7 +97,7 @@ import { formEndpoint } from '../data/site';
   }
 
   // Everything below the headline staggers up.
-  gsap.from('.waitlist-desc, .waitlist-form, .waitlist-success', {
+  gsap.from('.waitlist-desc, .waitlist-form', {
     y: 30,
     autoAlpha: 0,
     duration: 0.8,

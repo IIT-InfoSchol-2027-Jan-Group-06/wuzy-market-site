@@ -36,8 +36,10 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  gsap.from('.hero-kicker', { y: 24, opacity: 0, duration: 0.8, ease: 'power3.out' });
-  gsap.from('.hero-title span', {
+  // Direct children only. As a descendant selector this also matched the two
+  // spans nested inside the second line, so "story." got y:60 compounded three
+  // times (180px) with opacity multiplied out, and started a stagger step late.
+  gsap.from('.hero-title > span', {
     y: 60, opacity: 0, duration: 1, stagger: 0.12, ease: 'power4.out',
   });
   gsap.from('.hero-copy', { y: 24, opacity: 0, duration: 0.8, delay: 0.4, ease: 'power3.out' });
@@ -45,8 +47,9 @@
 //words list for the hero
   const words = ['story.', 'vibe.', 'scene.', 'match.'];
   let index = 0;
-  const cycleWord = document.getElementById('cycle-word') as HTMLElement;
+  const cycleWord = document.getElementById('cycle-word');
 
+  if (cycleWord) {
   const swap = () => {
     index = (index + 1) % words.length;
     gsap.to(cycleWord, {
@@ -65,8 +68,33 @@
     });
   };
 
-  gsap.delayedCall(4, function repeat() {
-    swap();
-    gsap.delayedCall(2.6, repeat);
+  // Gate the loop on the hero actually being on screen. Ungated it kept
+  // swapping — and kept GSAP's ticker alive — while the reader was twenty
+  // viewports down, and the word had silently moved on by the time they
+  // scrolled back up.
+  let cycleCall: ReturnType<typeof gsap.delayedCall> | null = null;
+
+  const startCycle = (delay: number) => {
+    cycleCall = gsap.delayedCall(delay, function repeat() {
+      swap();
+      cycleCall = gsap.delayedCall(2.6, repeat);
+    });
+  };
+
+  ScrollTrigger.create({
+    trigger: '#hero',
+    start: 'top bottom',
+    end: 'bottom top',
+    onToggle: (self) => {
+      if (self.isActive) {
+        if (!cycleCall) startCycle(2.6);
+      } else {
+        cycleCall?.kill();
+        cycleCall = null;
+      }
+    },
   });
+
+  startCycle(4);
+  }
 </script>

@@ -14,7 +14,7 @@ import progressMock from '../assets/mockups/ticket.webp';
 //   mock → the phone screenshot shown next to the headline
 const features = [
   { n: '01', e: '📸', t: 'Catch Up With Friends', d: 'Check social feeds, plan meetups, and make a scene.', mock: homeMock },
-  { n: '02', e: '🎟️', t: 'Find Events,Communities & Join', d: 'Discover local events and communities that match your interests, and pull up in one tap.', mock: eventMock },
+  { n: '02', e: '🎟️', t: 'Find Events, Communities & Join', d: 'Discover local events and communities that match your interests, and pull up in one tap.', mock: eventMock },
   { n: '03', e: '🌍', t: 'Direct in-app Ticketing', d: 'Purchase tickets in seconds and keep all your passes saved in one place with zero redirects.', mock: progressMock },
   { n: '04', e: '🤝', t: 'Conversations under one roof', d: 'Message people directly or connect in community chats without switching apps.', mock: profileMock },
 ];
@@ -44,13 +44,10 @@ const features = [
             <!-- Trailing cursive word "miss." in brand yellow (starts dim, lights yellow) -->
             <span class="inline-block align-top">
               <span class="intro-word intro-lit inline-block will-change-transform text-charcoal/40">
-                <span class="intro-blue font-control-cursive lowercase text-ember">miss.</span>
+                <span class="intro-blue font-control-cursive lowercase">miss.</span>
               </span>
             </span>
           </h2>
-          <!-- Sub-copy under the headline (also word-split, but not color-animated) -->
-          
-          
         </div>
       </div>
 
@@ -97,17 +94,6 @@ const features = [
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // ── Simple scroll-reveal for elements marked .reveal (the whole-plan block) ──
-  gsap.utils.toArray<HTMLElement>('.reveal').forEach((el) => {
-    gsap.from(el, {
-      y: 40,
-      opacity: 0,
-      duration: 0.9,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: el, start: 'top 80%', once: true },
-    });
-  });
-
   // ── Main pinned timeline (intro text + 4 slides) ───────────────────────────
   const slides = gsap.utils.toArray<HTMLElement>('.feature-slide');
   const scroller = document.querySelector<HTMLElement>('.feature-scroll'); // trigger element
@@ -128,20 +114,6 @@ const features = [
     const introLit = lit.length * wordStep;
     const introFadeAt = introLit + dwell;
     const introDur = introFadeAt + wordStep * 3;
-
-    // Reveal the intro as the section scrolls into view after the hero.
-    gsap.from('.feature-intro h2, .feature-intro p', {
-      y: 50,
-      autoAlpha: 0,
-      duration: 1,
-      stagger: 0.3,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: scroller,
-        start: 'top 85%',
-        once: true,
-      },
-    });
 
     // Hide every slide (and its inner parts) up front, so GSAP owns visibility.
     slides.forEach((s) => {
@@ -234,25 +206,30 @@ const features = [
       const desc = s.querySelector<HTMLElement>('.feature-desc');
       const img = s.querySelector<HTMLElement>('.feature-visual img');
 
-      // Hold the previous slide on screen, then start its exit.
-      tl.to(prev, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '+=' + dwell)
-        .to(
-          prevWords,
-          { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
-          '<0.2'
-        )
-        .to(prevDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.3')
+      // Hold the previous slide on screen, then exit it — children first, and
+      // the container's own fade LAST. It used to fade first, which put the
+      // slide at visibility:hidden 0.7s before its words/desc/image had
+      // finished animating: the exit choreography was never actually seen, and
+      // the pinned screen sat blank until the next slide began.
+      tl.to(
+        prevWords,
+        { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
+        '+=' + dwell
+      )
+        .to(prevDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.1')
         .to(
           prevImg,
           { scale: 0.6, autoAlpha: 0, duration: 0.45, ease: 'power2.in' },
-          '<0.2'
+          '<0.1'
         )
-        // …then the entrance animation for the current slide.
+        .to(prev, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.15')
+        // …then the entrance animation for the current slide, overlapping the
+        // tail of the exit so the hand-off crossfades instead of going blank.
         .fromTo(
           s,
           { scale: 0.7, autoAlpha: 0 },
           { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'power2.out' },
-          '<0.6'
+          '<0.35'
         )
         .fromTo(
           words,

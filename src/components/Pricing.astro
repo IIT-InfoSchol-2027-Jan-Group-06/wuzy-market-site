@@ -41,14 +41,14 @@ const premiumTierFeatures = [
 
     <!-- Headline (words reveal one-by-one, matching the other sections) -->
     <h2 class="mt-4 text-center font-display font-normal leading-[1.2] tracking-[0.02em] uppercase text-charcoal">
-      <span class="block text-[clamp(38px,6vw,68px)]">
+      <span class="block overflow-hidden text-[clamp(38px,6vw,68px)]">
         {'unlock your'.split(' ').map((w) => (
           <span class="inline-block align-top">
             <span class="pricing-word inline-block will-change-transform">{w}&nbsp;</span>
           </span>
         ))}
       </span>
-      <span class="block text-[clamp(38px,6vw,68px)]">
+      <span class="block overflow-hidden text-[clamp(38px,6vw,68px)]">
         <span class="pricing-word inline-block will-change-transform">
           <span class="font-control-cursive lowercase text-ember">main character era.</span>
         </span>
@@ -191,11 +191,10 @@ const premiumTierFeatures = [
   }
 
   // Sub-copy and closing note.
-  gsap.from('.pricing-desc, .pricing-note', {
+  gsap.from('.pricing-desc', {
     y: 30,
     autoAlpha: 0,
     duration: 0.8,
-    stagger: 0.12,
     ease: 'power3.out',
     scrollTrigger: { trigger: '.pricing-desc', start: 'top 88%', once: true },
   });
