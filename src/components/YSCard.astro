@@ -154,6 +154,10 @@ const reasons = [
     // cards up), now measured against a timeline that carries the hold too.
     const freezeAt = 0.5 * (buildVH / (buildVH + HOLD_VH));
 
+    // Initial state for entrance animation
+    gsap.set(cards, { y: 200, x: (i) => i % 2 === 0 ? -70 : 70, rotate: (i) => i % 2 === 0 ? -4 : 4, autoAlpha: 0 });
+    gsap.set('.ys-head', { y: 50, autoAlpha: 0 });
+
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
@@ -171,11 +175,19 @@ const reasons = [
           if (self.progress >= freezeAt) freezeWordToUs();
           else resumeCycling();
         },
+        onEnter: () => {
+          // Entrance animation when section first pins - title only
+          gsap.to('.ys-head', { y: 0, autoAlpha: 1, duration: 0.3, ease: 'power3.out' });
+        },
+        onLeaveBack: () => {
+          // Reverse entrance when scrolling back up past the section
+          gsap.to('.ys-head', { y: 50, autoAlpha: 0, duration: 0.2, ease: 'power2.in' });
+          gsap.to(cards, { y: 200, x: (i) => i % 2 === 0 ? -70 : 70, rotate: (i) => i % 2 === 0 ? -4 : 4, autoAlpha: 0, duration: 0.3, ease: 'power2.in', stagger: 0.03 }, 0.05);
+        },
       },
     });
 
-    // Each card gets its own window in the scrubbed timeline, so they
-    // appear one by one as the user scrolls (diagonally, over the text).
+    // Scrubbed timeline: cards rise one by one as user scrolls
     cards.forEach((card, i) => {
       tl.fromTo(
         card,
@@ -184,10 +196,11 @@ const reasons = [
       );
     });
 
-    // Empty tween: pure time, so scrub holds the finished stack for HOLD_VH.
-    // Scaled off the build's own length so the build-up keeps exactly the
-    // scroll distance it had.
-    tl.to({}, { duration: tl.duration() * (HOLD_VH / buildVH) });
+    // Fade out the cards and heading before pin releases, so they're gone before
+    // the next section arrives. Then a brief hold for smooth timing.
+    tl.to(cards, { y: -200, x: (i) => i % 2 === 0 ? -70 : 70, rotate: (i) => i % 2 === 0 ? -4 : 4, autoAlpha: 0, duration: 0.6, ease: 'power2.in', stagger: 0.04 }, '+=' + HOLD_VH)
+      .to('.ys-head', { y: -100, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, '<0.1')
+      .to({}, { duration: 0.3 });
   }
 </script>
 
