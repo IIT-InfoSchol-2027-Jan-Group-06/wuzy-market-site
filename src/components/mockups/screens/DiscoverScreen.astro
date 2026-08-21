@@ -58,9 +58,10 @@ const chips = ['All', 'Music', 'Reading', 'Movies'];
 
   <h2 class="mt-40 px-32 text-app-body font-semibold text-ember">Today</h2>
 
-  <!-- Featured rail — the next card peeks in at the edge. It renders a real
-       HeroCard rather than a copy of its box, so the two cannot desync. -->
-  <div class="mt-20 flex gap-12 overflow-hidden pl-32">
+  <!-- Featured rail — the next card peeks in at the edge, and the rail
+       scrolls so it can be pulled fully into view. It renders a real HeroCard
+       rather than a copy of its box, so the two cannot desync. -->
+  <div class="wz-rail mt-20 flex gap-12 px-32">
     <HeroCard slotName="d-hero" hollow={out('d-hero')} />
     <HeroCard peek />
   </div>

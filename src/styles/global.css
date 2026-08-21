@@ -86,6 +86,18 @@
   box-shadow: inset 0 0 0 1px --alpha(var(--color-ember) / 25%);
 }
 
+/* A horizontal rail inside a phone screen. Really scrollable, like the frame
+   of a Figma prototype — content that overflows is reachable, never clipped
+   into the void — with the scrollbar hidden the way the well hides its own.
+   Contained, so dragging a rail never scrolls the marketing page sideways. */
+@utility wz-rail {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
 html {
   /* No `scroll-behavior: smooth`. Three sections are pinned with scrub:true,
      and the browser's smooth-scroll animation drives their timelines at fling

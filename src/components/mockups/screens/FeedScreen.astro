@@ -36,8 +36,9 @@ const out = (slot: string) => hollow.includes(slot);
   <h2 class="mt-40 px-32 text-app-body font-semibold text-ember">Recommendations</h2>
 
   <!-- Rail. It leads at 8, not the page's 32, so it reads as running off the
-       edge. Compose is chrome on this screen, pinned by the frame. -->
-  <div class="mt-20 flex gap-12 overflow-hidden pl-8">
+       edge — and it scrolls, so the run-off is reachable rather than lost.
+       Compose is chrome on this screen, pinned by the frame. -->
+  <div class="wz-rail mt-20 flex gap-12 px-8">
     {posters.map((p) => (
       <Poster {...p} hollow={out(p.slotName)} />
     ))}

@@ -44,11 +44,21 @@ export function init(root: HTMLElement) {
   // back into it.
   const homing = well && stage && outs.length > 0;
 
-  // offsetLeft/offsetTop are relative to the nearest positioned ancestor,
-  // which is not always the well — sum the chain instead of assuming.
+  // Where a slot actually sits inside the well, in the well's own space.
+  // offsetLeft/offsetTop are relative to the nearest positioned ancestor, so
+  // the first walk sums the offsetParent chain; the second subtracts the
+  // scroll of every ancestor in between, because a slot inside a horizontally
+  // scrollable rail moves on screen without its offsetLeft changing. The
+  // well's own scrollTop is the caller's business — it is part of the homing
+  // maths already.
   function offsetIn(el: HTMLElement, stop: HTMLElement) {
-    let x = 0, y = 0, n: HTMLElement | null = el;
-    while (n && n !== stop) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent as HTMLElement | null; }
+    let x = 0, y = 0;
+    for (let n: HTMLElement | null = el; n && n !== stop; n = n.offsetParent as HTMLElement | null) {
+      x += n.offsetLeft; y += n.offsetTop;
+    }
+    for (let n = el.parentElement; n && n !== stop; n = n.parentElement) {
+      x -= n.scrollLeft; y -= n.scrollTop;
+    }
     return { x, y };
   }
   let t = 0, target = 0, raf2 = 0;
@@ -75,6 +85,23 @@ export function init(root: HTMLElement) {
       const o = outs[i], ds = o.dataset;
       const slot = well.querySelector<HTMLElement>(`[data-slot="${ds.home}"]`);
       if (!slot) continue;
+
+      // Fully home: hand the piece back to the screen. The overlay lives
+      // outside the well, and no clip-path can reproduce "bounded by every
+      // ancestor box" — it knows the well's edges but not the rail's, so a
+      // seated poster slid across the bezel, and inset(... round R) rounded
+      // all four corners of the clip rect, which put round corners on the map
+      // in the middle of the screen. The slot's copy is the same component
+      // fed from the same content module, natively clipped by the well and by
+      // whatever rail it sits in, and it scrolls with both.
+      const seated = t > 0.995;
+      slot.style.visibility = seated ? 'visible' : '';   // '' lets the class's `invisible` reassert
+      o.style.visibility = seated ? 'hidden' : '';
+      if (seated) {
+        if (o.style.clipPath) o.style.clipPath = '';
+        continue;
+      }
+
       const home = offsetIn(slot, well);
       const cx = wellLeft + home.x + slot.offsetWidth / 2;
       const cy = wellTop - well.scrollTop + home.y + slot.offsetHeight / 2;
@@ -137,7 +164,10 @@ export function init(root: HTMLElement) {
   };
 
   if (homing) {
-    well!.addEventListener('scroll', schedule, { passive: true });
+    // Capture phase, so this also fires for a scrollable rail *inside* the
+    // screen — scroll events don't bubble, but they do capture. A slot in a
+    // rail moves while the rail is dragged, and the homing has to follow it.
+    well!.addEventListener('scroll', schedule, { passive: true, capture: true });
     // schedule(), not a bare frame() request: a resize can reflow the screen
     // and clamp the well back to the top without firing a scroll event, which
     // left the pieces seated at a scroll offset that no longer existed.
