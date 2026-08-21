@@ -35,7 +35,7 @@ const features = [
         <div class="mx-auto w-full max-w-[1150px] text-center">
           <h2 class="mx-auto max-w-3xl font-display text-[clamp(30px,4.5vw,56px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal uppercase">
             <!-- Split the headline into per-word spans so each word can animate independently -->
-            {'everything you need in one app. events, tickets, communities, and the connections you don\'t want to miss'.split(' ').map((w) => (
+            {'everything you need in one app. events, tickets, communities, and the connections you don\'t want to'.split(' ').map((w) => (
               <span class="inline-block align-top">
                 <!-- intro-lit → the word gets its color tweened by GSAP -->
                 <span class="intro-word intro-lit inline-block will-change-transform text-charcoal/40">{w}&nbsp;</span>
@@ -118,9 +118,16 @@ const features = [
   if (slides.length && sticky) {
     // Timeline "time" is mapped to scroll distance via scrub.
     // wordStep = seconds of timeline per word lit up (also ~scroll amount).
-    const wordStep = 0.09;
-    // Total time the intro takes: light up every word + 3 steps to fade out.
-    const introDur = lit.length * wordStep + wordStep * 3;
+    const wordStep = 0.14;
+    // Seconds a finished beat sits on screen before the next one starts —
+    // the fully lit headline, and each mockup. Without it the next thing
+    // begins the moment the last one lands, so everything swaps the instant
+    // you scroll instead of holding.
+    const dwell = 2.9;
+    // Intro beats: every word lit, then held, then faded out.
+    const introLit = lit.length * wordStep;
+    const introFadeAt = introLit + dwell;
+    const introDur = introFadeAt + wordStep * 3;
 
     // Reveal the intro as the section scrolls into view after the hero.
     gsap.from('.feature-intro h2, .feature-intro p', {
@@ -151,11 +158,13 @@ const features = [
     // The pinned timeline: pins .feature-sticky while the user scrolls.
     // The whole sequence (intro words + 4 slides) is scrubbed across this
     // distance, so it has to be budgeted per item — same as Community/YSCard.
-    // ~1.2 viewports for the intro copy, ~1.45 per mockup slide. These two
-    // numbers are the pacing knobs; lower them if the section drags.
-    // Scrub splits the distance by timeline time, so raising the per-slide
-    // budget alone would stretch the intro with it — wordStep above is what
-    // holds the intro at its 1.2 while the slides get more room.
+    // Budget terms, not measured output: they land the intro words at ~1.05
+    // viewports and each mockup at ~2.2 — about 1 viewport of transition,
+    // then 1.2 held fully on screen. These are the pacing
+    // knobs; lower them if the section drags.
+    // Scrub splits the distance by timeline time, so the budget alone does
+    // not set the split — wordStep and dwell above are what keep the intro,
+    // the transitions and the holds at those shares.
     // With default pinSpacing the spacer equals the pin distance, so the pin
     // releases with Community's top exactly at the viewport top — no gap.
     const tl = gsap.timeline({
@@ -163,7 +172,7 @@ const features = [
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        end: () => '+=' + (1.2 + slides.length * 1.45) * window.innerHeight,
+        end: () => '+=' + (2.4 + slides.length * 2.2) * window.innerHeight,
         pin: sticky,
         scrub: true,        // progress follows scroll 1:1
         anticipatePin: 1,
@@ -189,7 +198,7 @@ const features = [
         duration: wordStep * 3,
         ease: 'power1.inOut',
       },
-      (lit.length - 1) * wordStep
+      introFadeAt
     );
 
     // Phase 3 — bring in the FIRST slide right as the intro fades.
@@ -225,8 +234,8 @@ const features = [
       const desc = s.querySelector<HTMLElement>('.feature-desc');
       const img = s.querySelector<HTMLElement>('.feature-visual img');
 
-      // Exit animation for the previous slide…
-      tl.to(prev, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' })
+      // Hold the previous slide on screen, then start its exit.
+      tl.to(prev, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '+=' + dwell)
         .to(
           prevWords,
           { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
@@ -260,19 +269,12 @@ const features = [
         );
     });
 
-    // Phase 5 — exit the LAST slide so the plan section can scroll into view.
-    const last = slides[slides.length - 1];
-    const lastWords = last.querySelectorAll<HTMLElement>('.feature-word');
-    const lastDesc = last.querySelector<HTMLElement>('.feature-desc');
-    const lastImg = last.querySelector<HTMLElement>('.feature-visual img');
-
-    tl.to(last, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' })
-      .to(
-        lastWords,
-        { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
-        '<0.2'
-      )
-      .to(lastDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.3')
-      .to(lastImg, { scale: 0.6, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.2');
+    // Phase 5 — hold the LAST slide, then let the pin release with it still on
+    // screen so it scrolls away with the section, the same way Community and
+    // YSCard hand over. It used to fade out here instead, which left the
+    // pinned screen empty for the rest of the pin AND for the sticky's own
+    // viewport height as it scrolled off — a screenful of nothing before
+    // Community arrived. Empty tween: pure time, so scrub just holds.
+    tl.to({}, { duration: dwell });
   }
 </script>

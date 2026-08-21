@@ -117,21 +117,27 @@ const reasons = [
   const cards = gsap.utils.toArray<HTMLElement>('.ys-card');
 
   if (cards.length && scroller && sticky) {
+    // ~0.45 viewport per card for the build-up, then the finished stack is
+    // held for HOLD_VH — the same beat the feature mockups hold for, so every
+    // pinned section settles instead of cutting away.
+    const buildVH = 0.35 + cards.length * 0.45;
+    const HOLD_VH = 1.2;
+    // Freeze the word at the same point in the build as before (half the
+    // cards up), now measured against a timeline that carries the hold too.
+    const freezeAt = 0.5 * (buildVH / (buildVH + HOLD_VH));
+
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        // Shorter pin: each card previously needed ~0.87 viewport of scroll,
-        // making the section drag. ~0.5 viewport per card keeps the one-by-one
-        // rhythm but feels snappy.
-        end: () => '+=' + (0.35 + cards.length * 0.45) * window.innerHeight,
+        end: () => '+=' + (buildVH + HOLD_VH) * window.innerHeight,
         pin: sticky,
         scrub: true,
         anticipatePin: 1,
         // Once the cards are covering the locked text, keep the word on "us".
         onUpdate: (self: { progress: number }) => {
-          if (self.progress >= 0.5) freezeWordToUs();
+          if (self.progress >= freezeAt) freezeWordToUs();
         },
       },
     });
@@ -145,5 +151,10 @@ const reasons = [
         { y: 0, x: 0, rotate: 0, autoAlpha: 1, duration: 0.8, ease: 'power2.out' }
       );
     });
+
+    // Empty tween: pure time, so scrub holds the finished stack for HOLD_VH.
+    // Scaled off the build's own length so the build-up keeps exactly the
+    // scroll distance it had.
+    tl.to({}, { duration: tl.duration() * (HOLD_VH / buildVH) });
   }
 </script>

@@ -116,12 +116,18 @@ const avatars = [
 
     sync();
 
+    // Scroll the build-up gets, then the beat the finished state is held for
+    // before the pin releases — the same 1.2 viewports the feature mockups
+    // hold for, so every pinned section settles instead of cutting away.
+    const buildVH = 0.7 + avatars.length * 0.11 + 0.6;
+    const HOLD_VH = 1.2;
+
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        end: () => '+=' + (0.7 + avatars.length * 0.11 + 0.6) * window.innerHeight,
+        end: () => '+=' + (buildVH + HOLD_VH) * window.innerHeight,
         pin: sticky,
         scrub: true,
         anticipatePin: 1,
@@ -139,6 +145,11 @@ const avatars = [
     avatars.forEach((av, i) => {
       tl.to(av, { x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.22, ease: 'power2.out' }, 0.35 + i * 0.07);
     });
+
+    // Empty tween: pure time, so scrub keeps the assembled graph on screen
+    // for HOLD_VH. Scaled off the build's own length so the build-up keeps
+    // exactly the scroll distance it had.
+    tl.to({}, { duration: tl.duration() * (HOLD_VH / buildVH) });
   }
 </script>
 
