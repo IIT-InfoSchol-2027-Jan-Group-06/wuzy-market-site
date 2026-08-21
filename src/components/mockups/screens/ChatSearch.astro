@@ -1,0 +1,21 @@
+---
+// The Messages search field. 335 x 41 at a 20 radius.
+//
+// The fill is the app's translucent-yellow surface: #FFE783 at 0.2 over the
+// #000811 ground, which resolves to the #333428 the Discover search sampled at.
+// Same material, written the way the export states it.
+import Icon from './Icon.astro';
+
+interface Props { slotName?: string; hollow?: boolean }
+const { slotName, hollow = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    'flex h-41 w-335 items-center rounded-u-20 bg-ember/20 pl-10',
+    hollow && 'invisible',
+  ]}
+  data-slot={slotName}
+>
+  <Icon name="search" class="size-27 text-white" />
+</div>

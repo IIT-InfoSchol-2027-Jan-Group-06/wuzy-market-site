@@ -1,0 +1,67 @@
+---
+// Messages, rebuilt as real DOM.
+//
+// 393-wide artboard. Boxes are read off chat_feed.svg: search 335x41 r20 at
+// 34,119; four filter chips 26 tall at y 179.5 starting x 35.5 with a 9 gap;
+// seven 48-tall rows from y 237 on a 59.5 pitch; nav 290x50 at 51,693; compose
+// r22.5 at 346.5,649.5.
+//
+// The chips state the app's surface plainly: the active one is solid #FFE783,
+// the rest are the same yellow at 0.25 behind a solid yellow hairline.
+import ChatSearch from './ChatSearch.astro';
+import MessageRow from './MessageRow.astro';
+
+interface Props { hollow?: string[] }
+const { hollow = [] } = Astro.props;
+const out = (s: string) => hollow.includes(s);
+
+const chips = ['All', 'Unread', 'Community', 'Groups'];
+
+const threads = [
+  { slotName: 'c-alex',    name: 'alex wanner',          preview: 'Just do it bro,',    time: '.1d', avatar: 'alex.jpg' },
+  { slotName: 'c-lily',    name: 'lily ruth',            preview: 'Hey!',               time: '.1d', avatar: 'lily.jpg' },
+  { slotName: 'c-rally',   name: 'the rally club',       preview: 'Come join us',       time: '.2d', avatar: 'rally-club.jpg' },
+  { slotName: 'c-dean',    name: 'dean di laurentis',    preview: 'Be a fun teammate!', time: '.2d', avatar: 'lily.jpg' },
+  { slotName: 'c-allie',   name: 'allie hayes',          preview: 'You wanna come?',    time: '.3d', avatar: 'allie.jpg' },
+  { slotName: 'c-runners', name: 'colombo runners club', preview: 'Just do it bro.',    time: '.4d', avatar: 'runners-club.jpg' },
+  { slotName: 'c-studio',  name: 'the studio',           preview: 'Come join us',       time: '.2d', avatar: 'studio.jpg' },
+];
+
+const img = (f: string) => `/wuzy/img/chat/${f}`;
+---
+
+<div class="wz-screen font-app w-full bg-[#000811] pt-66 pb-210 text-white antialiased select-none">
+  <h1 class="pl-35 text-u-24 font-semibold text-ember">Messages</h1>
+
+  <div class="mt-23 pl-34">
+    <ChatSearch slotName="c-search" hollow={out('c-search')} />
+  </div>
+
+  <div class="mt-19 flex gap-9 overflow-hidden pl-35">
+    {chips.map((c, i) => (
+      <span
+        class:list={[
+          'grid h-26 shrink-0 place-items-center rounded-full px-14 text-u-15 font-semibold',
+          i === 0
+            ? 'bg-ember text-[#000811]'
+            : 'bg-ember/25 text-ember ring-1 ring-ember ring-inset',
+        ]}
+      >
+        {c}
+      </span>
+    ))}
+  </div>
+
+  <div class="mt-31 flex flex-col gap-11 pl-35">
+    {threads.map((t) => (
+      <MessageRow
+        name={t.name}
+        preview={t.preview}
+        time={t.time}
+        avatar={img(t.avatar)}
+        slotName={t.slotName}
+        hollow={out(t.slotName)}
+      />
+    ))}
+  </div>
+</div>

@@ -1,70 +1,102 @@
 ---
 // Slide 04 — "Conversations under one roof". The Messages screen.
-// Floating: search, two message rows, compose. Pinned: nav bar.
-// Numbers transcribed from live-mockup-files/index.html §Messages.
 //
-// This screen has the least scroll runway of the four (~39px): its source is
-// 852 units against a 618px viewport. Homing still fires, there is just little
-// travel — that is the export, not a porting bug.
+// Floating: the search field and two of the message rows. The compose button
+// is chrome rather than a breakout, like every other button across the four
+// screens — static, always on top.
+//
+// This screen has the least scroll runway of the four: 852 units of content
+// against roughly 801 visible. Homing still fires, there is just little travel.
+// That is the export, not a porting bug.
 import WuzyFrame from './WuzyFrame.astro';
+import ChatScreen from './screens/ChatScreen.astro';
+import ChatSearch from './screens/ChatSearch.astro';
+import MessageRow from './screens/MessageRow.astro';
+import NavBar from './screens/NavBar.astro';
+import Icon from './screens/Icon.astro';
 
-const pins = [
-  {
-    style: '--pl:50.000%;--pt:92.454%;--w:calc(var(--fw) * 0.703674)',
-    glass: 'wz-glass--pill',
-    glassStyle: '--pw:290;--ph:50',
-    src: '/wuzy/chat_feed__nav.svg',
-    imgStyle: '--l:-2.069%;--t:-12.000%;--ww:104.138%',
-  },
-];
+const img = (f: string) => `/wuzy/img/chat/${f}`;
 
-const outs = [
-  {
-    style: '--x:17%;--y:15.5%;--z:130px;--w:calc(var(--fw) * 0.812865);--hs:1.00000;',
-    data: { 'data-parallax': '-20', 'data-x': '17', 'data-y': '15.5', 'data-hx': '201.50', 'data-hy': '139.50', 'data-hh': '41.00' },
-    label: 'Search',
-    e: '--in-delay:0ms',
-    f: '--amp:8px;--dur:5.8s;--delay:0.0s',
-    wrap: 'wz-glass wz-glass--pill',
-    wrapStyle: '--pw:335;--ph:41',
-    src: '/wuzy/chat_feed__search.svg',
-    imgStyle: '--l:-1.791%;--t:-14.634%;--ww:103.582%',
-  },
-  {
-    style: '--x:99%;--y:36%;--z:120px;--w:calc(var(--fw) * 0.749485);--hs:1.26263;',
-    data: { 'data-parallax': '24', 'data-x': '99', 'data-y': '36', 'data-hx': '197.50', 'data-hy': '440.00', 'data-hh': '76.00' },
-    label: 'Message from dean di laurentis',
-    e: '--in-delay:90ms',
-    f: '--amp:12px;--dur:5.6s;--delay:0.7s;--tilt:1.5deg',
-    wrap: 'wz-card',
-    src: '/wuzy/chat_feed__row4.svg',
-  },
-  {
-    style: '--x:-1%;--y:68%;--z:120px;--w:calc(var(--fw) * 0.749485);--hs:1.26263;',
-    data: { 'data-parallax': '-24', 'data-x': '-1', 'data-y': '68', 'data-hx': '197.50', 'data-hy': '261.00', 'data-hh': '76.00' },
-    label: 'Message from alex wanner',
-    e: '--in-delay:170ms',
-    f: '--amp:11px;--dur:6.1s;--delay:0.3s;--tilt:1.5deg',
-    wrap: 'wz-card',
-    src: '/wuzy/chat_feed__row1.svg',
-  },
-  {
-    style: '--x:101%;--y:84%;--z:140px;--w:calc(var(--fw) * 0.229422);--hs:0.84890;',
-    data: { 'data-parallax': '16', 'data-x': '101', 'data-y': '84', 'data-hx': '346.50', 'data-hy': '649.50', 'data-hh': '61.00' },
-    label: 'New message',
-    e: '--in-delay:240ms',
-    f: '--amp:9px;--dur:5.0s;--delay:0.4s',
-    wrap: 'wz-chip wz-chip--round',
-    src: '/wuzy/chat_feed__fab.svg',
-  },
-];
+// Compose sits clear above the nav, 24 in from the right edge as the export has it.
+const atFoot = (r: number, b: number) =>
+  `left:auto;right:calc(${r} * var(--spacing));top:auto;bottom:calc(${b} * var(--spacing));transform:none;width:auto`;
+
+const lifted = ['c-search', 'c-alex', 'c-dean'];
 ---
 
-<WuzyFrame
-  screenW={393}
-  content="/wuzy/chat_feed__content.svg"
-  contentAlt="Messages screen of the Wuzy app"
-  wellLabel="Messages screen, scrollable"
-  pins={pins}
-  outs={outs}
-/>
+<WuzyFrame wellLabel="Messages screen, scrollable" screenW={393}>
+  <ChatScreen slot="screen" hollow={lifted} />
+
+  <div slot="chrome" class="wz-pin wz-pin--bottom wz-out--dom" style="--pl:50%" aria-hidden="true">
+    <NavBar />
+  </div>
+
+  <div slot="chrome" class="wz-pin wz-out--dom" style={atFoot(24, 88)} aria-hidden="true">
+    <span class="wz-chrome grid size-45 place-items-center rounded-full text-white">
+      <Icon name="plus" class="size-24" />
+    </span>
+  </div>
+
+  <Fragment slot="outs">
+    <div
+      class="wz-out wz-out--dom"
+      style="--x:17%;--y:15.5%;--z:26px;"
+      data-home="c-search"
+      data-x="17"
+      data-y="15.5"
+      data-parallax="-20"
+      role="img"
+      aria-label="Search conversations"
+    >
+      <div class="wz-out-e" style="--in-delay:0ms">
+        <div class="wz-out-f" style="--amp:8px;--dur:5.8s;--delay:0s">
+          <ChatSearch />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out wz-out--dom"
+      style="--x:99%;--y:36%;--z:26px;"
+      data-home="c-dean"
+      data-x="99"
+      data-y="36"
+      data-parallax="24"
+      role="img"
+      aria-label="Message from dean di laurentis"
+    >
+      <div class="wz-out-e" style="--in-delay:90ms">
+        <div class="wz-out-f" style="--amp:12px;--dur:5.6s;--delay:0.7s;--tilt:1.5deg">
+          <MessageRow
+            name="dean di laurentis"
+            preview="Be a fun teammate!"
+            time=".2d"
+            avatar={img('lily.jpg')}
+          />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out wz-out--dom"
+      style="--x:-1%;--y:68%;--z:26px;"
+      data-home="c-alex"
+      data-x="-1"
+      data-y="68"
+      data-parallax="-24"
+      role="img"
+      aria-label="Message from alex wanner"
+    >
+      <div class="wz-out-e" style="--in-delay:170ms">
+        <div class="wz-out-f" style="--amp:11px;--dur:6.1s;--delay:0.3s;--tilt:1.5deg">
+          <MessageRow
+            name="alex wanner"
+            preview="Just do it bro,"
+            time=".1d"
+            avatar={img('alex.jpg')}
+          />
+        </div>
+      </div>
+    </div>
+  </Fragment>
+</WuzyFrame>
