@@ -1,3 +1,8 @@
+// Only `formEndpoint` below is imported anywhere. Everything else is drafted
+// copy for sections that were never built — kept deliberately, since Vite
+// tree-shakes unused exports so it costs nothing in the bundle. Delete a block
+// when you're sure the section isn't coming.
+
 export const slots = [
   { key: 'action', opts: ['play football', 'go to a gig', 'find a reading group', 'run at 6am', 'play board games', 'cook something'] },
   { key: 'count', opts: ['14', '16', '12', '18', '20'] },

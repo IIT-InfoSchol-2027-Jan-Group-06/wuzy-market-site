@@ -34,16 +34,20 @@ const features = [
       <div class="feature-intro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 pb-16">
         <div class="mx-auto w-full max-w-[1150px] text-center">
           <h2 class="mx-auto max-w-3xl font-display text-[clamp(30px,4.5vw,56px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal uppercase">
-            <!-- Split the headline into per-word spans so each word can animate independently -->
+            <!-- Split the headline into per-word spans so each word can animate
+                 independently. No will-change here: these only ever receive a
+                 colour tween, and seventeen permanently-promoted layers is the
+                 exact thing the note on .feature-sticky in global.css warns
+                 against. -->
             {'everything you need in one app. events, tickets, communities, and the connections you don\'t want to'.split(' ').map((w) => (
               <span class="inline-block align-top">
                 <!-- intro-lit → the word gets its color tweened by GSAP -->
-                <span class="intro-word intro-lit inline-block will-change-transform text-charcoal/40">{w}&nbsp;</span>
+                <span class="intro-lit inline-block text-charcoal/40">{w}&nbsp;</span>
               </span>
             ))}
             <!-- Trailing cursive word "miss." in brand yellow (starts dim, lights yellow) -->
             <span class="inline-block align-top">
-              <span class="intro-word intro-lit inline-block will-change-transform text-charcoal/40">
+              <span class="intro-lit inline-block text-charcoal/40">
                 <span class="intro-blue font-control-cursive lowercase">miss.</span>
               </span>
             </span>
