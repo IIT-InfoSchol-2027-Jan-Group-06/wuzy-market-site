@@ -188,3 +188,25 @@ const reasons = [
     tl.to({}, { duration: tl.duration() * (HOLD_VH / buildVH) });
   }
 </script>
+
+<style>
+  /* ── Small screens ────────────────────────────────────────────
+     Below md the three cards stack into one column, and at the desktop sizes
+     the stack plus the heading came to ~770px inside a min-h-screen frame that
+     is `justify-center overflow-hidden` AND pinned — so it clipped the top of
+     "WHY CHOOSE" and the bottom of the third card, with no way to scroll them
+     into view. Shrink the heading, the card padding and the overlap so the
+     whole column fits a short phone viewport. */
+  @media (max-width: 767px) {
+    .ys-head h2 { font-size: clamp(38px, 11vw, 56px) !important; }
+
+    .ys-grid {
+      margin-top: -1rem !important;
+      gap: 1rem;
+    }
+
+    .ys-card { padding: 1.4rem; }
+    .ys-card h3 { font-size: 1.25rem; }
+    .ys-card p { font-size: 14px; margin-top: 0.5rem; }
+  }
+</style>

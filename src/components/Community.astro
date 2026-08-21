@@ -92,25 +92,33 @@ const avatars = [
     // makes them erupt FROM the heading and settle at their positions. The
     // wrapper is anchored on its left/top point (the -50% xPercent/yPercent
     // translate makes that point the avatar's center at rest), so dx/dy move
-    // it onto the heading's center. Reading live rects keeps this correct at
-    // every breakpoint, including the mobile repositioning in the CSS below.
+    // it onto the heading's center.
+    //
+    // Everything here is measured in .community-sticky's own coordinate space
+    // using offset* rather than getBoundingClientRect(), for two reasons:
+    //
+    //   1. The avatars are absolute children of .community-sticky, so offset*
+    //      ignores the transform a previous sync() wrote. Client rects do not:
+    //      re-reading them fed each sync() its own output, so the fly-out
+    //      origin flipped on every other refresh and whether the effect worked
+    //      was a coin flip per page load.
+    //   2. Measuring `scroller` was wrong from the first refresh onward — GSAP
+    //      inserts a pin-spacer inside it, which makes it several viewports
+    //      tall, so its centre sat well below the pinned heading.
     const sync = () => {
-      const cRect = scroller.getBoundingClientRect();
-      const cw = cRect.width || 1;
-      const ch = cRect.height || 1;
-      const cx = cRect.left + cw / 2;
-      const cy = cRect.top + ch / 2;
-      const rects = avatars.map((av) => av.getBoundingClientRect());
+      const cx = sticky.clientWidth / 2;
+      const cy = sticky.clientHeight / 2;
 
-      avatars.forEach((av, i) => {
-        const r = rects[i];
-        const ax = r.left;
-        const ay = r.top;
-        const dx = cx - ax;
-        const dy = cy - ay;
-
+      avatars.forEach((av) => {
         // Start gathered on the heading, then it flies outward.
-        gsap.set(av, { xPercent: -50, yPercent: -50, x: dx, y: dy, scale: 0.2, autoAlpha: 0 });
+        gsap.set(av, {
+          xPercent: -50,
+          yPercent: -50,
+          x: cx - av.offsetLeft,
+          y: cy - av.offsetTop,
+          scale: 0.2,
+          autoAlpha: 0,
+        });
       });
     };
 
@@ -131,6 +139,10 @@ const avatars = [
         pin: sticky,
         scrub: true,
         anticipatePin: 1,
+        // Without this the avatars' `to()` tweens keep the start values they
+        // recorded on first render, so sync()'s re-aim after a resize or a
+        // breakpoint change was silently discarded.
+        invalidateOnRefresh: true,
         onRefresh: () => sync(),
       },
     });
@@ -172,7 +184,10 @@ const avatars = [
     .community-avatar-inner.size-md { height: clamp(30px, 8vw, 48px) !important; width: clamp(30px, 8vw, 48px) !important; }
     .community-avatar-inner.size-sm { height: clamp(24px, 6vw, 36px) !important; width: clamp(24px, 6vw, 36px) !important; }
 
-    .community-title-wrap h2 { font-size: clamp(32px, 10vw, 48px) !important; }
+    /* The size lives on the line spans, not the h2 — a child's own font-size
+       beats an inherited one, !important or not, so targeting the h2 here did
+       nothing and the heading stayed pinned at its 48px clamp floor. */
+    .community-line-word { font-size: clamp(32px, 10vw, 48px) !important; }
     .community-desc { font-size: 0.875rem; }
   }
 </style>
