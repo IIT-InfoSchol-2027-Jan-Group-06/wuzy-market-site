@@ -1,110 +1,44 @@
 ---
 // ── The phone frame ──────────────────────────────────────────────────────────
-// Ported from live-mockup-files/ (index.html + wuzy-frame.css). Every number
-// the four screen components pass in is computed by the exporter, not eyeballed
-// — widths are `frame_width x 0.9536 x (piece_width / screen_width) x scale`,
-// and --hx/--hy are the centre of a piece's original slot in screen units.
-// See live-mockup-files/README.md before changing any of them.
+// A bezel, a screen that scrolls inside it, and UI that breaks out of it.
+// Geometry derives from iphone-frame.svg's own coordinate space; the layer
+// stack and the design-unit basis are documented in the stylesheet below.
 //
-// All the .wz-* markup lives here rather than behind a <slot> so the scoped
-// styles below actually reach it: slotted markup carries the *caller's* scope
-// id, not this component's.
-
-export interface Pin {
-  style: string;       // --pl / --pt / --w
-  glass: string;       // wz-glass modifier classes
-  glassStyle: string;  // --pw / --ph
-  src: string;
-  imgStyle: string;    // --l / --t / --ww
-}
-
-export interface Out {
-  style: string;                 // --x / --y / --z / --w / --hs
-  data: Record<string, string>;  // parallax / x / y / hx / hy / hh
-  label: string;                 // accessible name
-  e: string;                     // --in-delay
-  f: string;                     // --amp / --dur / --delay / --tilt
-  src: string;
-  wrap?: string;                 // surface carried along; omit for a bare image
-  wrapStyle?: string;
-  imgStyle?: string;
-  text?: string;                 // authored label Figma never drew
-  textStyle?: string;            // --l / --t / --fs
-}
+// The screen, the chrome and the breakouts all come in through slots, so the
+// caller composes them — which is why the stylesheet is global rather than
+// scoped: slotted markup carries the caller's scope id, not this component's.
 
 interface Props {
-  // `screenW` is only needed by the SVG path, where home positions are given in
-  // screen units. A DOM screen measures its own slots, so it can omit it.
+  /** Width of the artboard this screen was drawn against — one design unit is
+   *  measured from it, and it is not 360 everywhere (Discover 402, Chat 393). */
   screenW?: number;
-  content?: string;
-  contentAlt?: string;
   wellLabel: string;
-  pins?: Pin[];
-  outs?: Out[];
   fw?: string;
 }
 
 const {
-  screenW, content, contentAlt, wellLabel, pins = [], outs = [],
+  screenW = 360,
+  wellLabel,
   // The demo hardcodes 318px; the site needs it to survive a phone viewport.
   fw = 'clamp(208px, 23vw, 318px)',
 } = Astro.props;
 ---
 
-{/* pointer-events-auto: .feature-slide turns them off for the whole slide.
-    --screen-units is the width of the artboard this screen was drawn against;
-    it is what one design unit is measured from, and it is not 360 everywhere
-    (Discover is 402, Messages 393). */}
-<div
-  class="wz pointer-events-auto"
-  style={`--fw:${fw};--screen-units:${screenW ?? 360}`}
-  data-screen-w={screenW}
->
+{/* pointer-events-auto: .feature-slide turns them off for the whole slide */}
+<div class="wz pointer-events-auto" style={`--fw:${fw};--screen-units:${screenW}`}>
   <div class="wz-stage">
     <div class="wz-phone">
       <div class="wz-well" tabindex="0" role="region" aria-label={wellLabel}>
-        {/* Either a screen built as real DOM, or the flat SVG export it replaces */}
-        <slot name="screen">
-          <img class="wz-content" src={content} alt={contentAlt} />
-        </slot>
+        <slot name="screen" />
       </div>
-      {pins.map((p) => (
-        <div class="wz-pin" style={p.style} aria-hidden="true">
-          <div class={`wz-glass ${p.glass}`} style={p.glassStyle}>
-            <img style={p.imgStyle} src={p.src} alt="" draggable="false" />
-          </div>
-        </div>
-      ))}
       <slot name="chrome" />
       <img class="wz-bezel" src="/wuzy/iphone-frame.svg" alt="" aria-hidden="true" />
     </div>
 
-    {/* Breakouts built as DOM. They find their own slot by name, so there is
-        nothing to keep in sync when the screen's layout changes. */}
+    {/* Breakouts. Each names the slot it came from and the frame measures it,
+        so nothing here has to be kept in sync with the screen's layout. */}
     <slot name="outs" />
 
-    {outs.map((o) => (
-      <div class="wz-out" style={o.style} role="img" aria-label={o.label} {...o.data}>
-        <div class="wz-out-e" style={o.e}>
-          <div class="wz-out-f" style={o.f}>
-            {o.wrap ? (
-              <div class={o.wrap} style={o.wrapStyle}>
-                {o.text ? (
-                  <div class="wz-piece">
-                    <img src={o.src} alt="" draggable="false" />
-                    <span class="wz-label" style={o.textStyle}>{o.text}</span>
-                  </div>
-                ) : (
-                  <img style={o.imgStyle} src={o.src} alt="" draggable="false" />
-                )}
-              </div>
-            ) : (
-              <img style={o.imgStyle} src={o.src} alt="" draggable="false" />
-            )}
-          </div>
-        </div>
-      </div>
-    ))}
   </div>
 </div>
 
@@ -116,7 +50,9 @@ const {
     so their markup carries the caller's scope id and scoped rules would never
     reach it. Every selector is .wz-* prefixed, so nothing else can collide. */}
 <style is:global>
-/* Verbatim from live-mockup-files/wuzy-frame.css.
+/* The frame's geometry and the homing technique come from the prototype in
+ * live-mockup-files/; the screens that used to be flat exports are components
+ * now, so what remains here is the bezel, the well and the breakout layer.
  *
  * Every geometric number below is derived from iphone-frame.svg's own
  * coordinate space (viewBox 0 0 301.72 600.32, 7-unit bezel ring, 38-unit
@@ -135,9 +71,6 @@ const {
   --ow: 301.72;             /* bezel viewBox width  */
   --oh: 600.32;             /* bezel viewBox height */
   --screen: #000811;        /* app surface, sampled from the exports */
-  --chip: #060f1b;
-  --chip-edge: rgba(255, 255, 255, 0.1);
-  --wz-ui: var(--font-control);
 
   position: relative;
   width: var(--fw);
@@ -213,13 +146,6 @@ const {
 .wz-well::-webkit-scrollbar { width: 0; height: 0; }
 .wz-well:focus-visible { outline: 3px solid #2b90f5; outline-offset: 3px; }
 
-.wz-content {
-  display: block;
-  width: 100%;
-  height: auto;
-  /* the export is the source of truth for its own colour */
-  background: var(--screen);
-}
 
 /* Bezel rides above the screen. It is a ring path with no background fill,
  * so the screen simply shows through the hole — no masking required. */
@@ -234,9 +160,8 @@ const {
 
 /* ---- breakout layer ---------------------------------------------------- */
 /* --t is the homing progress: 0 = lifted off and floating over the page,
- * 1 = seated back in the slot it was cut from. --hx/--hy/--hs are the home
- * placement, recomputed each frame by the script as the screen scrolls; they
- * default to the floating values so the piece stays put without JS. */
+ * 1 = seated back in the slot it was cut from. The script recomputes the
+ * landing every frame, because the slot moves with the screen's scroll. */
 .wz-out {
   --t: 0;
   position: absolute;
@@ -245,35 +170,27 @@ const {
    * stutter. --dx/--dy are plain pixel offsets the script updates instead. */
   left: var(--x);
   top: var(--y);
-  will-change: transform;
-  width: var(--w);
+  /* Sized by its own content, at exactly the scale of the slot it came from. */
+  width: auto;
   z-index: 4;
   opacity: var(--op, 1);
   transform:
     translate(-50%, -50%)
     translate3d(var(--dx, 0px),
                 calc(var(--dy, 0px) + var(--py, 0px) * (1 - var(--t))),
-                calc(var(--z, 60px) * (1 - var(--t))))
-    scale(calc(1 + (var(--hs, 1) - 1) * var(--t)));
+                calc(var(--z, 60px) * (1 - var(--t))));
   transform-style: preserve-3d;
   pointer-events: none;
+  /* Deliberately not will-change: transform. That promotes the piece to a
+   * layer and pins the scale it was rastered at, so under the stage's
+   * perspective a floating --z stretched the bitmap instead of redrawing it —
+   * live text went soft while floating and snapped sharp the instant it
+   * seated and --z fell to 0. */
+  will-change: auto;
 }
 /* Seated: the piece belongs to the screen again, so it drops below the bezel. */
 .wz-out.is-home { z-index: 1; }
 
-/* A breakout built as DOM sizes itself from its own content, at exactly the
- * scale of the slot it came from, so there is no --w to declare and no --hs
- * correction to make. */
-.wz-out--dom {
-  width: auto;
-  /* will-change: transform promotes the piece to a layer and pins the scale it
-   * was rastered at. Under the stage's 1500px perspective a floating --z of
-   * ~120px enlarges it about 8%, so the layer got stretched rather than
-   * redrawn — live text went soft while it floated and snapped sharp the
-   * instant it seated and --z fell to 0. A flat export tolerated that; real
-   * type does not. See also the much smaller --z these pieces now use. */
-  will-change: auto;
-}
 
 /* Elevation for a DOM breakout, applied to the piece itself so it picks up the
  * piece's own border-radius.
@@ -284,7 +201,7 @@ const {
  * screen was live DOM, and that is the whole "low quality until it lands".
  * A box-shadow needs no surface at all, and these pieces are rounded
  * rectangles, the one case where a rectangular shadow is the right shape. */
-.wz-out--dom .wz-out-f > * {
+.wz-out .wz-out-f > * {
   box-shadow:
     0 22px 34px -10px rgba(0, 8, 17, calc(0.55 * (1 - var(--t, 0)))),
     0 6px 12px -4px rgba(0, 8, 17, calc(0.3 * (1 - var(--t, 0))));
@@ -297,7 +214,8 @@ const {
  * the whole screen scales with --fw instead of being pinned to one size.
  * Breakouts get it too — they render outside the well but at the same scale. */
 .wz-screen,
-.wz-out--dom {
+.wz-out,
+.wz-pin {
   --spacing: calc(var(--fw) * 0.9536 / var(--screen-units, 360));
   /* The screens are a product, not the marketing page. .feature-sticky sets
    * uppercase and body sets a -0.02em track for the editorial voice outside;
@@ -363,54 +281,9 @@ const {
                     rotate(calc(var(--tilt, 0deg) * var(--fd, 1))); }
 }
 
-/* An SVG breakout is exactly one image and fills its box. A DOM breakout is a
- * real component with its own images sized by their own classes, so it must be
- * excluded — this rule was stretching every avatar inside one to full width. */
-.wz-out:not(.wz-out--dom) img,
-.wz-out:not(.wz-out--dom) svg { display: block; width: 100%; height: auto; }
 
-/* Icons lifted off the screen are white-on-dark by design — several are a
- * white stroke over a dark silhouette. Floated onto a light page they need to
- * carry a piece of their surface with them, so they get a chip. */
-.wz-chip {
-  background: rgba(6, 15, 27, calc(1 - var(--t, 0)));
-  border-radius: 26%;
-  padding: 18%;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, calc(.1 * (1 - var(--t, 0)))),
-    0 24px 48px -18px rgba(0, 8, 17, calc(.55 * (1 - var(--t, 0)))),
-    0 6px 14px -6px rgba(0, 8, 17, calc(.3 * (1 - var(--t, 0))));
-}
-.wz-chip--pill { border-radius: 999px; padding: 0; }
-.wz-chip--round { border-radius: 50%; padding: 12%;
-  background: rgba(16, 29, 46, calc(1 - var(--t, 0))); }
-.wz-chip--row {
-  display: flex;
-  align-items: center;
-  gap: 14%;
-  border-radius: 999px;
-  padding: 9% 13%;
-}
-.wz-chip--row > * { flex: none; }
 
-.wz-shadow {
-  filter: drop-shadow(0 22px 34px rgba(0, 8, 17, calc(.42 * (1 - var(--t, 0)))))
-          drop-shadow(0 4px 8px rgba(0, 8, 17, calc(.22 * (1 - var(--t, 0)))));
-}
 
-/* Text Figma never drew, because the element it belongs to was clipped off the
- * edge of the screen. Sized from --w so it tracks the piece at any frame size. */
-.wz-piece { position: relative; }
-.wz-label {
-  position: absolute;
-  left: var(--l);
-  top: var(--t);
-  transform: translateY(-50%);
-  font: 500 calc(var(--w) * var(--fs, .07)) / 1 var(--wz-ui, ui-sans-serif, system-ui, sans-serif);
-  color: #fff;
-  white-space: nowrap;
-  letter-spacing: .005em;
-}
 
 @media (prefers-reduced-motion: reduce) {
   .wz-out-f { animation: none; }
@@ -419,31 +292,6 @@ const {
 }
 
 /* ---- glassmorphic chrome ----------------------------------------------- */
-/* Figma bakes backdrop blur as a flat plate, and an SVG loaded through <img>
- * is sandboxed — it cannot sample anything behind it, so the glass is dead on
- * arrival. These plates are rebuilt as real elements; the vector icon rides
- * inside at the offset it had on the screen. */
-.wz-glass {
-  position: relative;
-  aspect-ratio: var(--pw) / var(--ph);
-  /* Tinted dark, not clear: these plates sit over the page as often as over
-   * the screen, and every icon inside them is white. The inset white ring is
-   * what separates them from a near-black canvas — it is load-bearing here,
-   * not decoration. */
-  background: rgba(4, 12, 22, calc(.6 * (1 - var(--t, 0))));
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  backdrop-filter: blur(20px) saturate(150%);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, calc(.2 * (1 - var(--t, 0)))),
-    0 22px 44px -18px rgba(0, 8, 17, calc(.5 * (1 - var(--t, 0)))),
-    inset 0 1px 0 rgba(255, 255, 255, calc(.16 * (1 - var(--t, 0))));
-}
-.wz-glass--pill   { border-radius: 999px; }
-.wz-glass--circle { border-radius: 50%; }
-.wz-glass > img {
-  position: absolute;
-  left: var(--l); top: var(--t); width: var(--ww);
-}
 
 /* Message rows and other white-on-dark content carry a slice of the app
  * surface with them, so they read as lifted off the screen rather than as
@@ -464,12 +312,7 @@ const {
   position: absolute;
   left: var(--pl);
   top: var(--pt);
-  width: var(--w);
   transform: translate(-50%, -50%);
   z-index: 5;               /* top of the layer stack; chrome never gets covered */
-}
-/* Over the app's own photography these read as frosted light, not smoked dark. */
-.wz-glass--light {
-  background: rgba(255, 255, 255, calc(.22 * (1 - var(--t, 0))));
 }
 </style>

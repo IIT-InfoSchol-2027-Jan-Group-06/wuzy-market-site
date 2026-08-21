@@ -29,13 +29,13 @@ const lifted = ['t-title', 't-when', 't-map'];
 <WuzyFrame wellLabel="Event screen, scrollable" screenW={360}>
   <TicketScreen slot="screen" hollow={lifted} />
 
-  <div slot="chrome" class="wz-pin wz-out--dom" style={at(25, 40)} aria-hidden="true">
+  <div slot="chrome" class="wz-pin" style={at(25, 40)} aria-hidden="true">
     <span class="wz-chrome grid size-50 place-items-center rounded-full text-white">
       <Icon name="back" class="size-24" />
     </span>
   </div>
 
-  <div slot="chrome" class="wz-pin wz-out--dom" style={at(195, 40)} aria-hidden="true">
+  <div slot="chrome" class="wz-pin" style={at(195, 40)} aria-hidden="true">
     <span class="wz-chrome flex h-50 w-150 items-center justify-around rounded-full text-white">
       <Icon name="share" class="size-23" />
       <Icon name="more" class="size-23" />
@@ -44,13 +44,13 @@ const lifted = ['t-title', 't-when', 't-map'];
 
   <!-- The two actions. Static chrome: the map slides up behind them as the
        screen scrolls, and they never move — a persistent buy bar. -->
-  <div slot="chrome" class="wz-pin wz-out--dom" style={atFoot(39, 34)} aria-hidden="true">
+  <div slot="chrome" class="wz-pin" style={atFoot(39, 34)} aria-hidden="true">
     <span class="wz-chrome grid h-50 w-60 place-items-center rounded-full text-white">
       <Icon name="gift" class="size-26" />
     </span>
   </div>
 
-  <div slot="chrome" class="wz-pin wz-out--dom" style={atFoot(108, 34)} aria-hidden="true">
+  <div slot="chrome" class="wz-pin" style={atFoot(108, 34)} aria-hidden="true">
     <span
       class="wz-chrome grid h-50 w-208 place-items-center rounded-full
              text-u-22 font-semibold tracking-[0.02em] text-white"
@@ -61,7 +61,7 @@ const lifted = ['t-title', 't-when', 't-map'];
 
   <Fragment slot="outs">
     <div
-      class="wz-out wz-out--dom"
+      class="wz-out"
       style="--x:-9%;--y:45%;--z:26px;"
       data-home="t-title"
       data-x="-9"
@@ -78,7 +78,7 @@ const lifted = ['t-title', 't-when', 't-map'];
     </div>
 
     <div
-      class="wz-out wz-out--dom"
+      class="wz-out"
       style="--x:103%;--y:50%;--z:26px;"
       data-home="t-when"
       data-x="103"
@@ -95,7 +95,7 @@ const lifted = ['t-title', 't-when', 't-map'];
     </div>
 
     <div
-      class="wz-out wz-out--dom"
+      class="wz-out"
       style="--x:58%;--y:96%;--z:26px;"
       data-home="t-map"
       data-x="58"

@@ -27,11 +27,11 @@ const lifted = ['c-search', 'c-alex', 'c-dean'];
 <WuzyFrame wellLabel="Messages screen, scrollable" screenW={393}>
   <ChatScreen slot="screen" hollow={lifted} />
 
-  <div slot="chrome" class="wz-pin wz-pin--bottom wz-out--dom" style="--pl:50%" aria-hidden="true">
+  <div slot="chrome" class="wz-pin wz-pin--bottom" style="--pl:50%" aria-hidden="true">
     <NavBar />
   </div>
 
-  <div slot="chrome" class="wz-pin wz-out--dom" style={atFoot(24, 88)} aria-hidden="true">
+  <div slot="chrome" class="wz-pin" style={atFoot(24, 88)} aria-hidden="true">
     <span class="wz-chrome grid size-45 place-items-center rounded-full text-white">
       <Icon name="plus" class="size-24" />
     </span>
@@ -39,7 +39,7 @@ const lifted = ['c-search', 'c-alex', 'c-dean'];
 
   <Fragment slot="outs">
     <div
-      class="wz-out wz-out--dom"
+      class="wz-out"
       style="--x:17%;--y:15.5%;--z:26px;"
       data-home="c-search"
       data-x="17"
@@ -56,7 +56,7 @@ const lifted = ['c-search', 'c-alex', 'c-dean'];
     </div>
 
     <div
-      class="wz-out wz-out--dom"
+      class="wz-out"
       style="--x:99%;--y:36%;--z:26px;"
       data-home="c-dean"
       data-x="99"
@@ -78,7 +78,7 @@ const lifted = ['c-search', 'c-alex', 'c-dean'];
     </div>
 
     <div
-      class="wz-out wz-out--dom"
+      class="wz-out"
       style="--x:-1%;--y:68%;--z:26px;"
       data-home="c-alex"
       data-x="-1"

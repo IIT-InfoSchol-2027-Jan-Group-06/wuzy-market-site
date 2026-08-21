@@ -34,13 +34,13 @@ const poster = {
   <!-- Bottom nav. Chrome, not content: it stays put while the screen scrolls,
        seated against the well's own lower edge rather than the y it happened
        to land on in a long screenshot. -->
-  <div slot="chrome" class="wz-pin wz-pin--bottom wz-out--dom" style="--pl:50%" aria-hidden="true">
+  <div slot="chrome" class="wz-pin wz-pin--bottom" style="--pl:50%" aria-hidden="true">
     <NavBar />
   </div>
 
   <!-- Compose. Chrome as well, so it neither scrolls away with the rail it
        used to sit on nor gets painted over by a poster flying home into it. -->
-  <div slot="chrome" class="wz-pin wz-pin--fab wz-out--dom" aria-hidden="true">
+  <div slot="chrome" class="wz-pin wz-pin--fab" aria-hidden="true">
     <div class="wz-chrome grid size-46 place-items-center rounded-full text-white">
       <Icon name="plus" class="size-22" />
     </div>
@@ -48,7 +48,7 @@ const poster = {
 
   <Fragment slot="outs">
     <div
-      class="wz-out wz-out--dom"
+      class="wz-out"
       style={card.style}
       data-home="runclub"
       data-x="-5"
@@ -70,7 +70,7 @@ const poster = {
     </div>
 
     <div
-      class="wz-out wz-out--dom"
+      class="wz-out"
       style={poster.style}
       data-home="p-dutchgp"
       data-x="101"

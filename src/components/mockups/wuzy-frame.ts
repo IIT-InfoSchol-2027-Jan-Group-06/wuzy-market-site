@@ -1,15 +1,9 @@
 /* wuzy-frame.ts — behaviour for the phone frame.
  *
- * Ported verbatim from live-mockup-files/wuzy-frame.js. Three things, all
- * optional and all motion-safe:
+ * Three things, all optional and all motion-safe:
  *   1. reveal   — breakouts fade up once the frame enters the viewport
  *   2. homing   — breakouts fly back into their slots as the screen is scrolled
  *   3. tilt     — a small pointer-driven rotation on fine pointers only
- *
- * The only change from the original: the "screen too short to scroll" check
- * now waits for the content image. In the demo the screens are data URIs and
- * are already decoded at boot; here they are ~1MB network requests, so the
- * well measured 0 and the check disabled scrolling on every frame.
  */
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
@@ -41,16 +35,14 @@ export function init(root: HTMLElement) {
   // composition becomes an ordinary phone again. Home placement is recomputed
   // every frame because the slot itself is moving with the scroll.
   //
-  // Geometry comes from offsetLeft/clientWidth rather than getBoundingClientRect
-  // so the pointer tilt (a 3D rotation on an ancestor) can't feed back into it —
-  // which is also why GSAP scaling an ancestor slide is harmless here.
-  const sw = parseFloat(root.dataset.screenW || '0');
-  // Two ways to know where a piece belongs. A DOM screen carries a
-  // [data-slot] placeholder that the piece measures directly, so the layout is
-  // the single source of truth. The flat SVG exports have no such thing, and
-  // fall back to data-hx/hy in screen units.
-  const slots = outs.some((o) => o.dataset.home);
-  const homing = well && stage && outs.length && (slots || sw > 0);
+  // A piece names the slot it came from; the screen renders that slot as an
+  // empty box of the same size, and the landing is measured off it every
+  // frame — the layout is the only source of truth for where anything belongs.
+  //
+  // Geometry comes from offsetLeft/offsetTop rather than getBoundingClientRect,
+  // so neither the pointer tilt nor GSAP scaling an ancestor slide can feed
+  // back into it.
+  const homing = well && stage && outs.length > 0;
 
   // offsetLeft/offsetTop are relative to the nearest positioned ancestor,
   // which is not always the well — sum the chain instead of assuming.
@@ -63,7 +55,6 @@ export function init(root: HTMLElement) {
   // When something outside drives the homing — the Features timeline scrubs it
   // off the page scroll — the well's own scrollTop stops being the trigger.
   let driven = false;
-  const hs = outs.map((o) => parseFloat(getComputedStyle(o).getPropertyValue('--hs')) || 1);
 
   function frame() {
     raf2 = 0;
@@ -73,7 +64,6 @@ export function init(root: HTMLElement) {
     if (Math.abs(target - t) < 0.002) t = target;
 
     const stageW = stage.offsetWidth, stageH = stage.offsetHeight;
-    const unit = well.clientWidth / sw;          // screen units -> px
     const wellTop = well.offsetTop, wellLeft = well.offsetLeft;
     const wellBot = wellTop + well.clientHeight;
     const wellRight = wellLeft + well.clientWidth;
@@ -83,17 +73,11 @@ export function init(root: HTMLElement) {
 
     for (let i = 0; i < outs.length; i++) {
       const o = outs[i], ds = o.dataset;
-      let cx: number, cy: number;
-      if (ds.home) {
-        const slot = well.querySelector<HTMLElement>(`[data-slot="${ds.home}"]`);
-        if (!slot) continue;
-        const p = offsetIn(slot, well);
-        cx = wellLeft + p.x + slot.offsetWidth / 2;
-        cy = wellTop - well.scrollTop + p.y + slot.offsetHeight / 2;
-      } else {
-        cx = wellLeft + parseFloat(ds.hx!) * unit;
-        cy = wellTop - well.scrollTop + parseFloat(ds.hy!) * unit;
-      }
+      const slot = well.querySelector<HTMLElement>(`[data-slot="${ds.home}"]`);
+      if (!slot) continue;
+      const home = offsetIn(slot, well);
+      const cx = wellLeft + home.x + slot.offsetWidth / 2;
+      const cy = wellTop - well.scrollTop + home.y + slot.offsetHeight / 2;
       const fx = parseFloat(ds.x!) / 100 * stageW;
       const fy = parseFloat(ds.y!) / 100 * stageH;
       const dx = (cx - fx) * t, dy = (cy - fy) * t;
@@ -102,19 +86,16 @@ export function init(root: HTMLElement) {
       o.style.setProperty('--dy', dy.toFixed(2) + 'px');
 
       // A seated piece belongs to the screen, so it has to obey the screen's
-      // edges — otherwise a tall card homing near the top spills straight over
-      // the bezel. clip-path runs in the element's own pre-transform space, so
-      // the insets are measured on the rendered box and then divided back out
-      // by the live scale. The clip only makes sense once a piece is basically
-      // seated: ramping it from the start slices a piece that is still out
-      // over the page the entire way in.
+      // edges — otherwise a tall card homing near the top spills over the
+      // bezel. The clip only makes sense once a piece is basically seated:
+      // ramping it from the start slices a piece that is still out over the
+      // page the whole way in.
       let c = (t - 0.82) / 0.18;
       c = c < 0 ? 0 : c > 1 ? 1 : c;
       let clipped = false;
       if (c > 0) {
-        const st = 1 + (hs[i] - 1) * t;
         const lx = fx + dx, ly = fy + dy;
-        const hw = o.offsetWidth * st / 2, hh2 = o.offsetHeight * st / 2;
+        const hw = o.offsetWidth / 2, hh2 = o.offsetHeight / 2;
         const ct = Math.max(0, wellTop - (ly - hh2));
         const cr = Math.max(0, (lx + hw) - wellRight);
         const cb = Math.max(0, (ly + hh2) - wellBot);
@@ -123,9 +104,8 @@ export function init(root: HTMLElement) {
         // on one sitting safely inside still rounds its own corners against the
         // well's radius, which deformed the date badges once they settled.
         if (ct + cr + cb + cl > 0.5) {
-          const k = c / st;
-          o.style.clipPath = 'inset(' + ct * k + 'px ' + cr * k + 'px ' +
-            cb * k + 'px ' + cl * k + 'px round ' + (radius * c / st) + 'px)';
+          o.style.clipPath = 'inset(' + ct * c + 'px ' + cr * c + 'px ' +
+            cb * c + 'px ' + cl * c + 'px round ' + radius * c + 'px)';
           clipped = true;
         }
       }
@@ -166,19 +146,13 @@ export function init(root: HTMLElement) {
   }
 
   // A screen shorter than the viewport has nothing to scroll, so don't
-  // advertise a scroll affordance that does nothing. Deferred until the screen
-  // has actually loaded — before that the well measures nothing at all.
-  const content = root.querySelector<HTMLImageElement>('.wz-content');
-  const measure = () => {
-    if (!well) return;
-    if (well.scrollHeight - well.clientHeight < 8) {
-      well.removeAttribute('tabindex');
-      well.style.overflowY = 'hidden';
-    }
-    if (homing && !raf2) raf2 = requestAnimationFrame(frame);
-  };
-  if (content && !content.complete) content.addEventListener('load', measure, { once: true });
-  else measure();
+  // advertise a scroll affordance that does nothing. Safe to measure straight
+  // away: a DOM screen gives every image a fixed box, so its height does not
+  // move as they decode.
+  if (well && well.scrollHeight - well.clientHeight < 8) {
+    well.removeAttribute('tabindex');
+    well.style.overflowY = 'hidden';
+  }
 
   // 3. tilt
   if (stage && fine.matches && !reduce.matches) {
