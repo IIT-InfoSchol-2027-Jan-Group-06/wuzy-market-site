@@ -34,6 +34,13 @@ const alexRow = byName(threads, 'c-alex');
     <NavBar />
   </div>
 
+  <!-- Compose's landing slot. It sits in chrome, not in the scrolling screen,
+       at the exact spot Feed pins its compose — so the floating button flies
+       in, seats here, and is then locked to the frame like any other chrome. -->
+  <div slot="chrome" class="wz-pin wz-pin--compose" aria-hidden="true">
+    <PlusButton slotName="c-plus" hollow />
+  </div>
+
   <Fragment slot="outs">
     <div
       class="wz-out"

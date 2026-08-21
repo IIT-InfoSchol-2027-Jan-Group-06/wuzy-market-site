@@ -17,8 +17,8 @@ const { slotName, hollow = false, floating = false } = Astro.props;
 <div
   class:list={[
     'flex h-48 w-326 items-center gap-12 rounded-app-md bg-app-surface px-16',
-    // Lifted, it gets the same hairline the floating message rows carry.
-    floating && 'ring-1 ring-ember/25 ring-inset',
+    // Lifted, it gets the same hairline and elevation the floating rows carry.
+    floating && 'wz-lifted',
     hollow && 'invisible',
   ]}
   data-slot={slotName}

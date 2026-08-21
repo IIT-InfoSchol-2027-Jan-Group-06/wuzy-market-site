@@ -202,8 +202,15 @@ const SCREEN_UNITS = 390;
  * floating copy of a card was a stretched bitmap while the copy sitting in the
  * screen was live DOM, and that is the whole "low quality until it lands".
  * A box-shadow needs no surface at all, and these pieces are rounded
- * rectangles, the one case where a rectangular shadow is the right shape. */
-.wz-out .wz-out-f > * {
+ * rectangles, the one case where a rectangular shadow is the right shape.
+ *
+ * :where() drops the selector to zero specificity on purpose. box-shadow is
+ * not additive, and at class specificity this rule *replaced* the shadow list
+ * of any piece that carries its own surface — which is where .wz-chrome keeps
+ * its inset ember hairline. The floating compose button rendered as a bare
+ * dark circle while its seated twin wore the ring. As a default, this applies
+ * to pieces with no surface of their own and yields to everything else. */
+:where(.wz-out .wz-out-f) > * {
   box-shadow:
     0 22px 34px -10px rgba(0, 8, 17, calc(0.55 * (1 - var(--t, 0)))),
     0 6px 12px -4px rgba(0, 8, 17, calc(0.3 * (1 - var(--t, 0))));

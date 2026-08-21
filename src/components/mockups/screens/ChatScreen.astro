@@ -9,7 +9,6 @@
 // treatment Discover's use.
 import ChatSearch from './ChatSearch.astro';
 import MessageRow from './MessageRow.astro';
-import PlusButton from './PlusButton.astro';
 import { threads } from './content';
 
 interface Props { hollow?: string[] }
@@ -57,11 +56,7 @@ const chips = ['All', 'Unread', 'Community', 'Groups'];
     ))}
   </div>
 
-  <!-- Compose, at the circle chat_feed.svg draws: r 22.5 at 346.5, 649.5 -->
-  <!-- Compose lands where .wz-pin--compose puts it on the other screens: a 32
-       gutter in from the right, bottom 93 above the screen's lower edge. The
-       well shows 795 units, so that is 657 down and 313 across. -->
-  <div class="absolute top-657 left-313">
-    <PlusButton slotName="c-plus" hollow={out('c-plus')} />
-  </div>
+  <!-- Compose is not part of this scrolling screen: it is chrome, and its
+       hollow landing slot lives in ChatFrame's .wz-pin--compose — so once the
+       floating button seats, it is pinned to the frame and never moves. -->
 </div>

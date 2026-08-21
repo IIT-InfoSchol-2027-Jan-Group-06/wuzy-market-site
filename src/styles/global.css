@@ -81,9 +81,24 @@
 /* Elevation for a lifted piece that has no opaque fill of its own — a message
    row, a search field, a bare line of type. Without it they float over the
    marketing page as white-on-nothing. */
+/* Because box-shadow is not additive, any piece that declares its own surface
+   opts out of the frame's generic breakout elevation — so these carry the
+   elevation in their own list. */
 @utility wz-float {
   background: var(--color-app-ground);
-  box-shadow: inset 0 0 0 1px --alpha(var(--color-ember) / 25%);
+  box-shadow:
+    inset 0 0 0 1px --alpha(var(--color-ember) / 25%),
+    0 22px 34px -10px --alpha(var(--color-app-ground) / 55%),
+    0 6px 12px -4px --alpha(var(--color-app-ground) / 30%);
+}
+
+/* The same hairline and elevation without the ground, for a lifted piece that
+   already has an opaque fill of its own — the search pill. */
+@utility wz-lifted {
+  box-shadow:
+    inset 0 0 0 1px --alpha(var(--color-ember) / 25%),
+    0 22px 34px -10px --alpha(var(--color-app-ground) / 55%),
+    0 6px 12px -4px --alpha(var(--color-app-ground) / 30%);
 }
 
 /* The app's translucent-yellow surface — ember at 20% over the ground —

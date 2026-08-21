@@ -83,7 +83,10 @@ export function init(root: HTMLElement) {
 
     for (let i = 0; i < outs.length; i++) {
       const o = outs[i], ds = o.dataset;
-      const slot = well.querySelector<HTMLElement>(`[data-slot="${ds.home}"]`);
+      // The whole frame, not just the well: a slot usually lives in the
+      // scrolling screen, but chrome can carry one too — the compose button
+      // lands on a pinned slot, so once seated it is static like the nav.
+      const slot = root.querySelector<HTMLElement>(`[data-slot="${ds.home}"]`);
       if (!slot) continue;
 
       // Fully home: hand the piece back to the screen. The overlay lives
@@ -102,9 +105,18 @@ export function init(root: HTMLElement) {
         continue;
       }
 
-      const home = offsetIn(slot, well);
-      const cx = wellLeft + home.x + slot.offsetWidth / 2;
-      const cy = wellTop - well.scrollTop + home.y + slot.offsetHeight / 2;
+      // A slot in the well rides the screen's scroll; a slot in chrome is
+      // already in stage space and does not move at all.
+      let cx: number, cy: number;
+      if (well.contains(slot)) {
+        const home = offsetIn(slot, well);
+        cx = wellLeft + home.x + slot.offsetWidth / 2;
+        cy = wellTop - well.scrollTop + home.y + slot.offsetHeight / 2;
+      } else {
+        const home = offsetIn(slot, stage);
+        cx = home.x + slot.offsetWidth / 2;
+        cy = home.y + slot.offsetHeight / 2;
+      }
       const fx = parseFloat(ds.x!) / 100 * stageW;
       const fy = parseFloat(ds.y!) / 100 * stageH;
       const dx = (cx - fx) * t, dy = (cy - fy) * t;
