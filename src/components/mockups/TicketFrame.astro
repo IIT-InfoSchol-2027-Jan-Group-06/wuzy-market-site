@@ -1,66 +1,114 @@
 ---
-// Slide 03 — "Direct in-app Ticketing". The Event detail screen.
-// Floating: title, date/time, map. Pinned: back, share + more.
-// Numbers transcribed from live-mockup-files/index.html §Event.
+// Slide 03 — "Direct in-app Ticketing". The event detail screen.
 //
-// The pinned controls here are top-anchored, so mapping their Figma y through
-// the bezel geometry is correct — unlike the bottom nav on the other screens,
-// which is placed against the well's own lower edge instead.
+// Floating: the title, the date/time and the map card. Pinned: back, and
+// share + more. Those two are top-anchored chrome — they sit at the same
+// coordinate as the screen does at rest, so they take their position straight
+// from the export rather than from the well's lower edge like a nav bar.
 import WuzyFrame from './WuzyFrame.astro';
+import TicketScreen from './screens/TicketScreen.astro';
+import EventTitle from './screens/EventTitle.astro';
+import EventWhen from './screens/EventWhen.astro';
+import MapCard from './screens/MapCard.astro';
+import Icon from './screens/Icon.astro';
 
-const pins = [
-  {
-    style: '--pl:15.564%;--pt:9.820%;--w:calc(var(--fw) * 0.132444)',
-    glass: 'wz-glass--circle wz-glass--light',
-    glassStyle: '--pw:50;--ph:50',
-    src: '/wuzy/event_info_black__back.svg',
-    imgStyle: '--l:-24.000%;--t:-24.000%;--ww:148.000%',
-  },
-  {
-    style: '--pl:73.840%;--pt:9.820%;--w:calc(var(--fw) * 0.397333)',
-    glass: 'wz-glass--pill wz-glass--light',
-    glassStyle: '--pw:150;--ph:50',
-    src: '/wuzy/event_info_black__acts.svg',
-    imgStyle: '--l:-5.333%;--t:-16.000%;--ww:110.667%',
-  },
-];
+// Chrome placement in design units, straight from the SVG's own boxes.
+const at = (x: number, y: number) =>
+  `left:calc(${x} * var(--spacing));top:calc(${y} * var(--spacing));transform:none;width:auto`;
 
-const outs = [
-  {
-    style: '--x:-9%;--y:45%;--z:135px;--w:calc(var(--fw) * 0.676261);--hs:0.86957;',
-    data: { 'data-parallax': '-20', 'data-x': '-9', 'data-y': '45', 'data-hx': '125.00', 'data-hy': '424.00', 'data-hh': '88.00' },
-    label: 'Event title',
-    e: '--in-delay:0ms',
-    f: '--amp:10px;--dur:5.7s;--delay:0.0s;--tilt:1.6deg',
-    wrap: 'wz-shadow',
-    src: '/wuzy/event_info_black__title.svg',
-  },
-  {
-    // Bare image — this one reads fine without a surface under it.
-    style: '--x:103%;--y:50%;--z:140px;--w:calc(var(--fw) * 0.407266);--hs:0.80000;',
-    data: { 'data-parallax': '16', 'data-x': '103', 'data-y': '50', 'data-hx': '288.50', 'data-hy': '587.00', 'data-hh': '92.00' },
-    label: 'Event date and time',
-    e: '--in-delay:120ms',
-    f: '--amp:10px;--dur:5.0s;--delay:0.8s;--tilt:2deg',
-    src: '/wuzy/event_info_black__date.svg',
-  },
-  {
-    style: '--x:58%;--y:96%;--z:105px;--w:calc(var(--fw) * 1.109248);--hs:0.86207;',
-    data: { 'data-parallax': '22', 'data-x': '58', 'data-y': '96', 'data-hx': '179.50', 'data-hy': '758.00', 'data-hh': '218.00' },
-    label: 'Venue map',
-    e: '--in-delay:200ms',
-    f: '--amp:8px;--dur:6.9s;--delay:0.2s',
-    wrap: 'wz-shadow',
-    src: '/wuzy/event_info_black__map.svg',
-  },
-];
+// Bottom-anchored chrome. The export puts these two on the map at y 697, but a
+// fixed control cannot take a y from a screen that scrolls — same reason the
+// nav bar is placed against the well's lower edge rather than at its exported
+// coordinate. Horizontal positions are still the export's: 39 and 108.
+const atFoot = (x: number, b: number) =>
+  `left:calc(${x} * var(--spacing));top:auto;bottom:calc(${b} * var(--spacing));transform:none;width:auto`;
+
+const lifted = ['t-title', 't-when', 't-map'];
 ---
 
-<WuzyFrame
-  screenW={360}
-  content="/wuzy/event_info_black__content.svg"
-  contentAlt="Event screen of the Wuzy app"
-  wellLabel="Event screen, scrollable"
-  pins={pins}
-  outs={outs}
-/>
+<WuzyFrame wellLabel="Event screen, scrollable" screenW={360}>
+  <TicketScreen slot="screen" hollow={lifted} />
+
+  <div slot="chrome" class="wz-pin wz-out--dom" style={at(25, 40)} aria-hidden="true">
+    <span class="wz-chrome grid size-50 place-items-center rounded-full text-white">
+      <Icon name="back" class="size-24" />
+    </span>
+  </div>
+
+  <div slot="chrome" class="wz-pin wz-out--dom" style={at(195, 40)} aria-hidden="true">
+    <span class="wz-chrome flex h-50 w-150 items-center justify-around rounded-full text-white">
+      <Icon name="share" class="size-23" />
+      <Icon name="more" class="size-23" />
+    </span>
+  </div>
+
+  <!-- The two actions. Static chrome: the map slides up behind them as the
+       screen scrolls, and they never move — a persistent buy bar. -->
+  <div slot="chrome" class="wz-pin wz-out--dom" style={atFoot(39, 34)} aria-hidden="true">
+    <span class="wz-chrome grid h-50 w-60 place-items-center rounded-full text-white">
+      <Icon name="gift" class="size-26" />
+    </span>
+  </div>
+
+  <div slot="chrome" class="wz-pin wz-out--dom" style={atFoot(108, 34)} aria-hidden="true">
+    <span
+      class="wz-chrome grid h-50 w-208 place-items-center rounded-full
+             text-u-22 font-semibold tracking-[0.02em] text-white"
+    >
+      BUY TICKET
+    </span>
+  </div>
+
+  <Fragment slot="outs">
+    <div
+      class="wz-out wz-out--dom"
+      style="--x:-9%;--y:45%;--z:26px;"
+      data-home="t-title"
+      data-x="-9"
+      data-y="45"
+      data-parallax="-20"
+      role="img"
+      aria-label="Event title, The Life of a Showgirl"
+    >
+      <div class="wz-out-e" style="--in-delay:0ms">
+        <div class="wz-out-f" style="--amp:10px;--dur:5.7s;--delay:0s;--tilt:1.6deg">
+          <EventTitle />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out wz-out--dom"
+      style="--x:103%;--y:50%;--z:26px;"
+      data-home="t-when"
+      data-x="103"
+      data-y="50"
+      data-parallax="16"
+      role="img"
+      aria-label="Event date and time, 9 August 6PM"
+    >
+      <div class="wz-out-e" style="--in-delay:120ms">
+        <div class="wz-out-f" style="--amp:10px;--dur:5s;--delay:0.8s;--tilt:2deg">
+          <EventWhen />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out wz-out--dom"
+      style="--x:58%;--y:96%;--z:26px;"
+      data-home="t-map"
+      data-x="58"
+      data-y="96"
+      data-parallax="22"
+      role="img"
+      aria-label="Venue map, with gift and buy ticket"
+    >
+      <div class="wz-out-e" style="--in-delay:200ms">
+        <div class="wz-out-f" style="--amp:8px;--dur:6.9s;--delay:0.2s">
+          <MapCard />
+        </div>
+      </div>
+    </div>
+  </Fragment>
+</WuzyFrame>

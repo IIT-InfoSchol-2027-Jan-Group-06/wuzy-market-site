@@ -1,0 +1,14 @@
+---
+// The event title. Its own component because it lifts out of the frame, and a
+// breakout has to be the same markup as the gap it leaves.
+interface Props { slotName?: string; hollow?: boolean }
+const { slotName, hollow = false } = Astro.props;
+---
+
+<h2
+  class:list={['text-u-32 font-bold tracking-[0.01em] text-ember', hollow && 'invisible']}
+  style="line-height: calc(40 * var(--spacing))"
+  data-slot={slotName}
+>
+  THE LIFE OF<br />A SHOWGIRL
+</h2>

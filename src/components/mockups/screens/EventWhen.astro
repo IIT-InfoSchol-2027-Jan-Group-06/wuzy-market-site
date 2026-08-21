@@ -1,0 +1,14 @@
+---
+// Date over time, set as large as the title and ranged right against the
+// screen edge. Lifts out of the frame, so it is its own component.
+interface Props { slotName?: string; hollow?: boolean }
+const { slotName, hollow = false } = Astro.props;
+---
+
+<p
+  class:list={['text-u-34 text-right font-bold text-ember', hollow && 'invisible']}
+  style="line-height: calc(40 * var(--spacing))"
+  data-slot={slotName}
+>
+  9 AUG<br />6PM
+</p>

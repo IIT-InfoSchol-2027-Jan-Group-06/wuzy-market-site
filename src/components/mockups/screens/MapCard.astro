@@ -1,0 +1,20 @@
+---
+// The venue map. Just the tile — 345 x 202 at a 50 radius, straight off the
+// export.
+//
+// The gift and BUY TICKET actions used to live in here. They are chrome now,
+// pinned by the frame like the nav bar: static, always on top, and they do not
+// travel with the card when it lifts off.
+interface Props {
+  slotName?: string;
+  hollow?: boolean;
+}
+const { slotName, hollow = false } = Astro.props;
+---
+
+<div
+  class:list={['h-202 w-345 shrink-0 overflow-hidden rounded-u-50', hollow && 'invisible']}
+  data-slot={slotName}
+>
+  <img src="/wuzy/img/ticket/map.jpg" alt="" draggable="false" class="size-full object-cover" />
+</div>
