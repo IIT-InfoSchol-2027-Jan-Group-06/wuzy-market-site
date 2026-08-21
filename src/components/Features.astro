@@ -252,12 +252,25 @@ const features = [
         );
     });
 
-    // Phase 5 — hold the LAST slide, then let the pin release with it still on
-    // screen so it scrolls away with the section, the same way Community and
-    // YSCard hand over. It used to fade out here instead, which left the
-    // pinned screen empty for the rest of the pin AND for the sticky's own
-    // viewport height as it scrolled off — a screenful of nothing before
-    // Community arrived. Empty tween: pure time, so scrub just holds.
-    tl.to({}, { duration: dwell });
+    // Phase 5 — fade out the LAST slide before the pin releases, so it's gone
+    // before Community arrives. Then a brief hold to keep timing smooth.
+    const last = slides[slides.length - 1];
+    const lastWords = last.querySelectorAll<HTMLElement>('.feature-word');
+    const lastDesc = last.querySelector<HTMLElement>('.feature-desc');
+    const lastImg = last.querySelector<HTMLElement>('.feature-visual img');
+
+    tl.to(
+      lastWords,
+      { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
+      '+=' + dwell
+    )
+      .to(lastDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.1')
+      .to(
+        lastImg,
+        { scale: 0.6, autoAlpha: 0, duration: 0.45, ease: 'power2.in' },
+        '<0.1'
+      )
+      .to(last, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.15')
+      .to({}, { duration: 0.3 });
   }
 </script>
