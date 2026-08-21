@@ -9,23 +9,25 @@
 // scoped: slotted markup carries the caller's scope id, not this component's.
 
 interface Props {
-  /** Width of the artboard this screen was drawn against — one design unit is
-   *  measured from it, and it is not 360 everywhere (Discover 402, Chat 393). */
-  screenW?: number;
   wellLabel: string;
   fw?: string;
 }
 
 const {
-  screenW = 360,
   wellLabel,
   // The demo hardcodes 318px; the site needs it to survive a phone viewport.
   fw = 'clamp(208px, 23vw, 318px)',
 } = Astro.props;
+
+// One artboard for all four screens. They are four different screens of one
+// app, so a number has to mean one size across them — and it did not: each
+// screen used to divide by its own export's width (360 / 393 / 402), which
+// made the same `290` nav bar render 12% wider on Feed than on Discover.
+const SCREEN_UNITS = 390;
 ---
 
 {/* pointer-events-auto: .feature-slide turns them off for the whole slide */}
-<div class="wz pointer-events-auto" style={`--fw:${fw};--screen-units:${screenW}`}>
+<div class="wz pointer-events-auto" style={`--fw:${fw};--screen-units:${SCREEN_UNITS}`}>
   <div class="wz-stage">
     <div class="wz-phone">
       <div class="wz-well" tabindex="0" role="region" aria-label={wellLabel}>
@@ -216,7 +218,7 @@ const {
 .wz-screen,
 .wz-out,
 .wz-pin {
-  --spacing: calc(var(--fw) * 0.9536 / var(--screen-units, 360));
+  --spacing: calc(var(--fw) * 0.9536 / var(--screen-units, 390));
   /* The screens are a product, not the marketing page. .feature-sticky sets
    * uppercase and body sets a -0.02em track for the editorial voice outside;
    * both inherit straight into the phone and have to be shut off here. */
@@ -224,15 +226,6 @@ const {
   letter-spacing: normal;
 }
 
-/* Bottom-anchored chrome. The nav's y in the export is wherever the design
- * viewport's bottom fell in a long screenshot, which is nowhere near the
- * bottom of this frame, so it is placed against the well's lower edge. */
-.wz-pin--bottom {
-  top: auto;
-  bottom: calc(22 * var(--spacing));
-  width: auto;
-  transform: translateX(-50%);
-}
 /* The app's chrome material, shared so the nav bar and the compose button
  * cannot drift apart. Opaque enough to stand on its own: backdrop-filter is
  * unreliable inside .wz-stage's 3D context and quietly no-ops, which left a
@@ -246,6 +239,16 @@ const {
     0 10px 30px -8px rgba(0, 0, 0, 0.7);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* The primary action, and the only place the accent becomes a surface rather
+ * than a colour. There is exactly one of these per screen — the whole point is
+ * that it cannot be mistaken for the neutral chrome beside it, which is what
+ * happened when Buy ticket wore the same glass as Back and Gift. */
+.wz-accent {
+  background: var(--color-ember);
+  color: var(--color-app-ground);
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.7);
 }
 
 /* Three nested layers so the three motions never overwrite each other's
@@ -296,13 +299,70 @@ const {
     0 6px 16px -8px rgba(0, 8, 17, calc(.3 * (1 - var(--t, 0))));
 }
 
-/* Chrome that belongs in the UI rather than floating over the page: seated at
- * its original slot, fixed to the frame so it doesn't scroll away. */
+/* Chrome that belongs to the frame rather than the screen: it does not scroll,
+ * and nothing paints over it.
+ *
+ * No transform here. It used to carry translate(-50%, -50%) for the one pin
+ * that needed centring, which quietly broke the others: .wz-pin--bottom sets
+ * its own transform, the two rules have equal specificity, and this one is
+ * declared later — so it won, and every nav bar sat half its own height above
+ * where it was told to. Centring now belongs to the variant that wants it. */
 .wz-pin {
   position: absolute;
-  left: var(--pl);
-  top: var(--pt);
-  transform: translate(-50%, -50%);
+  left: var(--pl, auto);
+  top: var(--pt, auto);
   z-index: 5;               /* top of the layer stack; chrome never gets covered */
+  /* How far the screen's top-left sits inside the frame box: 7 of the bezel's
+   * 287.72 inner units. Chrome is positioned against the frame box but the
+   * export measures from the screen, so every screen coordinate needs this
+   * added. It lived as a hand-typed 8.76 in one frame and was simply missing
+   * from another, which put all of the Event screen's buttons out of place. */
+  --well-inset: calc(7 / 287.72 * var(--screen-units, 390) * var(--spacing));
+}
+
+/* Bottom-anchored chrome — the nav bar. The export's y for it is wherever the
+ * design viewport's bottom happened to fall in a long screenshot, nowhere near
+ * the bottom of this frame, so it is placed against the well's lower edge
+ * instead.
+ *
+ * A pin is positioned against the frame box, not the well, so the well's own
+ * bottom inset has to be added back: it is 7 of the bezel's 600.32 viewBox
+ * units, which is exactly what `7 / var(--oh) * 100%` resolves to here. The
+ * 27 above that is the gap the prototype held between the nav and the screen's
+ * bottom edge — one constant, the same on every screen. */
+.wz-pin--bottom {
+  left: 50%;
+  bottom: calc(7 / var(--oh) * 100% + 27 * var(--spacing));
+  width: auto;
+  transform: translateX(-50%);
+}
+
+/* Chrome placed at the coordinate the export gives it, in screen space.
+ * --sx / --sy from the top-left; --sb anchors to the screen's bottom instead. */
+.wz-pin--at {
+  left: calc(var(--sx) * var(--spacing) + var(--well-inset));
+  top: calc(var(--sy) * var(--spacing) + var(--well-inset));
+}
+.wz-pin--foot {
+  left: calc(var(--sx) * var(--spacing) + var(--well-inset));
+  bottom: calc(7 / var(--oh) * 100% + var(--sb) * var(--spacing));
+}
+/* …and its mirror, for chrome ranged against the screen's right edge. */
+.wz-pin--foot-right {
+  right: calc(var(--sr) * var(--spacing) + var(--well-inset));
+  bottom: calc(7 / var(--oh) * 100% + var(--sb) * var(--spacing));
+}
+
+/* Compose. One resting place on every screen that has one — bottom right, a
+ * gutter in, clear of the nav bar. It is chrome on the feed and a breakout on
+ * messages, but it has to *look* like the same button in the same corner, so
+ * both take their position from here:
+ *
+ *   nav sits 27 above the screen's bottom edge and is 50 tall, so its top is
+ *   at 77; a 16 gap above that puts compose's bottom at 93.
+ */
+.wz-pin--compose {
+  right: calc(32 * var(--spacing) + var(--well-inset));
+  bottom: calc(7 / var(--oh) * 100% + 93 * var(--spacing));
 }
 </style>

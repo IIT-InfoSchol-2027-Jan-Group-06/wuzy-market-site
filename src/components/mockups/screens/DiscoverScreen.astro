@@ -1,12 +1,16 @@
 ---
 // Discover, rebuilt as real DOM.
 //
-// Drawn against a 402-wide artboard, not 360 — the frame reads that off
-// --screen-units, so w-335 here is the 335 measured on the reference. 34 of
-// side padding, a 335 x 450 hero, 330 x 118 rows 18 apart.
+// Laid out on the shared 390 artboard: a 32 gutter, a 326 content column, and
+// the common rhythm — 40 between sections, 20 from a label to its content.
+//
+// That rhythm is what fixes this screen's worst spacing bug: "Up Coming" used
+// to sit closer to the rail above it than to the rows it labels, so it read as
+// belonging to the wrong section.
 import HeroCard from './HeroCard.astro';
 import EventRow from './EventRow.astro';
 import Icon from './Icon.astro';
+import { upcoming } from './content';
 
 interface Props { hollow?: string[] }
 const { hollow = [] } = Astro.props;
@@ -14,47 +18,37 @@ const out = (s: string) => hollow.includes(s);
 
 // Four, not five. The reference runs a fifth off the right edge; at this size
 // it just reads as a chip sliced in half, so the rail ends on the page margin.
-const chips = ['All', 'Music', 'Reading', 'Movie'];
-
-const rows = [
-  { slotName: 'd-aug8',  name: 'Focus live', host: 'jordan', photo: 'row-market.jpg', day: '8',  month: 'AUG' },
-  { slotName: 'd-aug21', name: 'Focus live', host: 'jordan', photo: 'row-party.jpg',  day: '21', month: 'AUG' },
-  { slotName: 'd-sep4',  name: 'Focus live', host: 'jordan', photo: 'row-lasers.jpg', day: '4',  month: 'SEP' },
-];
-
-const img = (f: string) => `/wuzy/img/discover/${f}`;
+const chips = ['All', 'Music', 'Reading', 'Movies'];
 ---
 
-<div class="wz-screen font-app w-full bg-[#000811] pt-53 pb-150 text-white antialiased select-none">
-  <!-- Header -->
-  <header class="flex items-center justify-between px-34">
-    <h1 class="text-u-34 leading-none font-semibold text-ember">Explore</h1>
+{/* pt-56 is the status-bar clearance, the same on all four screens */}
+<div class="wz-screen font-app w-full bg-app-ground pt-56 pb-180 text-white antialiased select-none">
+  <header class="flex items-center justify-between px-32">
+    <h1 class="text-app-display font-bold text-ember">Explore</h1>
     <span class="wz-chrome grid size-50 place-items-center rounded-full text-white">
-      <Icon name="ticket" class="size-24" />
+      <Icon name="ticket" u={24} />
     </span>
   </header>
 
-  <!-- Search -->
-  <div class="mt-16 px-34">
-    <div class="flex h-41 items-center gap-12 rounded-full bg-[#333428] px-16">
-      <Icon name="search" class="size-20 shrink-0 text-white/85" />
-      <span class="text-u-17 font-medium text-white/55">Search</span>
+  <div class="mt-24 px-32">
+    <div class="flex h-48 items-center gap-12 rounded-app-md bg-ember/20 px-16">
+      <Icon name="search" u={22} class="shrink-0 text-white/85" />
+      <span class="text-app-body font-medium text-white/55">Search</span>
     </div>
   </div>
 
-  <div class="mt-19 flex gap-8 overflow-hidden px-34">
+  <div class="mt-16 flex gap-8 overflow-hidden px-32">
     {chips.map((c, i) => (
       <span
         class:list={[
-          'grid h-27 shrink-0 place-items-center rounded-full px-14 text-u-15 font-semibold',
+          'grid h-28 shrink-0 place-items-center rounded-full px-14 text-app-meta font-semibold',
           i === 0
-            ? 'bg-ember text-[#000811]'
+            ? 'bg-ember text-app-ground'
             // Inset ring, not an outset one. An outset ring paints a second
             // rounded rect one pixel outside the chip's own, and at this size
-            // — a 27-unit pill is about 15 real pixels — the two radii
-            // disagree by enough that the corners read as squared off. The
-            // active chip looked right only because it has no ring at all.
-            : 'bg-[#40402e] text-ember ring-1 ring-ember/70 ring-inset',
+            // the two radii disagree enough that the corners read as squared
+            // off. The active chip looked right only because it has no ring.
+            : 'bg-ember/25 text-ember ring-1 ring-ember/70 ring-inset',
         ]}
       >
         {c}
@@ -62,32 +56,22 @@ const img = (f: string) => `/wuzy/img/discover/${f}`;
     ))}
   </div>
 
-  <h2 class="mt-42 px-34 text-u-17 font-semibold text-ember">Today</h2>
+  <h2 class="mt-40 px-32 text-app-body font-semibold text-ember">Today</h2>
 
-  <!-- Featured rail — the next card peeks in at the edge -->
-  <div class="mt-34 flex gap-25 overflow-hidden pl-35">
+  <!-- Featured rail — the next card peeks in at the edge. It renders a real
+       HeroCard rather than a copy of its box, so the two cannot desync. -->
+  <div class="mt-20 flex gap-12 overflow-hidden pl-32">
     <HeroCard slotName="d-hero" hollow={out('d-hero')} />
-    <div class="h-450 w-335 shrink-0 overflow-hidden rounded-u-20">
-      <img src={img('row-lasers.jpg')} alt="" draggable="false" class="size-full object-cover" />
-    </div>
+    <HeroCard peek />
   </div>
 
-  <h2 class="mt-9 px-34 text-u-17 font-semibold text-ember">Up Coming</h2>
+  <h2 class="mt-40 px-32 text-app-body font-semibold text-ember">Upcoming</h2>
 
-  <div class="mt-21 flex flex-col gap-18 px-34">
-    {rows.map((r) => (
-      <EventRow
-        name={r.name}
-        host={r.host}
-        avatar={img('jordan.jpg')}
-        photo={img(r.photo)}
-        day={r.day}
-        month={r.month}
-        badgeSlot={r.slotName}
-        hollowBadge={out(r.slotName)}
-      />
+  <div class="mt-20 flex flex-col gap-16 px-32">
+    {upcoming.map((r) => (
+      <EventRow {...r} badgeSlot={r.slotName} hollowBadge={out(r.slotName)} />
     ))}
   </div>
 
-  <p class="mt-38 text-center text-u-16 font-semibold text-ember">caught up with life</p>
+  <p class="mt-40 text-center text-app-meta font-semibold text-ember">Caught up with life</p>
 </div>

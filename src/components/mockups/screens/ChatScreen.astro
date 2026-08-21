@@ -1,16 +1,16 @@
 ---
 // Messages, rebuilt as real DOM.
 //
-// 393-wide artboard. Boxes are read off chat_feed.svg: search 335x41 r20 at
-// 34,119; four filter chips 26 tall at y 179.5 starting x 35.5 with a 9 gap;
-// seven 48-tall rows from y 237 on a 59.5 pitch; nav 290x50 at 51,693; compose
-// r22.5 at 346.5,649.5.
+// Boxes come from chat_feed.svg, converted onto the shared ruler.
+// Laid out on the shared 390 artboard: a 32 gutter and the common rhythm.
 //
-// The chips state the app's surface plainly: the active one is solid #FFE783,
-// the rest are the same yellow at 0.25 behind a solid yellow hairline.
+// The chips state the app's surface plainly: the active one is solid ember,
+// the rest are the same yellow at 0.25 behind an ember hairline — the same
+// treatment Discover's use.
 import ChatSearch from './ChatSearch.astro';
 import MessageRow from './MessageRow.astro';
 import PlusButton from './PlusButton.astro';
+import { threads } from './content';
 
 interface Props { hollow?: string[] }
 const { hollow = [] } = Astro.props;
@@ -18,34 +18,25 @@ const out = (s: string) => hollow.includes(s);
 
 const chips = ['All', 'Unread', 'Community', 'Groups'];
 
-const threads = [
-  { slotName: 'c-alex',    name: 'alex wanner',          preview: 'Just do it bro,',    time: '.1d', avatar: 'alex.jpg' },
-  { slotName: 'c-lily',    name: 'lily ruth',            preview: 'Hey!',               time: '.1d', avatar: 'lily.jpg' },
-  { slotName: 'c-rally',   name: 'the rally club',       preview: 'Come join us',       time: '.2d', avatar: 'rally-club.jpg' },
-  { slotName: 'c-dean',    name: 'dean di laurentis',    preview: 'Be a fun teammate!', time: '.2d', avatar: 'lily.jpg' },
-  { slotName: 'c-allie',   name: 'allie hayes',          preview: 'You wanna come?',    time: '.3d', avatar: 'allie.jpg' },
-  { slotName: 'c-runners', name: 'colombo runners club', preview: 'Just do it bro.',    time: '.4d', avatar: 'runners-club.jpg' },
-  { slotName: 'c-studio',  name: 'the studio',           preview: 'Come join us',       time: '.2d', avatar: 'studio.jpg' },
-];
 
-const img = (f: string) => `/wuzy/img/chat/${f}`;
 ---
 
-<div class="wz-screen font-app relative w-full bg-[#000811] pt-66 pb-210 text-white antialiased select-none">
-  <h1 class="pl-35 text-u-24 font-semibold text-ember">Messages</h1>
+{/* pt-56 is the status-bar clearance, the same on all four screens */}
+<div class="wz-screen font-app relative w-full bg-app-ground pt-56 pb-180 text-white antialiased select-none">
+  <h1 class="px-32 text-app-display font-bold text-ember">Messages</h1>
 
-  <div class="mt-23 pl-34">
+  <div class="mt-24 px-32">
     <ChatSearch slotName="c-search" hollow={out('c-search')} />
   </div>
 
-  <div class="mt-19 flex gap-9 overflow-hidden pl-35">
+  <div class="mt-16 flex gap-8 overflow-hidden px-32">
     {chips.map((c, i) => (
       <span
         class:list={[
-          'grid h-26 shrink-0 place-items-center rounded-full px-14 text-u-15 font-semibold',
+          'grid h-28 shrink-0 place-items-center rounded-full px-14 text-app-meta font-semibold',
           i === 0
-            ? 'bg-ember text-[#000811]'
-            : 'bg-ember/25 text-ember ring-1 ring-ember ring-inset',
+            ? 'bg-ember text-app-ground'
+            : 'bg-ember/25 text-ember ring-1 ring-ember/70 ring-inset',
         ]}
       >
         {c}
@@ -53,13 +44,13 @@ const img = (f: string) => `/wuzy/img/chat/${f}`;
     ))}
   </div>
 
-  <div class="mt-31 flex flex-col gap-11 pl-35">
+  <div class="mt-40 flex flex-col gap-12 px-32">
     {threads.map((t) => (
       <MessageRow
         name={t.name}
         preview={t.preview}
         time={t.time}
-        avatar={img(t.avatar)}
+        avatar={t.avatar}
         slotName={t.slotName}
         hollow={out(t.slotName)}
       />
@@ -67,7 +58,10 @@ const img = (f: string) => `/wuzy/img/chat/${f}`;
   </div>
 
   <!-- Compose, at the circle chat_feed.svg draws: r 22.5 at 346.5, 649.5 -->
-  <div class="absolute top-627 left-324">
+  <!-- Compose lands where .wz-pin--compose puts it on the other screens: a 32
+       gutter in from the right, bottom 93 above the screen's lower edge. The
+       well shows 795 units, so that is 657 down and 313 across. -->
+  <div class="absolute top-657 left-313">
     <PlusButton slotName="c-plus" hollow={out('c-plus')} />
   </div>
 </div>

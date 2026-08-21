@@ -11,67 +11,61 @@ import EventTitle from './screens/EventTitle.astro';
 import EventWhen from './screens/EventWhen.astro';
 import MapCard from './screens/MapCard.astro';
 import Icon from './screens/Icon.astro';
+import { float } from './screens/motion';
 
-// Chrome placement in design units, straight from the SVG's own boxes.
-const at = (x: number, y: number) =>
-  `left:calc(${x} * var(--spacing));top:calc(${y} * var(--spacing));transform:none;width:auto`;
-
-// Bottom-anchored chrome. The export puts these two on the map at y 697, but a
-// fixed control cannot take a y from a screen that scrolls — same reason the
-// nav bar is placed against the well's lower edge rather than at its exported
-// coordinate. Horizontal positions are still the export's: 39 and 108.
-const atFoot = (x: number, b: number) =>
-  `left:calc(${x} * var(--spacing));top:auto;bottom:calc(${b} * var(--spacing));transform:none;width:auto`;
+const title = float({ x: -9, y: 45, parallax: -20, speed: 'mid', tilt: 1.5 }, 0);
+const when = float({ x: 103, y: 50, parallax: 16, speed: 'mid', tilt: 2 }, 1);
+const map = float({ x: 58, y: 96, parallax: 22, speed: 'heavy' }, 2);
 
 const lifted = ['t-title', 't-when', 't-map'];
 ---
 
-<WuzyFrame wellLabel="Event screen, scrollable" screenW={360}>
+<WuzyFrame wellLabel="Event screen, scrollable">
   <TicketScreen slot="screen" hollow={lifted} />
 
-  <div slot="chrome" class="wz-pin" style={at(25, 40)} aria-hidden="true">
+  <!-- Top chrome, on the page gutter so it lines up with the copy below, and
+       at the same 56 inset the other three screens give their headers — this
+       screen's hero bleeds to the very top, so its chrome is the only thing
+       holding the status-bar clearance. -->
+  <div slot="chrome" class="wz-pin wz-pin--at" style="--sx:32;--sy:56" aria-hidden="true">
     <span class="wz-chrome grid size-50 place-items-center rounded-full text-white">
-      <Icon name="back" class="size-24" />
+      <Icon name="back" u={24} />
     </span>
   </div>
 
-  <div slot="chrome" class="wz-pin" style={at(195, 40)} aria-hidden="true">
+  <div slot="chrome" class="wz-pin wz-pin--at" style="--sx:208;--sy:56" aria-hidden="true">
     <span class="wz-chrome flex h-50 w-150 items-center justify-around rounded-full text-white">
-      <Icon name="share" class="size-23" />
-      <Icon name="more" class="size-23" />
+      <Icon name="share" u={24} />
+      <Icon name="more" u={24} />
     </span>
   </div>
 
-  <!-- The two actions. Static chrome: the map slides up behind them as the
-       screen scrolls, and they never move — a persistent buy bar. -->
-  <div slot="chrome" class="wz-pin" style={atFoot(39, 34)} aria-hidden="true">
+  <!-- The buy bar. Static chrome: the map slides up behind it as the screen
+       scrolls, and it never moves. Gift and ticket together span the content
+       column exactly, gutter to gutter. -->
+  <div slot="chrome" class="wz-pin wz-pin--foot" style="--sx:32;--sb:36" aria-hidden="true">
     <span class="wz-chrome grid h-50 w-60 place-items-center rounded-full text-white">
-      <Icon name="gift" class="size-26" />
+      <Icon name="gift" u={24} />
     </span>
   </div>
 
-  <div slot="chrome" class="wz-pin" style={atFoot(108, 34)} aria-hidden="true">
-    <span
-      class="wz-chrome grid h-50 w-208 place-items-center rounded-full
-             text-u-22 font-semibold tracking-[0.02em] text-white"
-    >
-      BUY TICKET
+  <div slot="chrome" class="wz-pin wz-pin--foot" style="--sx:104;--sb:36" aria-hidden="true">
+    <span class="wz-accent grid h-50 w-254 place-items-center rounded-full text-app-title font-semibold">
+      Buy ticket
     </span>
   </div>
 
   <Fragment slot="outs">
     <div
       class="wz-out"
-      style="--x:-9%;--y:45%;--z:26px;"
+      style={title.style}
       data-home="t-title"
-      data-x="-9"
-      data-y="45"
-      data-parallax="-20"
+      {...title.data}
       role="img"
       aria-label="Event title, The Life of a Showgirl"
     >
-      <div class="wz-out-e" style="--in-delay:0ms">
-        <div class="wz-out-f" style="--amp:10px;--dur:5.7s;--delay:0s;--tilt:1.6deg">
+      <div class="wz-out-e" style={title.enter}>
+        <div class="wz-out-f" style={title.rock}>
           <EventTitle />
         </div>
       </div>
@@ -79,16 +73,14 @@ const lifted = ['t-title', 't-when', 't-map'];
 
     <div
       class="wz-out"
-      style="--x:103%;--y:50%;--z:26px;"
+      style={when.style}
       data-home="t-when"
-      data-x="103"
-      data-y="50"
-      data-parallax="16"
+      {...when.data}
       role="img"
-      aria-label="Event date and time, 9 August 6PM"
+      aria-label="Event date and time, 9 August, 6PM"
     >
-      <div class="wz-out-e" style="--in-delay:120ms">
-        <div class="wz-out-f" style="--amp:10px;--dur:5s;--delay:0.8s;--tilt:2deg">
+      <div class="wz-out-e" style={when.enter}>
+        <div class="wz-out-f" style={when.rock}>
           <EventWhen />
         </div>
       </div>
@@ -96,16 +88,14 @@ const lifted = ['t-title', 't-when', 't-map'];
 
     <div
       class="wz-out"
-      style="--x:58%;--y:96%;--z:26px;"
+      style={map.style}
       data-home="t-map"
-      data-x="58"
-      data-y="96"
-      data-parallax="22"
+      {...map.data}
       role="img"
-      aria-label="Venue map, with gift and buy ticket"
+      aria-label="Venue map"
     >
-      <div class="wz-out-e" style="--in-delay:200ms">
-        <div class="wz-out-f" style="--amp:8px;--dur:6.9s;--delay:0.2s">
+      <div class="wz-out-e" style={map.enter}>
+        <div class="wz-out-f" style={map.rock}>
           <MapCard />
         </div>
       </div>

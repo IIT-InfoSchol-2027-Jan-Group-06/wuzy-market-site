@@ -1,6 +1,6 @@
 ---
-// An "Up Coming" row: 330 x 118 of photo with the event name and host over it,
-// and the date badge sitting on the right.
+// An Upcoming row: 326 x 128 of photo with the event name and host over it,
+// and the date badge on the right.
 import DateBadge from './DateBadge.astro';
 
 interface Props {
@@ -16,17 +16,19 @@ interface Props {
 const { name, host, avatar, photo, day, month, badgeSlot, hollowBadge = false } = Astro.props;
 ---
 
-<div class="relative h-118 w-330 overflow-hidden rounded-u-14">
+<div class="relative h-128 w-326 overflow-hidden rounded-app-md">
   <img src={photo} alt="" draggable="false" class="size-full object-cover" />
-  <!-- Reads left-heavy, so the scrim is too -->
-  <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/10"></div>
+  <!-- Reads left-heavy, so the scrim is too. It ends at transparent like
+       every other one: it used to hold a 10% floor across the whole photo,
+       including the third where only the white badge sits. -->
+  <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent"></div>
 
   <!-- Copy and badge share one centred flex row rather than being absolutely
        placed and pulled back by a transform, so the badge is centred by the
        layout instead of by arithmetic that has to stay in sync with its height. -->
-  <div class="absolute inset-0 flex items-center justify-between pr-16 pl-18">
+  <div class="absolute inset-0 flex items-center justify-between px-16">
     <div class="flex flex-col gap-8">
-      <p class="text-u-26 font-semibold text-white">{name}</p>
+      <p class="text-app-title font-semibold text-white">{name}</p>
       <div class="flex items-center gap-8">
         <img
           src={avatar}
@@ -34,7 +36,7 @@ const { name, host, avatar, photo, day, month, badgeSlot, hollowBadge = false } 
           draggable="false"
           class="size-24 rounded-full object-cover ring-1 ring-ember/80"
         />
-        <span class="text-u-16 font-medium text-white/90">{host}</span>
+        <span class="text-app-meta font-medium text-white/90">{host}</span>
       </div>
     </div>
 

@@ -1,10 +1,8 @@
 ---
 // The event detail screen, rebuilt as real DOM.
 //
-// 360-wide artboard. Geometry is read straight off event_info_black.svg, which
-// gives exact boxes rather than measured ones: hero 402x531 at 0,0 (it bleeds
-// past the right edge), heart 50x50 at 286,404, avatars r17 at cy 564.5, map
-// 345x202 r50 at 7,657, gift 60x50 at 39,697, ticket 208x50 at 108,697.
+// Laid out on the shared 390 artboard: a 32 gutter and the common rhythm.
+// Proportions come from event_info_black.svg, converted onto that ruler.
 import Icon from './Icon.astro';
 import EventTitle from './EventTitle.astro';
 import EventWhen from './EventWhen.astro';
@@ -18,34 +16,36 @@ const going = ['going-1.jpg', 'going-2.jpg', 'going-3.jpg'];
 const img = (f: string) => `/wuzy/img/ticket/${f}`;
 ---
 
-<div class="wz-screen font-app relative w-full bg-[#000811] pb-15 text-white antialiased select-none">
+<div class="wz-screen font-app relative w-full bg-app-ground pb-180 text-white antialiased select-none">
   <!-- Hero. Wider than the screen by design — the export bleeds it 42 units
        past the right edge — and it ramps into the ground rather than ending. -->
   <img
     src={img('hero.jpg')}
     alt=""
     draggable="false"
-    class="absolute top-0 left-0 h-531 w-402 object-cover object-top"
+    class="absolute top-0 left-0 h-575 w-436 object-cover object-top"
   />
-  <div class="absolute top-0 left-0 h-531 w-full bg-gradient-to-b from-transparent via-[#000811]/45 to-[#000811]"></div>
+  <!-- Matches the image it covers, not the screen: it was 42 units narrower
+       than the photo, leaving the bleed unscrimmed. -->
+  <div class="absolute top-0 left-0 h-575 w-436 bg-gradient-to-b from-transparent via-app-ground/45 to-app-ground"></div>
 
   <!-- Title sits over the faded tail of the hero, level with the heart -->
-  <div class="relative flex items-start justify-between pt-386 pr-24 pl-26">
+  <div class="relative flex items-start justify-between px-32 pt-418">
     <EventTitle slotName="t-title" hollow={out('t-title')} />
-    <span class="wz-chrome mt-14 grid size-50 shrink-0 place-items-center rounded-full text-white">
-      <Icon name="heart" class="size-24" />
+    <span class="wz-chrome mt-8 grid size-50 shrink-0 place-items-center rounded-full text-white">
+      <Icon name="heart" u={24} />
     </span>
   </div>
 
-  <p class="relative mt-21 pr-30 pl-26 text-u-15 leading-[1.18] font-semibold text-ember">
-    Released on October 3, 2025, via Republic Records, Taylor Swift's landmark
-    twelfth album, The Life of a Showgirl, was crafted ….<span class="font-bold">Show more</span>
+  <p class="relative mt-20 px-32 text-app-body font-medium text-ember/85">
+    Released on October 3, 2025 via Republic Records, Taylor Swift's twelfth
+    album was crafted across three continents… <span class="font-semibold text-ember">Show more</span>
   </p>
 
   <!-- Who's going, and when -->
-  <div class="relative mt-23 flex items-start justify-between pr-26 pl-26">
+  <div class="relative mt-40 flex items-start justify-between px-32">
     <div>
-      <div class="flex items-center gap-9">
+      <div class="flex items-center gap-12">
         <div class="flex">
           {going.map((g, i) => (
             <img
@@ -53,23 +53,23 @@ const img = (f: string) => `/wuzy/img/ticket/${f}`;
               alt=""
               draggable="false"
               class:list={[
-                'size-34 rounded-full object-cover ring-1 ring-[#000811]',
+                'size-34 rounded-full object-cover ring-1 ring-app-ground',
                 i > 0 && '-ml-12',
               ]}
             />
           ))}
         </div>
-        <span class="text-u-17 font-semibold text-white">5+</span>
+        <span class="text-app-body font-semibold text-white">5+</span>
       </div>
-      <p class="mt-16 text-u-16 font-semibold text-ember">88 Plams</p>
-      <p class="mt-6 text-u-15 font-medium text-ember/75">Lekki, Lagos</p>
+      <p class="mt-16 text-app-body font-semibold text-ember">88 Palms</p>
+      <p class="mt-4 text-app-meta font-medium text-ember/75">Lekki, Lagos</p>
     </div>
 
     <EventWhen slotName="t-when" hollow={out('t-when')} />
   </div>
 
-  <!-- 7 of side inset, not the page's 26 — the map runs wider than the copy -->
-  <div class="relative mt-20 px-7">
+  <!-- The map runs wider than the copy, half a gutter in on each side -->
+  <div class="relative mt-40 px-16">
     <MapCard slotName="t-map" hollow={out('t-map')} />
   </div>
 </div>

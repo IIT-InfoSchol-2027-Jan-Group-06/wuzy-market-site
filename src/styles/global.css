@@ -37,21 +37,53 @@
   --shadow-xl: 0 24px 48px -24px rgba(0, 0, 0, 0.9);
 }
 
-/* ── Phone-screen design units ─────────────────────────────────────────────
-   The mockup screens are drawn against a 360-unit-wide artboard. Each screen
-   root rebases Tailwind's --spacing to one of those units, which makes every
-   numeric spacing/size utility (w-300, gap-12, size-38) read as the number
-   straight off the Figma measurement.
+/* ── The phone screens' design system ──────────────────────────────────────
+   Four screens live inside the phone frames: Feed, Discover, Event, Messages.
+   They are four different screens of one app, and they share a language —
+   this is where that language is written down.
 
-   text-* and rounded-* don't ride the spacing scale, so they get unit-aware
-   twins rather than a calc() in every arbitrary value. text-u-16 is sixteen
-   design units tall, and tracks the frame as it scales. */
-@utility text-u-* {
-  font-size: calc(--value(integer) * var(--spacing));
-  line-height: 1.25;
+   THE RULER. Every screen rebases Tailwind's --spacing to one design unit, so
+   a numeric utility (w-326, gap-12, size-34) reads as the number straight off
+   the artboard. All four screens now divide by the SAME artboard width (390),
+   which is the whole point: before, each divided by its own (360/393/402), so
+   the identical number was three different physical sizes and the nav bar
+   rendered 12% wider on Feed than on Discover.
+
+   Everything below is expressed in that unit, so the entire system scales
+   with the frame and nothing needs a second set of numbers for small screens. */
+
+/* Type: six steps, and nothing between them. `hero` is the one loud step —
+   event titles are allowed to shout; everything else is quiet and regular.
+
+   These are utilities rather than @theme tokens on purpose. A custom property
+   declared at :root has its var() references substituted *there*, so a token
+   defined as calc(36 * var(--spacing)) freezes against the root's 0.25rem and
+   arrives at the screen four times too big. Keeping the calc in the
+   declaration lets it resolve against the element that uses it. */
+@utility text-app-hero    { font-size: calc(36 * var(--spacing)); line-height: 1.12; }
+@utility text-app-display { font-size: calc(30 * var(--spacing)); line-height: 1.15; }
+@utility text-app-numeric { font-size: calc(26 * var(--spacing)); line-height: 1.1; }
+@utility text-app-title   { font-size: calc(18 * var(--spacing)); line-height: 1.25; }
+@utility text-app-body    { font-size: calc(16 * var(--spacing)); line-height: 1.35; }
+@utility text-app-meta    { font-size: calc(14 * var(--spacing)); line-height: 1.3; }
+
+/* Radius: three, plus pills. Photo cards, the hero and the map all sit at
+   `lg`; rows and search fields at `md`; badges at `sm`. */
+@utility rounded-app-sm { border-radius: calc(14 * var(--spacing)); }
+@utility rounded-app-md { border-radius: calc(22 * var(--spacing)); }
+@utility rounded-app-lg { border-radius: calc(32 * var(--spacing)); }
+
+@theme {
+  /* The app's own ground. It was written as a raw #000811 in seven places. */
+  --color-app-ground: #000811;
 }
-@utility rounded-u-* {
-  border-radius: calc(--value(integer) * var(--spacing));
+
+/* Elevation for a lifted piece that has no opaque fill of its own — a message
+   row, a search field, a bare line of type. Without it they float over the
+   marketing page as white-on-nothing. */
+@utility wz-float {
+  background: var(--color-app-ground);
+  box-shadow: inset 0 0 0 1px --alpha(var(--color-ember) / 25%);
 }
 
 html {

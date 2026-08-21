@@ -1,38 +1,44 @@
 ---
 // Slide 02 — "Find Events, Communities & Join". The Discover screen.
 //
-// Floating: the Neon Nights card and two date badges. Each names the slot it
-// came from and the frame measures it, so nothing here encodes a position
-// inside the screen.
+// Composition: a large card leaning off the left edge with two small badges
+// stacked down the right — deliberately asymmetric, where Feed is a pair.
 import WuzyFrame from './WuzyFrame.astro';
 import DiscoverScreen from './screens/DiscoverScreen.astro';
 import HeroCard from './screens/HeroCard.astro';
 import DateBadge from './screens/DateBadge.astro';
 import NavBar from './screens/NavBar.astro';
+import { upcoming, byName } from './screens/content';
+import { float } from './screens/motion';
 
 const lifted = ['d-hero', 'd-aug8', 'd-sep4'];
+
+const hero = float({ x: 30, y: 48, parallax: -16, speed: 'heavy', tilt: 1.5 }, 0);
+const first = float({ x: 100, y: 37, parallax: 20, speed: 'light', tilt: 2 }, 1);
+const last = float({ x: 96, y: 72, parallax: 26, speed: 'light', tilt: 2 }, 2);
+
+const aug8 = byName(upcoming, 'd-aug8');
+const sep4 = byName(upcoming, 'd-sep4');
 ---
 
-<WuzyFrame wellLabel="Discover screen, scrollable" screenW={402}>
+<WuzyFrame wellLabel="Discover screen, scrollable">
   <DiscoverScreen slot="screen" hollow={lifted} />
 
-  <div slot="chrome" class="wz-pin wz-pin--bottom" style="--pl:50%" aria-hidden="true">
+  <div slot="chrome" class="wz-pin wz-pin--bottom" aria-hidden="true">
     <NavBar />
   </div>
 
   <Fragment slot="outs">
     <div
       class="wz-out"
-      style="--x:30%;--y:48%;--z:26px;"
+      style={hero.style}
       data-home="d-hero"
-      data-x="30"
-      data-y="48"
-      data-parallax="-16"
+      {...hero.data}
       role="img"
       aria-label="Featured event, Neon Nights Festival"
     >
-      <div class="wz-out-e" style="--in-delay:0ms">
-        <div class="wz-out-f" style="--amp:12px;--dur:6.8s;--delay:0.2s;--tilt:1.4deg">
+      <div class="wz-out-e" style={hero.enter}>
+        <div class="wz-out-f" style={hero.rock}>
           <HeroCard />
         </div>
       </div>
@@ -40,34 +46,30 @@ const lifted = ['d-hero', 'd-aug8', 'd-sep4'];
 
     <div
       class="wz-out"
-      style="--x:100%;--y:37%;--z:26px;"
+      style={first.style}
       data-home="d-aug8"
-      data-x="100"
-      data-y="37"
-      data-parallax="20"
+      {...first.data}
       role="img"
-      aria-label="Event date, 8 August"
+      aria-label={`Event date, ${aug8.day} ${aug8.month}`}
     >
-      <div class="wz-out-e" style="--in-delay:140ms">
-        <div class="wz-out-f" style="--amp:10px;--dur:4.9s;--delay:0.8s;--tilt:2.4deg">
-          <DateBadge day="8" month="AUG" />
+      <div class="wz-out-e" style={first.enter}>
+        <div class="wz-out-f" style={first.rock}>
+          <DateBadge day={aug8.day} month={aug8.month} />
         </div>
       </div>
     </div>
 
     <div
       class="wz-out"
-      style="--x:96%;--y:72%;--z:26px;"
+      style={last.style}
       data-home="d-sep4"
-      data-x="96"
-      data-y="72"
-      data-parallax="26"
+      {...last.data}
       role="img"
-      aria-label="Event date, 4 September"
+      aria-label={`Event date, ${sep4.day} ${sep4.month}`}
     >
-      <div class="wz-out-e" style="--in-delay:200ms">
-        <div class="wz-out-f" style="--amp:11px;--dur:5.4s;--delay:0.1s;--tilt:2deg">
-          <DateBadge day="4" month="SEP" />
+      <div class="wz-out-e" style={last.enter}>
+        <div class="wz-out-f" style={last.rock}>
+          <DateBadge day={sep4.day} month={sep4.month} />
         </div>
       </div>
     </div>

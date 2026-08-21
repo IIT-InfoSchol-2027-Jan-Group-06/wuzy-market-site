@@ -1,5 +1,5 @@
 ---
-// A recommendation: 140 x 224 of artwork with the poster's avatar and handle
+// A recommendation: 158 x 236 of artwork with the poster's avatar and handle
 // sitting *on* it, near the bottom-left — the same treatment the feed cards
 // give their identity at the top-left, not a caption underneath.
 //
@@ -16,22 +16,26 @@ const { name, img, avatar, slotName, hollow = false } = Astro.props;
 ---
 
 <div
-  class:list={['relative h-218 w-146 shrink-0 overflow-hidden rounded-u-31', hollow && 'invisible']}
+  class:list={[
+    'relative h-236 w-158 shrink-0 overflow-hidden rounded-app-lg',
+    hollow && 'invisible',
+  ]}
   data-slot={slotName}
 >
   <img src={img} alt="" draggable="false" class="size-full object-cover" />
 
-  <!-- Enough of a scrim to hold the handle over whatever the artwork does down
-       there; the posters are busy and several are light at the bottom. -->
-  <div class="absolute inset-x-0 bottom-0 h-58 bg-gradient-to-t from-black/65 to-transparent"></div>
+  <!-- Deep enough to cover the handle block and its inset. It used to peak at
+       the bottom edge and fade out before reaching the copy it was added to
+       protect, leaving the handle sitting in the tail of its own ramp. -->
+  <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black/70 to-transparent"></div>
 
-  <div class="absolute bottom-26 left-26 flex items-center gap-7">
+  <div class="absolute bottom-16 left-16 flex items-center gap-8">
     <img
       src={avatar}
       alt=""
       draggable="false"
-      class="size-23 shrink-0 rounded-full object-cover ring-1 ring-ember/80"
+      class="size-24 shrink-0 rounded-full object-cover ring-1 ring-ember/80"
     />
-    <span class="text-u-13 font-medium text-white">{name}</span>
+    <span class="text-app-meta font-medium text-white">{name}</span>
   </div>
 </div>

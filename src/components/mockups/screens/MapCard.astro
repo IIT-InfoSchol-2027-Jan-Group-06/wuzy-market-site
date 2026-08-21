@@ -1,6 +1,7 @@
 ---
-// The venue map. Just the tile — 345 x 202 at a 50 radius, straight off the
-// export.
+// The venue map. Just the tile — 358 x 218, on the shared card radius. The
+// export gave it a corner nearly as round as the phone's own, which read as a
+// second bezel rather than as a card.
 //
 // The gift and BUY TICKET actions used to live in here. They are chrome now,
 // pinned by the frame like the nav bar: static, always on top, and they do not
@@ -13,7 +14,7 @@ const { slotName, hollow = false } = Astro.props;
 ---
 
 <div
-  class:list={['h-202 w-345 shrink-0 overflow-hidden rounded-u-50', hollow && 'invisible']}
+  class:list={['h-218 w-358 shrink-0 overflow-hidden rounded-app-lg', hollow && 'invisible']}
   data-slot={slotName}
 >
   <img src="/wuzy/img/ticket/map.jpg" alt="" draggable="false" class="size-full object-cover" />

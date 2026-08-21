@@ -1,14 +1,19 @@
 ---
 // The event title. Its own component because it lifts out of the frame, and a
 // breakout has to be the same markup as the gap it leaves.
+//
+// Title Case, not the export's all-caps: the same album is named in sentence
+// case in the description two lines below it.
 interface Props { slotName?: string; hollow?: boolean }
 const { slotName, hollow = false } = Astro.props;
 ---
 
 <h2
-  class:list={['text-u-32 font-bold tracking-[0.01em] text-ember', hollow && 'invisible']}
-  style="line-height: calc(40 * var(--spacing))"
+  class:list={[
+    'text-app-hero font-bold tracking-[0.01em] text-ember',
+    hollow && 'invisible',
+  ]}
   data-slot={slotName}
 >
-  THE LIFE OF<br />A SHOWGIRL
+  The Life of<br />a Showgirl
 </h2>

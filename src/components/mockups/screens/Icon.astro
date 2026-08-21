@@ -1,21 +1,26 @@
 ---
-// App icons as real vectors rather than slices of a Figma export. Every one is
-// drawn on a 24-unit box with a 1.7 stroke, so they sit on the same optical
-// weight however large the frame is scaled.
+// App icons as real vectors rather than slices of a Figma export.
 //
-// `size` is in design units — the parent screen rebases --spacing to one unit,
-// so a Tailwind size-* class on the wrapper is the usual way to set it.
-interface Props { name: string; class?: string }
-const { name, class: cls = '' } = Astro.props;
+// `u` is the icon's size in design units. The stroke is derived from it rather
+// than fixed, because every glyph is drawn on the same 24-unit box: a fixed
+// stroke-width scales *with* the box, so a 35-unit icon carried a 46% heavier
+// line than a 24-unit one sitting beside it on the same screen. Dividing it
+// back out gives every glyph the same optical weight at any size, which is the
+// whole reason the set reads as one family.
+interface Props { name: string; u?: number; class?: string }
+const { name, u = 24, class: cls = '' } = Astro.props;
+
+const STROKE_AT_24 = 1.7;
 ---
 
 <svg
   viewBox="0 0 24 24"
   fill="none"
   stroke="currentColor"
-  stroke-width="1.7"
+  stroke-width={((STROKE_AT_24 * 24) / u).toFixed(2)}
   stroke-linecap="round"
   stroke-linejoin="round"
+  style={`width:calc(${u} * var(--spacing));height:calc(${u} * var(--spacing))`}
   class={cls}
   aria-hidden="true"
 >

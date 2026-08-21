@@ -1,6 +1,6 @@
 ---
-// One post in the feed: a photo with the poster's identity floated over its
-// top-left corner. 300 x 295 design units.
+// One post in the feed: a photo with the poster's identity over its top-left
+// corner. 326 x 320 design units.
 //
 // Rendered twice for the card that breaks out of the frame — once here inside
 // the screen as an empty slot, once as the floating piece — so `hollow` blanks
@@ -18,27 +18,30 @@ const { name, place, avatar, photo, slotName, hollow = false } = Astro.props;
 ---
 
 <div
-  class:list={['relative h-295 w-300 shrink-0 overflow-hidden rounded-u-31', hollow && 'invisible']}
+  class:list={[
+    'relative h-320 w-326 shrink-0 overflow-hidden rounded-app-lg',
+    hollow && 'invisible',
+  ]}
   data-slot={slotName}
 >
   <img src={photo} alt="" draggable="false" class="size-full object-cover" />
 
-  <!-- The export puts the name straight onto the photo, which is fine over the
-       dark frames and illegible over a bright one. A short scrim keeps the
-       placement and makes it hold on any image. -->
-  <div class="absolute inset-x-0 top-0 h-90 bg-gradient-to-b from-black/55 via-black/20 to-transparent"></div>
+  <!-- The export sets the name straight onto the photo, which holds over the
+       dark frames and fails over a bright one. A scrim keeps the placement and
+       makes it work on any image. Its depth is the identity block plus its
+       inset, so the copy always sits in the strong end of the ramp. -->
+  <div class="absolute inset-x-0 top-0 h-96 bg-gradient-to-b from-black/70 to-transparent"></div>
 
-  <!-- Identity sits on the photo, not in a bar under it -->
-  <div class="absolute top-21 left-21 flex items-center gap-10">
+  <div class="absolute top-20 left-20 flex items-center gap-12">
     <img
       src={avatar}
       alt=""
       draggable="false"
-      class="size-34 shrink-0 rounded-full object-cover ring-1 ring-white/80"
+      class="size-34 shrink-0 rounded-full object-cover ring-1 ring-ember/80"
     />
     <div>
-      <p class="text-u-16 font-semibold text-white">{name}</p>
-      <p class="text-u-14 font-medium text-white/85">{place}</p>
+      <p class="text-app-title font-semibold text-white">{name}</p>
+      <p class="text-app-meta font-medium text-white/85">{place}</p>
     </div>
   </div>
 </div>

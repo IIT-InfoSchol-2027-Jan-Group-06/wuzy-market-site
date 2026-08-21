@@ -1,52 +1,43 @@
 ---
 // Slide 01 — "Catch Up With Friends". The Feed screen.
 //
-// Screen and breakouts are both real DOM (see ./screens/), so the two pieces
-// that fly out are literally the same components the screen renders — the
-// screen just draws them hollow, leaving the gap they return to. Nothing here
-// declares a home position: each piece names its slot and the frame measures
-// it, so moving something in the screen moves its landing spot with it.
+// The two pieces that fly out are the same components the screen renders, from
+// the same content — the screen just draws them hollow, leaving the gap they
+// return to. Nothing here declares a home position: each piece names its slot
+// and the frame measures it.
+//
+// Composition: a symmetric pair, one off each edge at mid height.
 import WuzyFrame from './WuzyFrame.astro';
 import FeedScreen from './screens/FeedScreen.astro';
 import FeedCard from './screens/FeedCard.astro';
 import Poster from './screens/Poster.astro';
 import NavBar from './screens/NavBar.astro';
 import PlusButton from './screens/PlusButton.astro';
+import { posts, posters, byName } from './screens/content';
+import { float } from './screens/motion';
 
-const img = (f: string) => `/wuzy/img/feed/${f}`;
+const lifted = ['runclub', 'p-dutchgp'];
 
-// Chrome placement in design units. home-black.svg draws compose as an r 22.5
-// circle at 321.5, 610.5 — so a 45 box at 299, 588 — and the well's own top-left
-// sits 8.76 units inside the frame box a pin is positioned against.
-const at = (x: number, y: number) =>
-  `left:calc(${x + 8.76} * var(--spacing));top:calc(${y + 8.76} * var(--spacing));transform:none;width:auto`;
+const card = float({ x: -5, y: 34, parallax: -24, speed: 'heavy', tilt: 1.5 }, 0);
+const poster = float({ x: 101, y: 60, parallax: 20, speed: 'mid', tilt: 2 }, 1);
 
-// Placement while floating: --x/--y are the piece's centre as a percentage of
-// the frame box, so outside 0–100 hangs it off the edge. --z is depth for the
-// pointer tilt. data-parallax is how far it drifts before it seats.
-const card = {
-  style: '--x:-5%;--y:34%;--z:26px;',
-  f: '--amp:11px;--dur:6.2s;--delay:0s;--tilt:1.4deg',
-};
-const poster = {
-  style: '--x:101%;--y:60%;--z:26px;',
-  f: '--amp:10px;--dur:5.5s;--delay:0.6s;--tilt:2deg',
-};
+const runclub = byName(posts, 'runclub');
+const dutchgp = byName(posters, 'p-dutchgp');
 ---
 
-<WuzyFrame wellLabel="Feed screen, scrollable" screenW={360}>
-  <FeedScreen slot="screen" hollow={['runclub', 'p-dutchgp']} />
+<WuzyFrame wellLabel="Feed screen, scrollable">
+  <FeedScreen slot="screen" hollow={lifted} />
 
   <!-- Bottom nav. Chrome, not content: it stays put while the screen scrolls,
        seated against the well's own lower edge rather than the y it happened
        to land on in a long screenshot. -->
-  <div slot="chrome" class="wz-pin wz-pin--bottom" style="--pl:50%" aria-hidden="true">
+  <div slot="chrome" class="wz-pin wz-pin--bottom" aria-hidden="true">
     <NavBar />
   </div>
 
-  <!-- Compose. Static: it does not scroll away with the rail it sits on, and
-       nothing can paint over it. -->
-  <div slot="chrome" class="wz-pin" style={at(299, 588)} aria-hidden="true">
+  <!-- Compose, in the corner every screen keeps it. Static here: it does not
+       scroll away, and nothing can paint over it. -->
+  <div slot="chrome" class="wz-pin wz-pin--compose" aria-hidden="true">
     <PlusButton />
   </div>
 
@@ -55,20 +46,13 @@ const poster = {
       class="wz-out"
       style={card.style}
       data-home="runclub"
-      data-x="-5"
-      data-y="34"
-      data-parallax="-24"
+      {...card.data}
       role="img"
-      aria-label="Feed post from New york run club"
+      aria-label={`Feed post from ${runclub.name}`}
     >
-      <div class="wz-out-e" style="--in-delay:0ms">
-        <div class="wz-out-f" style={card.f}>
-          <FeedCard
-              name="New york run club"
-              place="new jersey"
-              avatar={img('runclub-avatar.jpg')}
-              photo={img('runclub-photo.jpg')}
-            />
+      <div class="wz-out-e" style={card.enter}>
+        <div class="wz-out-f" style={card.rock}>
+          <FeedCard {...runclub} />
         </div>
       </div>
     </div>
@@ -77,22 +61,15 @@ const poster = {
       class="wz-out"
       style={poster.style}
       data-home="p-dutchgp"
-      data-x="101"
-      data-y="60"
-      data-parallax="20"
+      {...poster.data}
       role="img"
-      aria-label="Recommended event, dutch gp"
+      aria-label={`Recommended event, ${dutchgp.name}`}
     >
-      <div class="wz-out-e" style="--in-delay:130ms">
-        <div class="wz-out-f" style={poster.f}>
-          <Poster
-              name="dutch gp"
-              img={img('poster-dutchgp.jpg')}
-              avatar={img('dutchgp-avatar.jpg')}
-            />
+      <div class="wz-out-e" style={poster.enter}>
+        <div class="wz-out-f" style={poster.rock}>
+          <Poster {...dutchgp} />
         </div>
       </div>
     </div>
-
   </Fragment>
 </WuzyFrame>
