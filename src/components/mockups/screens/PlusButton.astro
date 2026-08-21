@@ -1,0 +1,26 @@
+---
+// Compose. One component for both the feed's recommendation rail and the
+// messages list, at the size home-black.svg gives it: a 45 circle (r 22.5)
+// around a 30 glyph.
+//
+// It wears .wz-chrome, the same glass the nav bar and every other button use,
+// so all the chrome across the four screens is one definition.
+//
+// Static on the feed, where it is pinned to the frame; a breakout on messages,
+// where it lifts off with the search field and two of the rows. Same component
+// either way — only the frame decides which.
+import Icon from './Icon.astro';
+
+interface Props { slotName?: string; hollow?: boolean }
+const { slotName, hollow = false } = Astro.props;
+---
+
+<span
+  class:list={[
+    'wz-chrome grid size-45 shrink-0 place-items-center rounded-full text-white',
+    hollow && 'invisible',
+  ]}
+  data-slot={slotName}
+>
+  <Icon name="plus" class="size-30" />
+</span>

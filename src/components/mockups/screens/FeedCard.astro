@@ -18,7 +18,7 @@ const { name, place, avatar, photo, slotName, hollow = false } = Astro.props;
 ---
 
 <div
-  class:list={['relative h-295 w-300 shrink-0 overflow-hidden rounded-u-20', hollow && 'invisible']}
+  class:list={['relative h-295 w-300 shrink-0 overflow-hidden rounded-u-31', hollow && 'invisible']}
   data-slot={slotName}
 >
   <img src={photo} alt="" draggable="false" class="size-full object-cover" />
@@ -29,12 +29,12 @@ const { name, place, avatar, photo, slotName, hollow = false } = Astro.props;
   <div class="absolute inset-x-0 top-0 h-90 bg-gradient-to-b from-black/55 via-black/20 to-transparent"></div>
 
   <!-- Identity sits on the photo, not in a bar under it -->
-  <div class="absolute top-14 left-14 flex items-center gap-10">
+  <div class="absolute top-21 left-21 flex items-center gap-10">
     <img
       src={avatar}
       alt=""
       draggable="false"
-      class="size-38 shrink-0 rounded-full object-cover ring-1 ring-white/80"
+      class="size-34 shrink-0 rounded-full object-cover ring-1 ring-white/80"
     />
     <div>
       <p class="text-u-16 font-semibold text-white">{name}</p>

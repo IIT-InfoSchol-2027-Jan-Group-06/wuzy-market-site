@@ -10,6 +10,7 @@
 // the rest are the same yellow at 0.25 behind a solid yellow hairline.
 import ChatSearch from './ChatSearch.astro';
 import MessageRow from './MessageRow.astro';
+import PlusButton from './PlusButton.astro';
 
 interface Props { hollow?: string[] }
 const { hollow = [] } = Astro.props;
@@ -30,7 +31,7 @@ const threads = [
 const img = (f: string) => `/wuzy/img/chat/${f}`;
 ---
 
-<div class="wz-screen font-app w-full bg-[#000811] pt-66 pb-210 text-white antialiased select-none">
+<div class="wz-screen font-app relative w-full bg-[#000811] pt-66 pb-210 text-white antialiased select-none">
   <h1 class="pl-35 text-u-24 font-semibold text-ember">Messages</h1>
 
   <div class="mt-23 pl-34">
@@ -63,5 +64,10 @@ const img = (f: string) => `/wuzy/img/chat/${f}`;
         hollow={out(t.slotName)}
       />
     ))}
+  </div>
+
+  <!-- Compose, at the circle chat_feed.svg draws: r 22.5 at 346.5, 649.5 -->
+  <div class="absolute top-627 left-324">
+    <PlusButton slotName="c-plus" hollow={out('c-plus')} />
   </div>
 </div>

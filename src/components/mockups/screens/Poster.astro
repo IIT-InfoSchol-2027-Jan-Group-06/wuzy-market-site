@@ -16,7 +16,7 @@ const { name, img, avatar, slotName, hollow = false } = Astro.props;
 ---
 
 <div
-  class:list={['relative h-224 w-140 shrink-0 overflow-hidden rounded-u-14', hollow && 'invisible']}
+  class:list={['relative h-218 w-146 shrink-0 overflow-hidden rounded-u-31', hollow && 'invisible']}
   data-slot={slotName}
 >
   <img src={img} alt="" draggable="false" class="size-full object-cover" />
@@ -25,12 +25,12 @@ const { name, img, avatar, slotName, hollow = false } = Astro.props;
        there; the posters are busy and several are light at the bottom. -->
   <div class="absolute inset-x-0 bottom-0 h-58 bg-gradient-to-t from-black/65 to-transparent"></div>
 
-  <div class="absolute bottom-12 left-10 flex items-center gap-7">
+  <div class="absolute bottom-26 left-26 flex items-center gap-7">
     <img
       src={avatar}
       alt=""
       draggable="false"
-      class="size-24 shrink-0 rounded-full object-cover ring-1 ring-ember/80"
+      class="size-23 shrink-0 rounded-full object-cover ring-1 ring-ember/80"
     />
     <span class="text-u-13 font-medium text-white">{name}</span>
   </div>

@@ -11,9 +11,15 @@ import FeedScreen from './screens/FeedScreen.astro';
 import FeedCard from './screens/FeedCard.astro';
 import Poster from './screens/Poster.astro';
 import NavBar from './screens/NavBar.astro';
-import Icon from './screens/Icon.astro';
+import PlusButton from './screens/PlusButton.astro';
 
 const img = (f: string) => `/wuzy/img/feed/${f}`;
+
+// Chrome placement in design units. home-black.svg draws compose as an r 22.5
+// circle at 321.5, 610.5 — so a 45 box at 299, 588 — and the well's own top-left
+// sits 8.76 units inside the frame box a pin is positioned against.
+const at = (x: number, y: number) =>
+  `left:calc(${x + 8.76} * var(--spacing));top:calc(${y + 8.76} * var(--spacing));transform:none;width:auto`;
 
 // Placement while floating: --x/--y are the piece's centre as a percentage of
 // the frame box, so outside 0–100 hangs it off the edge. --z is depth for the
@@ -38,12 +44,10 @@ const poster = {
     <NavBar />
   </div>
 
-  <!-- Compose. Chrome as well, so it neither scrolls away with the rail it
-       used to sit on nor gets painted over by a poster flying home into it. -->
-  <div slot="chrome" class="wz-pin wz-pin--fab" aria-hidden="true">
-    <div class="wz-chrome grid size-46 place-items-center rounded-full text-white">
-      <Icon name="plus" class="size-22" />
-    </div>
+  <!-- Compose. Static: it does not scroll away with the rail it sits on, and
+       nothing can paint over it. -->
+  <div slot="chrome" class="wz-pin" style={at(299, 588)} aria-hidden="true">
+    <PlusButton />
   </div>
 
   <Fragment slot="outs">
@@ -89,5 +93,6 @@ const poster = {
         </div>
       </div>
     </div>
+
   </Fragment>
 </WuzyFrame>

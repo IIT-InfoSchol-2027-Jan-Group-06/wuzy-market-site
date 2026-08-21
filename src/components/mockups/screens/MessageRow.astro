@@ -9,12 +9,24 @@ interface Props {
   unread?: boolean;
   slotName?: string;
   hollow?: boolean;
+  /** Lifted out of the frame: takes a slice of the app's ground with it, or
+   *  white-on-dark content has nothing to sit on over the site's own page.
+   *  The box is unchanged, so the piece still lands exactly on its slot — the
+   *  radius is half the row height, which rounds the ends around the avatar. */
+  floating?: boolean;
 }
-const { name, preview, time, avatar, unread = true, slotName, hollow = false } = Astro.props;
+const {
+  name, preview, time, avatar,
+  unread = true, slotName, hollow = false, floating = false,
+} = Astro.props;
 ---
 
 <div
-  class:list={['flex h-48 w-323 items-center gap-19', hollow && 'invisible']}
+  class:list={[
+    'flex h-48 w-323 items-center gap-19',
+    floating && 'rounded-u-24 bg-[#000811] ring-1 ring-ember/25 ring-inset',
+    hollow && 'invisible',
+  ]}
   data-slot={slotName}
 >
   <img

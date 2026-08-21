@@ -233,16 +233,6 @@ const {
   width: auto;
   transform: translateX(-50%);
 }
-/* Right-anchored chrome — the compose button, which sits clear of the nav. */
-.wz-pin--fab {
-  top: auto;
-  left: auto;
-  right: calc(34 * var(--spacing));
-  bottom: calc(154 * var(--spacing));
-  width: auto;
-  transform: none;
-}
-
 /* The app's chrome material, shared so the nav bar and the compose button
  * cannot drift apart. Opaque enough to stand on its own: backdrop-filter is
  * unreliable inside .wz-stage's 3D context and quietly no-ops, which left a
