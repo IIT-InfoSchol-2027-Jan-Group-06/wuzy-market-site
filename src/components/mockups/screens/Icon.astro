@@ -1,0 +1,87 @@
+---
+// App icons as real vectors rather than slices of a Figma export. Every one is
+// drawn on a 24-unit box with a 1.7 stroke, so they sit on the same optical
+// weight however large the frame is scaled.
+//
+// `size` is in design units — the parent screen rebases --spacing to one unit,
+// so a Tailwind size-* class on the wrapper is the usual way to set it.
+interface Props { name: string; class?: string }
+const { name, class: cls = '' } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.7"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class={cls}
+  aria-hidden="true"
+>
+  {name === 'bell' && (
+    <>
+      <path d="M18 8.4c0-3.6-2.7-6.4-6-6.4S6 4.8 6 8.4c0 4.6-1.6 6-2.2 6.7-.3.3-.1.9.4.9h15.6c.5 0 .7-.6.4-.9-.6-.7-2.2-2.1-2.2-6.7Z" />
+      <path d="M9.8 19.4a2.4 2.4 0 0 0 4.4 0" />
+    </>
+  )}
+
+  {/* Home — a soft pentagon with a smile in it, the way the export draws it */}
+  {name === 'home' && (
+    <>
+      <path d="M11.1 2.6 3.6 8a2.2 2.2 0 0 0-.8 2.4l2.9 8.8A2.2 2.2 0 0 0 7.8 20.7h8.4a2.2 2.2 0 0 0 2.1-1.5l2.9-8.8a2.2 2.2 0 0 0-.8-2.4l-7.5-5.4a2.2 2.2 0 0 0-1.8 0Z" />
+      <path d="M9.3 13.4a3.6 3.6 0 0 0 5.4 0" />
+    </>
+  )}
+
+  {name === 'chat' && (
+    <>
+      <path d="M20.6 11.4c0 4.6-3.9 8.3-8.6 8.3a9.3 9.3 0 0 1-3.2-.55L3.4 21l1.5-4.2a8 8 0 0 1-1.5-4.6c0-4.6 3.9-8.3 8.6-8.3s8.6 3.7 8.6 8.3Z" />
+      <path d="M8.2 10.2h7.6M8.2 13.4h4.8" />
+    </>
+  )}
+
+  {name === 'award' && (
+    <>
+      <circle cx="12" cy="9.2" r="6.1" />
+      <circle cx="12" cy="9.2" r="2.6" />
+      <path d="M8.5 14.6 7.2 21l4.8-2.4 4.8 2.4-1.3-6.4" />
+    </>
+  )}
+
+  {/* Party popper — the cone plus the burst it throws */}
+  {name === 'popper' && (
+    <>
+      <path d="M3.2 20.8 8.9 8.6l6.5 6.5-12.2 5.7Z" />
+      <path d="M11 11.6 8.9 8.6" />
+      <path d="M15.6 3.4v2.2M19.4 5.1l-1.6 1.6M21 9.6h-2.2M19.9 13.6l-1.9-1.1M15.9 15.1l-.5-2.1" />
+    </>
+  )}
+
+  {name === 'plus' && <path d="M12 5.5v13M5.5 12h13" />}
+
+  {name === 'ticket' && (
+    <>
+      <path d="M3.2 8.6V6.9c0-1 .8-1.7 1.7-1.7h14.2c1 0 1.7.8 1.7 1.7v1.7a3.4 3.4 0 0 0 0 6.8v1.7c0 1-.8 1.7-1.7 1.7H4.9c-1 0-1.7-.8-1.7-1.7v-1.7a3.4 3.4 0 0 0 0-6.8Z" />
+      <path d="M13.4 8.2v1.4M13.4 12.4v1.4M13.4 16.6V18" stroke-dasharray="0.1 3" />
+    </>
+  )}
+
+  {name === 'heart' && (
+    <path d="M12 20.3s-8.1-4.7-8.1-10.2a4.6 4.6 0 0 1 8.1-3 4.6 4.6 0 0 1 8.1 3c0 5.5-8.1 10.2-8.1 10.2Z" />
+  )}
+
+  {name === 'pin' && (
+    <>
+      <path d="M12 21.5s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z" />
+      <circle cx="12" cy="10.2" r="2.6" />
+    </>
+  )}
+
+  {name === 'search' && (
+    <>
+      <circle cx="10.8" cy="10.8" r="6.6" />
+      <path d="m15.7 15.7 3.9 3.9" />
+    </>
+  )}
+</svg>

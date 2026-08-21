@@ -144,6 +144,14 @@ const features = [
       well.removeAttribute('tabindex');
       well.removeAttribute('role');
       const p = { h: 0, s: 0 };
+      // Keep the last fraction rather than only the pixel value. The runway
+      // changes with the frame width, and a scrub tween that has already
+      // finished never fires onUpdate again — so after a resize the screen was
+      // left parked at a scrollTop measured against the old runway.
+      const apply = () => {
+        well.scrollTop = p.s * (well.scrollHeight - well.clientHeight);
+      };
+      window.addEventListener('resize', apply);
       tl.fromTo(
         p,
         { h: 0 },
@@ -157,11 +165,8 @@ const features = [
         { s: 0 },
         {
           s: 1, duration: screenDur, ease: 'none',
-          // Measured per frame, not once: the screen SVG is a network request
-          // and the runway does not exist until it has decoded.
-          onUpdate: () => {
-            well.scrollTop = p.s * (well.scrollHeight - well.clientHeight);
-          },
+          // Measured per frame, not once: the runway tracks the frame width.
+          onUpdate: apply,
         }
       );
     };

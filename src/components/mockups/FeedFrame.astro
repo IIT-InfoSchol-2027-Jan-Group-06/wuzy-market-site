@@ -1,51 +1,93 @@
 ---
 // Slide 01 — "Catch Up With Friends". The Feed screen.
-// Floating: feed card, recommendation poster. Pinned: nav bar.
-// Numbers transcribed from live-mockup-files/index.html §Feed — all computed by
-// the exporter, none eyeballed. See live-mockup-files/README.md.
+//
+// Screen and breakouts are both real DOM (see ./screens/), so the two pieces
+// that fly out are literally the same components the screen renders — the
+// screen just draws them hollow, leaving the gap they return to. Nothing here
+// declares a home position: each piece names its slot and the frame measures
+// it, so moving something in the screen moves its landing spot with it.
 import WuzyFrame from './WuzyFrame.astro';
+import FeedScreen from './screens/FeedScreen.astro';
+import FeedCard from './screens/FeedCard.astro';
+import Poster from './screens/Poster.astro';
+import NavBar from './screens/NavBar.astro';
+import Icon from './screens/Icon.astro';
 
-const pins = [
-  {
-    style: '--pl:50.000%;--pt:92.174%;--w:calc(var(--fw) * 0.768177)',
-    glass: 'wz-glass--pill',
-    glassStyle: '--pw:290;--ph:50',
-    src: '/wuzy/home-black__nav.svg',
-    imgStyle: '--l:-2.069%;--t:-12.000%;--ww:104.138%',
-  },
-];
+const img = (f: string) => `/wuzy/img/feed/${f}`;
 
-const outs = [
-  {
-    style: '--x:-5%;--y:34%;--z:110px;--w:calc(var(--fw) * 0.644209);--hs:1.31579;',
-    data: { 'data-parallax': '-24', 'data-x': '-5', 'data-y': '34', 'data-hx': '180.00', 'data-hy': '919.50', 'data-hh': '315.00' },
-    label: 'Feed post',
-    e: '--in-delay:0ms',
-    f: '--amp:11px;--dur:6.2s;--delay:0.0s;--tilt:1.4deg',
-    wrap: 'wz-shadow',
-    src: '/wuzy/home-black__card.svg',
-  },
-  {
-    style: '--x:101%;--y:60%;--z:120px;--w:calc(var(--fw) * 0.471502);--hs:1.00000;',
-    data: { 'data-parallax': '20', 'data-x': '101', 'data-y': '60', 'data-hx': '384.00', 'data-hy': '621.00', 'data-hh': '250.00' },
-    label: 'Recommended event',
-    e: '--in-delay:130ms',
-    f: '--amp:10px;--dur:5.5s;--delay:0.6s;--tilt:2deg',
-    wrap: 'wz-shadow',
-    src: '/wuzy/home-black__poster.svg',
-    // The third card is cut off by the screen edge, so Figma never drew its
-    // profile name. Added back at the same baseline as the two beside it.
-    text: 'dutch gp',
-    textStyle: '--l:44.5%;--t:79.4%;--fs:0.062',
-  },
-];
+// Placement while floating: --x/--y are the piece's centre as a percentage of
+// the frame box, so outside 0–100 hangs it off the edge. --z is depth for the
+// pointer tilt. data-parallax is how far it drifts before it seats.
+const card = {
+  style: '--x:-5%;--y:34%;--z:26px;',
+  f: '--amp:11px;--dur:6.2s;--delay:0s;--tilt:1.4deg',
+};
+const poster = {
+  style: '--x:101%;--y:60%;--z:26px;',
+  f: '--amp:10px;--dur:5.5s;--delay:0.6s;--tilt:2deg',
+};
 ---
 
-<WuzyFrame
-  screenW={360}
-  content="/wuzy/home-black__content.svg"
-  contentAlt="Feed screen of the Wuzy app"
-  wellLabel="Feed screen, scrollable"
-  pins={pins}
-  outs={outs}
-/>
+<WuzyFrame wellLabel="Feed screen, scrollable" screenW={360}>
+  <FeedScreen slot="screen" hollow={['runclub', 'p-dutchgp']} />
+
+  <!-- Bottom nav. Chrome, not content: it stays put while the screen scrolls,
+       seated against the well's own lower edge rather than the y it happened
+       to land on in a long screenshot. -->
+  <div slot="chrome" class="wz-pin wz-pin--bottom wz-out--dom" style="--pl:50%" aria-hidden="true">
+    <NavBar />
+  </div>
+
+  <!-- Compose. Chrome as well, so it neither scrolls away with the rail it
+       used to sit on nor gets painted over by a poster flying home into it. -->
+  <div slot="chrome" class="wz-pin wz-pin--fab wz-out--dom" aria-hidden="true">
+    <div class="wz-chrome grid size-46 place-items-center rounded-full text-white">
+      <Icon name="plus" class="size-22" />
+    </div>
+  </div>
+
+  <Fragment slot="outs">
+    <div
+      class="wz-out wz-out--dom"
+      style={card.style}
+      data-home="runclub"
+      data-x="-5"
+      data-y="34"
+      data-parallax="-24"
+      role="img"
+      aria-label="Feed post from New york run club"
+    >
+      <div class="wz-out-e" style="--in-delay:0ms">
+        <div class="wz-out-f" style={card.f}>
+          <FeedCard
+              name="New york run club"
+              place="new jersey"
+              avatar={img('runclub-avatar.jpg')}
+              photo={img('runclub-photo.jpg')}
+            />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out wz-out--dom"
+      style={poster.style}
+      data-home="p-dutchgp"
+      data-x="101"
+      data-y="60"
+      data-parallax="20"
+      role="img"
+      aria-label="Recommended event, dutch gp"
+    >
+      <div class="wz-out-e" style="--in-delay:130ms">
+        <div class="wz-out-f" style={poster.f}>
+          <Poster
+              name="dutch gp"
+              img={img('poster-dutchgp.jpg')}
+              avatar={img('dutchgp-avatar.jpg')}
+            />
+        </div>
+      </div>
+    </div>
+  </Fragment>
+</WuzyFrame>

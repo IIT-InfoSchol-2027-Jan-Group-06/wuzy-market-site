@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Caveat:wght@400..700&family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Caveat:wght@400..700&family=Inter:wght@100..900&family=Poppins:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -18,6 +18,10 @@
   --font-script: 'Anton', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: 'Anton', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: 'Anton', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* The voice of the app itself, inside the phone mockups — the Figma screens
+     are set in Poppins, and the marketing page's Anton/Inter would read as the
+     website leaking into the product. */
+  --font-app: 'Poppins', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   /* Moxie — Radii */
   --radius-xl: 14px;
@@ -31,6 +35,23 @@
   --shadow-elevated: 0 0 0 1px rgba(244, 239, 212, 0.1), 0 24px 48px -20px rgba(0, 0, 0, 0.9);
   --shadow-image: 0 24px 48px -24px rgba(0, 0, 0, 0.9);
   --shadow-xl: 0 24px 48px -24px rgba(0, 0, 0, 0.9);
+}
+
+/* ── Phone-screen design units ─────────────────────────────────────────────
+   The mockup screens are drawn against a 360-unit-wide artboard. Each screen
+   root rebases Tailwind's --spacing to one of those units, which makes every
+   numeric spacing/size utility (w-300, gap-12, size-38) read as the number
+   straight off the Figma measurement.
+
+   text-* and rounded-* don't ride the spacing scale, so they get unit-aware
+   twins rather than a calc() in every arbitrary value. text-u-16 is sixteen
+   design units tall, and tracks the frame as it scales. */
+@utility text-u-* {
+  font-size: calc(--value(integer) * var(--spacing));
+  line-height: 1.25;
+}
+@utility rounded-u-* {
+  border-radius: calc(--value(integer) * var(--spacing));
 }
 
 html {

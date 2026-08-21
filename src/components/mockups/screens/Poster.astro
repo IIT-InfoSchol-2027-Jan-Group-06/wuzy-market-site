@@ -1,0 +1,37 @@
+---
+// A recommendation: 140 x 224 of artwork with the poster's avatar and handle
+// sitting *on* it, near the bottom-left — the same treatment the feed cards
+// give their identity at the top-left, not a caption underneath.
+//
+// The export never drew the third card's handle, because the screen edge cut
+// it off — here it is just text, so nothing is missing.
+interface Props {
+  name: string;
+  img: string;
+  avatar: string;
+  slotName?: string;
+  hollow?: boolean;
+}
+const { name, img, avatar, slotName, hollow = false } = Astro.props;
+---
+
+<div
+  class:list={['relative h-224 w-140 shrink-0 overflow-hidden rounded-u-14', hollow && 'invisible']}
+  data-slot={slotName}
+>
+  <img src={img} alt="" draggable="false" class="size-full object-cover" />
+
+  <!-- Enough of a scrim to hold the handle over whatever the artwork does down
+       there; the posters are busy and several are light at the bottom. -->
+  <div class="absolute inset-x-0 bottom-0 h-58 bg-gradient-to-t from-black/65 to-transparent"></div>
+
+  <div class="absolute bottom-12 left-10 flex items-center gap-7">
+    <img
+      src={avatar}
+      alt=""
+      draggable="false"
+      class="size-24 shrink-0 rounded-full object-cover ring-1 ring-ember/80"
+    />
+    <span class="text-u-13 font-medium text-white">{name}</span>
+  </div>
+</div>

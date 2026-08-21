@@ -1,0 +1,43 @@
+---
+// Dev-only bench for the phone screens. The frames on the marketing page are
+// ~200px wide, which is far too small to judge type and spacing against the
+// Figma reference, so this renders them at working size.
+//
+// A catch-all route with an empty getStaticPaths in production, so the page
+// exists at /mock while developing and is simply not emitted by the build.
+// (`return new Response(404)` does nothing in a static build — the page still
+// ships, which is what this shape avoids.)
+import Layout from '../../layouts/Layout.astro';
+import FeedFrame from '../../components/mockups/FeedFrame.astro';
+import DiscoverFrame from '../../components/mockups/DiscoverFrame.astro';
+import TicketFrame from '../../components/mockups/TicketFrame.astro';
+import ChatFrame from '../../components/mockups/ChatFrame.astro';
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { page: undefined } }] : [];
+}
+
+const frames = [
+  { name: 'Feed', C: FeedFrame },
+  { name: 'Discover', C: DiscoverFrame },
+  { name: 'Event', C: TicketFrame },
+  { name: 'Messages', C: ChatFrame },
+];
+---
+
+<Layout>
+  <main class="flex min-h-screen items-start gap-24 overflow-x-auto p-16 normal-case">
+    {frames.map(({ name, C }) => (
+      <section class="flex shrink-0 flex-col items-center gap-4">
+        <h2 class="font-control text-sm tracking-widest text-charcoal/50 uppercase">{name}</h2>
+        <C />
+      </section>
+    ))}
+  </main>
+</Layout>
+
+<style is:global>
+  /* Big enough to read type on. The frames clamp against the viewport on the
+     real page; here they are pinned to a working size. */
+  main .wz { --fw: 380px !important; }
+</style>

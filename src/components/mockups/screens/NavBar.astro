@@ -1,0 +1,23 @@
+---
+// The app's bottom nav. Real glass this time: the Figma export baked the
+// backdrop blur into a flat plate, and an SVG loaded through <img> is
+// sandboxed and cannot sample anything behind it.
+//
+// 290 x 50 design units, which is what the export measures. The surface comes
+// from .wz-chrome so it stays identical to the compose button.
+import Icon from './Icon.astro';
+
+const items = ['home', 'chat', 'award', 'popper'];
+---
+
+<div class="wz-chrome flex h-50 w-290 items-center justify-between rounded-full px-22">
+  {items.map((n) => (
+    <Icon name={n} class="size-25 text-white/92" />
+  ))}
+  <img
+    src="/wuzy/img/feed/me.jpg"
+    alt=""
+    draggable="false"
+    class="size-30 rounded-full object-cover ring-1 ring-white/35"
+  />
+</div>

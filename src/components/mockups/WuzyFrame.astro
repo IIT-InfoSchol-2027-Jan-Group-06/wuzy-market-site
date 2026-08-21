@@ -33,28 +33,40 @@ export interface Out {
 }
 
 interface Props {
-  screenW: number;
-  content: string;
-  contentAlt: string;
+  // `screenW` is only needed by the SVG path, where home positions are given in
+  // screen units. A DOM screen measures its own slots, so it can omit it.
+  screenW?: number;
+  content?: string;
+  contentAlt?: string;
   wellLabel: string;
-  pins: Pin[];
-  outs: Out[];
+  pins?: Pin[];
+  outs?: Out[];
   fw?: string;
 }
 
 const {
-  screenW, content, contentAlt, wellLabel, pins, outs,
+  screenW, content, contentAlt, wellLabel, pins = [], outs = [],
   // The demo hardcodes 318px; the site needs it to survive a phone viewport.
   fw = 'clamp(208px, 23vw, 318px)',
 } = Astro.props;
 ---
 
-{/* pointer-events-auto: .feature-slide turns them off for the whole slide */}
-<div class="wz pointer-events-auto" style={`--fw:${fw}`} data-screen-w={screenW}>
+{/* pointer-events-auto: .feature-slide turns them off for the whole slide.
+    --screen-units is the width of the artboard this screen was drawn against;
+    it is what one design unit is measured from, and it is not 360 everywhere
+    (Discover is 402, Messages 393). */}
+<div
+  class="wz pointer-events-auto"
+  style={`--fw:${fw};--screen-units:${screenW ?? 360}`}
+  data-screen-w={screenW}
+>
   <div class="wz-stage">
     <div class="wz-phone">
       <div class="wz-well" tabindex="0" role="region" aria-label={wellLabel}>
-        <img class="wz-content" src={content} alt={contentAlt} />
+        {/* Either a screen built as real DOM, or the flat SVG export it replaces */}
+        <slot name="screen">
+          <img class="wz-content" src={content} alt={contentAlt} />
+        </slot>
       </div>
       {pins.map((p) => (
         <div class="wz-pin" style={p.style} aria-hidden="true">
@@ -63,8 +75,13 @@ const {
           </div>
         </div>
       ))}
+      <slot name="chrome" />
       <img class="wz-bezel" src="/wuzy/iphone-frame.svg" alt="" aria-hidden="true" />
     </div>
+
+    {/* Breakouts built as DOM. They find their own slot by name, so there is
+        nothing to keep in sync when the screen's layout changes. */}
+    <slot name="outs" />
 
     {outs.map((o) => (
       <div class="wz-out" style={o.style} role="img" aria-label={o.label} {...o.data}>
@@ -95,7 +112,10 @@ const {
   import '../mockups/wuzy-frame';
 </script>
 
-<style>
+{/* is:global, not scoped: screens and breakouts are slotted in by the caller,
+    so their markup carries the caller's scope id and scoped rules would never
+    reach it. Every selector is .wz-* prefixed, so nothing else can collide. */}
+<style is:global>
 /* Verbatim from live-mockup-files/wuzy-frame.css.
  *
  * Every geometric number below is derived from iphone-frame.svg's own
@@ -134,10 +154,38 @@ const {
   transition: transform .5s cubic-bezier(.22, .61, .36, 1);
 }
 
+/* ---- layer stack -------------------------------------------------------
+ * One ordered list, all in .wz-stage's stacking context:
+ *
+ *   0  .wz-well            the screen
+ *   1  .wz-out.is-home     a breakout that has flown back into its slot
+ *   3  .wz-bezel           the frame ring
+ *   4  .wz-out             a breakout still floating over the page
+ *   5  .wz-pin             chrome — the nav bar
+ *
+ * Two things have to be true for that list to mean anything, and neither is
+ * the default:
+ *
+ * .wz-phone must be FLAT. As preserve-3d it made a 3D rendering context of
+ * the screen, the chrome and the bezel, and a 3D context paints by depth
+ * rather than by z-index — the nav hit-tested on top and still painted
+ * underneath the feed card sliding past it. Only .wz-stage needs depth, for
+ * the breakouts' --z and the pointer tilt.
+ *
+ * .wz-well must be a stacking context. At z-index auto its own positioned
+ * children — a feed card wears its name and avatar on the photo — escape into
+ * .wz-stage and paint wherever they like.
+ *
+ * The order itself: chrome above everything because it is chrome, and it does
+ * not scroll. A breakout is above the bezel while it floats (that is the whole
+ * effect) and below it once seated, because a seated piece belongs to the
+ * screen again. .is-home only engages at t > 0.6, so for the first half of the
+ * flight a piece is at 4 — which is why the nav has to clear 4, not 1.
+ */
 .wz-phone {
   position: absolute;
   inset: 0;
-  transform-style: preserve-3d;
+  transform-style: flat;
 }
 
 /* ---- the clip boundary ------------------------------------------------- */
@@ -157,6 +205,7 @@ const {
      matters for any frame left natively scrollable, where trapping the wheel
      inside a phone on a long page reads as a broken scroll. */
   overscroll-behavior: auto;
+  z-index: 0;               /* see the layer stack above — seals the screen in */
   scrollbar-width: none;
   -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
@@ -209,8 +258,87 @@ const {
   transform-style: preserve-3d;
   pointer-events: none;
 }
-/* Once seated, a piece belongs to the screen and must pass under the bezel. */
-.wz-out.is-home { z-index: 2; }
+/* Seated: the piece belongs to the screen again, so it drops below the bezel. */
+.wz-out.is-home { z-index: 1; }
+
+/* A breakout built as DOM sizes itself from its own content, at exactly the
+ * scale of the slot it came from, so there is no --w to declare and no --hs
+ * correction to make. */
+.wz-out--dom {
+  width: auto;
+  /* will-change: transform promotes the piece to a layer and pins the scale it
+   * was rastered at. Under the stage's 1500px perspective a floating --z of
+   * ~120px enlarges it about 8%, so the layer got stretched rather than
+   * redrawn — live text went soft while it floated and snapped sharp the
+   * instant it seated and --z fell to 0. A flat export tolerated that; real
+   * type does not. See also the much smaller --z these pieces now use. */
+  will-change: auto;
+}
+
+/* Elevation for a DOM breakout, applied to the piece itself so it picks up the
+ * piece's own border-radius.
+ *
+ * Not .wz-shadow. filter: drop-shadow() puts the entire subtree onto a filter
+ * render surface, which Chrome rasterises once and then transforms — so the
+ * floating copy of a card was a stretched bitmap while the copy sitting in the
+ * screen was live DOM, and that is the whole "low quality until it lands".
+ * A box-shadow needs no surface at all, and these pieces are rounded
+ * rectangles, the one case where a rectangular shadow is the right shape. */
+.wz-out--dom .wz-out-f > * {
+  box-shadow:
+    0 22px 34px -10px rgba(0, 8, 17, calc(0.55 * (1 - var(--t, 0)))),
+    0 6px 12px -4px rgba(0, 8, 17, calc(0.3 * (1 - var(--t, 0))));
+}
+
+/* One design unit. The screens are drawn against a 360-wide artboard and the
+ * well is 0.9536 of the frame's outer width (287.72 of the bezel's 301.72),
+ * so this is what turns a Figma measurement into a length. Rebasing Tailwind's
+ * --spacing means w-300 in the markup really is the 300 off the artboard, and
+ * the whole screen scales with --fw instead of being pinned to one size.
+ * Breakouts get it too — they render outside the well but at the same scale. */
+.wz-screen,
+.wz-out--dom {
+  --spacing: calc(var(--fw) * 0.9536 / var(--screen-units, 360));
+  /* The screens are a product, not the marketing page. .feature-sticky sets
+   * uppercase and body sets a -0.02em track for the editorial voice outside;
+   * both inherit straight into the phone and have to be shut off here. */
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Bottom-anchored chrome. The nav's y in the export is wherever the design
+ * viewport's bottom fell in a long screenshot, which is nowhere near the
+ * bottom of this frame, so it is placed against the well's lower edge. */
+.wz-pin--bottom {
+  top: auto;
+  bottom: calc(22 * var(--spacing));
+  width: auto;
+  transform: translateX(-50%);
+}
+/* Right-anchored chrome — the compose button, which sits clear of the nav. */
+.wz-pin--fab {
+  top: auto;
+  left: auto;
+  right: calc(34 * var(--spacing));
+  bottom: calc(154 * var(--spacing));
+  width: auto;
+  transform: none;
+}
+
+/* The app's chrome material, shared so the nav bar and the compose button
+ * cannot drift apart. Opaque enough to stand on its own: backdrop-filter is
+ * unreliable inside .wz-stage's 3D context and quietly no-ops, which left a
+ * half-alpha plate with the screen's text reading straight through it. The
+ * blur stays for where it does work. Colour is the reference pill sampled
+ * over black (#1d1b09) and over bright artwork (#413417). */
+.wz-chrome {
+  background: rgba(36, 32, 16, 0.94);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 231, 131, 0.28),
+    0 10px 30px -8px rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+}
 
 /* Three nested layers so the three motions never overwrite each other's
  * transform: outer = placement + depth + scroll parallax, middle = entrance,
@@ -235,7 +363,11 @@ const {
                     rotate(calc(var(--tilt, 0deg) * var(--fd, 1))); }
 }
 
-.wz-out img, .wz-out svg { display: block; width: 100%; height: auto; }
+/* An SVG breakout is exactly one image and fills its box. A DOM breakout is a
+ * real component with its own images sized by their own classes, so it must be
+ * excluded — this rule was stretching every avatar inside one to full width. */
+.wz-out:not(.wz-out--dom) img,
+.wz-out:not(.wz-out--dom) svg { display: block; width: 100%; height: auto; }
 
 /* Icons lifted off the screen are white-on-dark by design — several are a
  * white stroke over a dark silhouette. Floated onto a light page they need to
@@ -334,7 +466,7 @@ const {
   top: var(--pt);
   width: var(--w);
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 5;               /* top of the layer stack; chrome never gets covered */
 }
 /* Over the app's own photography these read as frosted light, not smoked dark. */
 .wz-glass--light {

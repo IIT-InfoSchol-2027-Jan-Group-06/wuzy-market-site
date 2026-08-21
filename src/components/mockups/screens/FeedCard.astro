@@ -1,0 +1,44 @@
+---
+// One post in the feed: a photo with the poster's identity floated over its
+// top-left corner. 300 x 295 design units.
+//
+// Rendered twice for the card that breaks out of the frame — once here inside
+// the screen as an empty slot, once as the floating piece — so `hollow` blanks
+// the contents while keeping the box, which is what leaves the gap the piece
+// flies back into.
+interface Props {
+  name: string;
+  place: string;
+  avatar: string;
+  photo: string;
+  slotName?: string;
+  hollow?: boolean;
+}
+const { name, place, avatar, photo, slotName, hollow = false } = Astro.props;
+---
+
+<div
+  class:list={['relative h-295 w-300 shrink-0 overflow-hidden rounded-u-20', hollow && 'invisible']}
+  data-slot={slotName}
+>
+  <img src={photo} alt="" draggable="false" class="size-full object-cover" />
+
+  <!-- The export puts the name straight onto the photo, which is fine over the
+       dark frames and illegible over a bright one. A short scrim keeps the
+       placement and makes it hold on any image. -->
+  <div class="absolute inset-x-0 top-0 h-90 bg-gradient-to-b from-black/55 via-black/20 to-transparent"></div>
+
+  <!-- Identity sits on the photo, not in a bar under it -->
+  <div class="absolute top-14 left-14 flex items-center gap-10">
+    <img
+      src={avatar}
+      alt=""
+      draggable="false"
+      class="size-38 shrink-0 rounded-full object-cover ring-1 ring-white/80"
+    />
+    <div>
+      <p class="text-u-16 font-semibold text-white">{name}</p>
+      <p class="text-u-14 font-medium text-white/85">{place}</p>
+    </div>
+  </div>
+</div>

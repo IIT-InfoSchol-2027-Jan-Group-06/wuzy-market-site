@@ -45,7 +45,20 @@ export function init(root: HTMLElement) {
   // so the pointer tilt (a 3D rotation on an ancestor) can't feed back into it —
   // which is also why GSAP scaling an ancestor slide is harmless here.
   const sw = parseFloat(root.dataset.screenW || '0');
-  const homing = well && stage && sw > 0 && outs.length;
+  // Two ways to know where a piece belongs. A DOM screen carries a
+  // [data-slot] placeholder that the piece measures directly, so the layout is
+  // the single source of truth. The flat SVG exports have no such thing, and
+  // fall back to data-hx/hy in screen units.
+  const slots = outs.some((o) => o.dataset.home);
+  const homing = well && stage && outs.length && (slots || sw > 0);
+
+  // offsetLeft/offsetTop are relative to the nearest positioned ancestor,
+  // which is not always the well — sum the chain instead of assuming.
+  function offsetIn(el: HTMLElement, stop: HTMLElement) {
+    let x = 0, y = 0, n: HTMLElement | null = el;
+    while (n && n !== stop) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent as HTMLElement | null; }
+    return { x, y };
+  }
   let t = 0, target = 0, raf2 = 0;
   // When something outside drives the homing — the Features timeline scrubs it
   // off the page scroll — the well's own scrollTop stops being the trigger.
@@ -70,8 +83,17 @@ export function init(root: HTMLElement) {
 
     for (let i = 0; i < outs.length; i++) {
       const o = outs[i], ds = o.dataset;
-      const cx = wellLeft + parseFloat(ds.hx!) * unit;
-      const cy = wellTop - well.scrollTop + parseFloat(ds.hy!) * unit;
+      let cx: number, cy: number;
+      if (ds.home) {
+        const slot = well.querySelector<HTMLElement>(`[data-slot="${ds.home}"]`);
+        if (!slot) continue;
+        const p = offsetIn(slot, well);
+        cx = wellLeft + p.x + slot.offsetWidth / 2;
+        cy = wellTop - well.scrollTop + p.y + slot.offsetHeight / 2;
+      } else {
+        cx = wellLeft + parseFloat(ds.hx!) * unit;
+        cy = wellTop - well.scrollTop + parseFloat(ds.hy!) * unit;
+      }
       const fx = parseFloat(ds.x!) / 100 * stageW;
       const fy = parseFloat(ds.y!) / 100 * stageH;
       const dx = (cx - fx) * t, dy = (cy - fy) * t;

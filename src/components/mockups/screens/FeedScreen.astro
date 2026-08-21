@@ -1,0 +1,76 @@
+---
+// The Wuzy feed, rebuilt as real DOM.
+//
+// Every number is a design unit off the 360-wide Figma artboard: 30 of side
+// padding, 300-wide cards, 295 tall, 29 apart. The root rebases Tailwind's
+// --spacing to one unit (see global.css), so w-300 really is the 300 in the
+// measurement — and the whole screen scales with the frame instead of being a
+// raster that only looks right at one size.
+//
+// `hollow` on a piece leaves its box in place but blanks it, which is how the
+// breakouts get a gap to fly back into.
+import FeedCard from './FeedCard.astro';
+import Poster from './Poster.astro';
+import Icon from './Icon.astro';
+
+interface Props { hollow?: string[] }
+const { hollow = [] } = Astro.props;
+const out = (slot: string) => hollow.includes(slot);
+
+const posts = [
+  { slotName: 'lana',    name: 'Lana rae',           place: 'new york',   avatar: 'lana-avatar.jpg',    photo: 'lana-photo.jpg' },
+  { slotName: 'runclub', name: 'New york run club',  place: 'new jersey', avatar: 'runclub-avatar.jpg', photo: 'runclub-photo.jpg' },
+  { slotName: 'yash',    name: 'Yash silva',         place: 'sri lanka',  avatar: 'yash-avatar.jpg',    photo: 'yash-photo.jpg' },
+  { slotName: 'raya',    name: 'Raya sing',          place: 'mumbai',     avatar: 'raya-avatar.jpg',    photo: 'raya-photo.jpg' },
+];
+
+const posters = [
+  { slotName: 'p-yeezus',   name: 'yeezus',   img: 'poster-yeezus.jpg',   avatar: 'taylor.jpg' },
+  { slotName: 'p-showgirl', name: 'Taylor',   img: 'poster-showgirl.jpg', avatar: 'lana-avatar.jpg' },
+  { slotName: 'p-dutchgp',  name: 'dutch gp', img: 'poster-dutchgp.jpg',  avatar: 'dutchgp-avatar.jpg' },
+];
+
+const img = (f: string) => `/wuzy/img/feed/${f}`;
+---
+
+<div
+  class="wz-screen font-app w-full bg-[#000811] pt-52 pb-170 text-white antialiased select-none"
+>
+  <!-- Header -->
+  <header class="flex items-center justify-between px-30">
+    <h1 class="text-u-28 leading-none font-extrabold tracking-[-0.02em] text-ember">WUZY</h1>
+    <Icon name="bell" class="size-28 text-white" />
+  </header>
+
+  <h2 class="mt-30 px-30 text-u-16 font-semibold text-ember">Recent</h2>
+
+  <div class="mt-26 px-30">
+    <FeedCard
+      {...posts[0]}
+      avatar={img(posts[0].avatar)}
+      photo={img(posts[0].photo)}
+      hollow={out(posts[0].slotName)}
+    />
+  </div>
+
+  <h2 class="mt-32 px-30 text-u-16 font-semibold text-ember">Recommendations</h2>
+
+  <!-- Horizontal rail. It leads at 6 rather than the page's 30 so the row
+       reads as running off the edge of the screen. -->
+  <!-- The compose button that sat on this rail is chrome now, pinned by the
+       frame — it does not scroll away with the posters. -->
+  <div class="mt-24 flex gap-12 overflow-hidden pl-6">
+    {posters.map((p) => (
+      <Poster {...p} img={img(p.img)} avatar={img(p.avatar)} hollow={out(p.slotName)} />
+    ))}
+  </div>
+
+  <!-- The rest of the feed -->
+  <div class="mt-32 flex flex-col gap-29 px-30">
+    {posts.slice(1).map((p) => (
+      <FeedCard {...p} avatar={img(p.avatar)} photo={img(p.photo)} hollow={out(p.slotName)} />
+    ))}
+  </div>
+
+  <p class="mt-46 text-center text-u-14 font-semibold text-ember">caught up with life</p>
+</div>
