@@ -16,6 +16,21 @@ import DashboardFrame from './mockups/DashboardFrame.astro';
 //   t    → slide headline
 //   d    → slide sub-copy
 //   Mock → the live phone frame shown next to the headline
+// Avatar "nodes" for the closing beat, same treatment as the home page's
+// Community section: they erupt FROM the locked heading and settle around it.
+// Positions differ from Community's so the two don't read as the same picture.
+//   n → alt text · x/y → position in % (desktop) · s → size tier · img → photo
+const faces = [
+  { n: 'Wumpus', x: 12, y: 24, s: 'xxl', img: '/avatars/p6.jpg' },
+  { n: 'Bumble', x: 86, y: 16, s: 'md', img: '/avatars/p3.jpg' },
+  { n: 'Fizz', x: 6, y: 62, s: 'sm', img: '/avatars/p8.jpg' },
+  { n: 'Gnome', x: 90, y: 62, s: 'xxl', img: '/avatars/p1.jpg' },
+  { n: 'Pickle', x: 26, y: 86, s: 'md', img: '/avatars/p4.jpg' },
+  { n: 'Mango', x: 74, y: 88, s: 'lg', img: '/avatars/p2.jpg' },
+  { n: 'Nacho', x: 34, y: 12, s: 'sm', img: '/avatars/p5.jpg' },
+  { n: 'Pixel', x: 68, y: 34, s: 'xxl', img: '/avatars/p7.jpg' },
+];
+
 const steps = [
   {
     t: 'Create Your Event',
@@ -94,6 +109,30 @@ const steps = [
           </p>
         </div>
       </div>
+
+      <!-- The faces, siblings of the outro so they measure against the sticky
+           itself — the same reference Community uses. They start gathered on
+           the heading and fly out as it lands. -->
+      {faces.map((a, i) => (
+        <div
+          class={`ent-face ent-face-${i + 1} pointer-events-none absolute z-20`}
+          style={`left:${a.x}%;top:${a.y}%`}
+        >
+          <div
+            class={`ent-face-inner size-${a.s} overflow-hidden rounded-full border border-white/25 shadow-[0_0_0_3px_rgba(0,0,0,0.35),0_14px_34px_-10px_rgba(0,0,0,0.85)] ${
+              a.s === 'xxl'
+                ? 'h-[clamp(84px,10vw,136px)] w-[clamp(84px,10vw,136px)]'
+                : a.s === 'lg'
+                  ? 'h-[clamp(50px,5.5vw,80px)] w-[clamp(50px,5.5vw,80px)]'
+                  : a.s === 'md'
+                    ? 'h-[clamp(38px,4vw,60px)] w-[clamp(38px,4vw,60px)]'
+                    : 'h-[clamp(26px,2.8vw,42px)] w-[clamp(26px,2.8vw,42px)]'
+            }`}
+          >
+            <img src={a.img} alt={a.n} class="h-full w-full object-cover" loading="lazy" draggable="false" />
+          </div>
+        </div>
+      ))}
     </div>
   </div>
 </section>
@@ -146,6 +185,29 @@ const steps = [
 
     const outro = document.querySelector<HTMLElement>('.ent-outro');
     const outroWords = gsap.utils.toArray<HTMLElement>('.ent-outro-word');
+    const faces = gsap.utils.toArray<HTMLElement>('.ent-face');
+
+    // Gather every face onto the heading's centre so the build makes them erupt
+    // FROM it. Measured in .ent-sticky's own space with offset*, never
+    // getBoundingClientRect: the faces are absolute children of the sticky, so
+    // offsets ignore the transform a previous sync() wrote, while client rects
+    // would feed each sync() its own output. Measuring the scroller instead
+    // would be wrong too — GSAP's pin-spacer makes it several viewports tall.
+    const syncFaces = () => {
+      const cx = sticky.clientWidth / 2;
+      const cy = sticky.clientHeight / 2;
+      faces.forEach((f) => {
+        gsap.set(f, {
+          xPercent: -50,
+          yPercent: -50,
+          x: cx - f.offsetLeft,
+          y: cy - f.offsetTop,
+          scale: 0.2,
+          autoAlpha: 0,
+        });
+      });
+    };
+    syncFaces();
 
     // Hide every slide up front, so GSAP owns visibility.
     slides.forEach((s) => {
@@ -165,12 +227,17 @@ const steps = [
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        // + 1.9 for the closing line: its build, then the 1.2 viewports every
-        // pinned section holds its finished state for.
-        end: () => '+=' + (0.6 + slides.length * 2.8 + 1.9) * pinScale() * window.innerHeight,
+        // + 2.4 for the closing line: its build, the faces erupting, then the
+        // 1.2 viewports every pinned section holds its finished state for.
+        end: () => '+=' + (0.6 + slides.length * 2.8 + 2.4) * pinScale() * window.innerHeight,
         pin: sticky,
         scrub: true,
         anticipatePin: 1,
+        // Without this the faces' tweens keep the start values they recorded on
+        // first render, so syncFaces()'s re-aim after a resize or a breakpoint
+        // change is silently discarded.
+        invalidateOnRefresh: true,
+        onRefresh: () => syncFaces(),
       },
     });
 
@@ -225,10 +292,17 @@ const steps = [
           { yPercent: 0, autoAlpha: 1, duration: 0.3, stagger: 0.08, ease: 'power2.out' },
           '<0.05'
         )
-        .from('.ent-outro-desc', { y: 20, autoAlpha: 0, duration: 0.25, ease: 'power2.out' }, '<0.25')
-        // The same 1.2 viewports every pinned section holds its finished state
-        // for, so this settles instead of cutting away.
-        .to(outroWords, { yPercent: -120, autoAlpha: 0, duration: 0.3, stagger: 0.04, ease: 'power2.in' }, '+=1.2')
+        .from('.ent-outro-desc', { y: 20, autoAlpha: 0, duration: 0.25, ease: 'power2.out' }, '<0.25');
+
+      // The faces erupt out of the heading, one after another.
+      faces.forEach((f, i) => {
+        tl.to(f, { x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.22, ease: 'power2.out' }, '<' + (i === 0 ? 0 : 0.07));
+      });
+
+      // Then the hold every pinned section gives its finished state, and out —
+      // faces first, so the heading is the last thing standing.
+      tl.to(faces, { x: 0, y: 0, scale: 0.2, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 }, '+=1.2')
+        .to(outroWords, { yPercent: -120, autoAlpha: 0, duration: 0.3, stagger: 0.04, ease: 'power2.in' }, '<0.1')
         .to('.ent-outro-label', { y: -20, autoAlpha: 0, duration: 0.2, ease: 'power2.in' }, '<0.1')
         .to('.ent-outro-desc', { y: -20, autoAlpha: 0, duration: 0.25, ease: 'power2.in' }, '<0.05');
     }
@@ -236,3 +310,30 @@ const steps = [
     tl.to({}, { duration: 0.3 });
   }
 </script>
+
+<style>
+  /* ── Small screens ────────────────────────────────────────────
+     Below lg the centre belongs to the heading, so the faces move out to the
+     safe edges and shrink. syncFaces() re-aims the eruption at the new spots
+     on every refresh, so nothing here has to be mirrored in the script. */
+  @media (max-width: 1023px) {
+    .ent-face-1 { left: 8% !important;  top: 16% !important; }
+    .ent-face-2 { left: 90% !important; top: 12% !important; }
+    .ent-face-3 { left: 5% !important;  top: 46% !important; }
+    .ent-face-4 { left: 94% !important; top: 52% !important; }
+    .ent-face-5 { left: 14% !important; top: 80% !important; }
+    .ent-face-6 { left: 88% !important; top: 86% !important; }
+    .ent-face-7 { left: 33% !important; top: 10% !important; }
+    .ent-face-8 { left: 92% !important; top: 32% !important; }
+
+    .ent-face-inner.size-xxl { height: clamp(44px, 12vw, 72px) !important; width: clamp(44px, 12vw, 72px) !important; }
+    .ent-face-inner.size-lg  { height: clamp(36px, 10vw, 60px) !important; width: clamp(36px, 10vw, 60px) !important; }
+    .ent-face-inner.size-md  { height: clamp(30px, 8vw, 48px) !important;  width: clamp(30px, 8vw, 48px) !important; }
+    .ent-face-inner.size-sm  { height: clamp(24px, 6vw, 36px) !important;  width: clamp(24px, 6vw, 36px) !important; }
+
+    /* The size lives on the line spans, not the h2 — a child's own font-size
+       beats an inherited one, so targeting the h2 here would do nothing. */
+    .ent-outro h2 > span { font-size: clamp(32px, 10vw, 48px) !important; }
+    .ent-outro-desc { font-size: 0.875rem; }
+  }
+</style>
