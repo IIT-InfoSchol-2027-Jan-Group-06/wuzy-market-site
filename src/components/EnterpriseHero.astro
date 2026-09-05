@@ -17,11 +17,7 @@
 <section id="ent-hero" class="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20">
   <div class="w-full max-w-[1150px] text-center">
 
-    <p class="ent-hero-label text-sm font-medium uppercase tracking-[0.08em] text-ember">
-      built for hosts &amp; creators
-    </p>
-
-    <h1 class="ent-hero-title mt-4 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] font-normal text-charcoal">
+    <h1 class="ent-hero-title mt-2 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] font-normal text-charcoal">
       <span class="block uppercase">fill the room</span>
       <span class="block uppercase">
         <!-- "with your" takes its own line below sm. Sharing one text flow with
@@ -66,7 +62,6 @@
   //
   // Direct children only on the title: as a descendant selector it would also
   // match the spans nested inside the second line and compound their y.
-  gsap.from('.ent-hero-label', { y: 24, opacity: 0, duration: 0.8, ease: 'power3.out' });
   gsap.from('.ent-hero-title > span', {
     y: 60, opacity: 0, duration: 1, stagger: 0.12, delay: 0.1, ease: 'power4.out',
   });
