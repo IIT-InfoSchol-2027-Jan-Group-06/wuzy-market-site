@@ -1,7 +1,8 @@
 ---
 // The /enterprise hero. Same shape as Hero.astro — Anton uppercase over a
 // lowercase Caveat ember tail, sub-copy, one glass CTA — with its own class
-// prefix and no word-cycler.
+// prefix and a word-cycler on the trailing "crowd." exactly like the homepage's
+// "story." word.
 //
 // Copied rather than made a prop on Hero.astro: that component's cycler lives in
 // a bundled <script> which cannot read Astro.props, so parameterising it would
@@ -23,7 +24,14 @@
     <h1 class="ent-hero-title mt-4 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] font-normal text-charcoal">
       <span class="block uppercase">fill the room</span>
       <span class="block uppercase">
-        with your <span class="font-control-cursive lowercase text-ember [font-size:1.15em]">crowd.</span>
+        <!-- "with your" and the word share one text flow, gap is the single
+             space in the markup. The word is an inline-flex with NO fixed
+             width and NO margin, anchored left so it starts tight against
+             "YOUR" and expands rightward; #ent-cycle-word tweens its own
+             width per swap so "crowd." -> "community." flows smoothly. -->
+        with your <span class="font-control-cursive lowercase text-ember [font-size:1.15em]">
+          <span id="ent-cycle-word" class="inline-flex whitespace-nowrap will-change-transform">crowd.</span>
+        </span>
       </span>
     </h1>
 
@@ -41,6 +49,9 @@
 
 <script>
   import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
 
   // Entrance on load, not on scroll — this is above the fold. Mirrors
   // Hero.astro's timing so the two pages feel like one site.
@@ -53,4 +64,73 @@
   });
   gsap.from('.ent-hero-copy', { y: 24, opacity: 0, duration: 0.8, delay: 0.5, ease: 'power3.out' });
   gsap.from('.ent-hero-cta a', { y: 16, opacity: 0, duration: 0.7, delay: 0.65, ease: 'power3.out' });
+
+  // Words for the trailing "crowd." — the period is part of the word, matching
+  // how the homepage cycles "story." / "vibe." / "scene." / "match.".
+  const words = ['crowd.', 'community.', 'audience.', 'fans.', 'people.'];
+  let index = 0;
+  const cycleWord = document.getElementById('ent-cycle-word');
+
+  if (cycleWord) {
+    const swap = () => {
+      index = (index + 1) % words.length;
+      gsap.to(cycleWord, {
+        y: -30,
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power2.in',
+        onComplete: () => {
+          // The word never owns a reserved slot, so the gap after "YOUR" is
+          // always the single space in the markup for every word. Width tweens
+          // from the old word's bounds to the new one's true content width
+          // ('auto' — GSAP measures it live), so the line tightens or expands
+          // as it flows instead of jumping. Landing on 'auto' means the style
+          // holds no px either, so a short word like "crowd." or "fans." can
+          // never leave locked-in dead space.
+          const oldW = cycleWord.offsetWidth;
+          cycleWord.textContent = words[index];
+          gsap.fromTo(
+            cycleWord,
+            { y: 30, opacity: 0, width: oldW },
+            { y: 0, opacity: 1, width: 'auto', duration: 0.4, ease: 'power2.out' }
+          );
+        },
+      });
+    };
+
+    // Same rhythm as the homepage hero (4s intro, then 2.6s per word) and
+    // gated the same way: the cycle only runs while the hero is on screen, so
+    // GSAP isn't ticking (and the word isn't riffing to itself) twenty
+    // viewports down the page.
+    let cycleCall: ReturnType<typeof gsap.delayedCall> | null = null;
+
+    const startCycle = (delay: number) => {
+      cycleCall = gsap.delayedCall(delay, function repeat() {
+        swap();
+        cycleCall = gsap.delayedCall(2.6, repeat);
+      });
+    };
+
+    ScrollTrigger.create({
+      trigger: '#ent-hero',
+      start: 'top bottom',
+      end: 'bottom top',
+      onToggle: (self) => {
+        if (self.isActive) {
+          if (!cycleCall) startCycle(2.6);
+        } else {
+          cycleCall?.kill();
+          cycleCall = null;
+        }
+      },
+    });
+
+    // The swap measures the word's width, which is wrong if the Caveat face
+    // hasn't landed yet (Caveat comes in via a CSS @import and the hero text
+    // would be measured in its fallback face, making the first transition
+    // overshoot). Arm the first cycle only once the page's fonts are ready.
+    const arm = () => startCycle(4);
+    if (document.fonts?.ready) document.fonts.ready.then(arm).catch(arm);
+    else arm();
+  }
 </script>
