@@ -1,6 +1,7 @@
 ---
 import EnterpriseHero from '../components/EnterpriseHero.astro';
 import Explainer from '../components/Explainer.astro';
+import WhyHost from '../components/WhyHost.astro';
 import Waitlist from '../components/Waitlist.astro';
 import Footer from '../components/Footer.astro';
 
@@ -25,24 +26,6 @@ const howItWorks = [
     body: 'We push your event directly to local users whose interests match your vibe, bringing you the right target audience so your crowd is active and involved.',
   },
 ];
-
-const whyHost = [
-  {
-    n: '01',
-    title: 'Target Audience Reach',
-    body: 'We skip generic feeds and deliver your event directly to local users who share your specific vibe, ensuring you fill the room with an engaged crowd.',
-  },
-  {
-    n: '02',
-    title: 'Effortless Sales & Tracking',
-    body: 'A simple setup to monitor ticket sales, guest registrations, and attendee lists in real time.',
-  },
-  {
-    n: '03',
-    title: 'Built-In Audience Growth',
-    body: 'Convert one-time ticket buyers into a loyal community, keeping your crowd connected and ready for your next event.',
-  },
-];
 ---
 
 <Layout
@@ -64,13 +47,7 @@ const whyHost = [
 		items={howItWorks}
 	/>
 
-	<Explainer
-		id="why-host"
-		label="why host on Wuzy"
-		line1="BUILT FOR"
-		accentWord="organisers."
-		items={whyHost}
-	/>
+	<WhyHost />
 
 	<Waitlist
 		id="host"

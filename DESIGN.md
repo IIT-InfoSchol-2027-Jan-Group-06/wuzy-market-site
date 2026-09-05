@@ -171,8 +171,8 @@ Never style a phone mockup with a marketing token, or vice versa.
 - `/` (`src/pages/index.astro`) — Hero → Features → Community → Why Choose →
   Pricing → Waitlist → Footer. The consumer pitch.
 - `/enterprise` (`src/pages/enterprise.astro`) — EnterpriseHero → Explainer
-  ("how it works") → Explainer ("why host") → Waitlist (host variant) → Footer.
-  The host pitch.
+  ("how it works") → WhyHost (pinned "why host" section) → Waitlist (host
+  variant) → Footer. The host pitch.
 
 (`src/pages/mock/[...page].astro` is a dev-only bench for the phone mockups.)
 
@@ -556,8 +556,10 @@ One geometry, three weights:
 ### 8.6 The explainer — numbered steps
 
 `src/components/Explainer.astro` is the numbered three-card primitive. It is
-prop-driven and rendered twice on `/enterprise`. **Use it rather than building
-another numbered list.**
+prop-driven and rendered once on `/enterprise` (the "how it works" block) — the
+"why host" block now uses `src/components/WhyHost.astro`, a pinned-section
+rendition of the homepage's Why Choose cards that keeps the numbered figures.
+Use the Explainer rather than building another numbered list.
 
 ```
 { id, label, line1, line2Prefix?, accentWord, items: [{ n, title, body }] }

@@ -1,0 +1,173 @@
+---
+// The enterprise "why host on wuzy" section, restyled to match the homepage's
+// "Why Choose" section (YSCard.astro): a pinned scroll area where the locked
+// heading stays centered while the cards rise over it one by one, then the
+// whole thing fades out before the pin releases.
+//
+// The content is the host pitch (numbered 01-03, target, sales, retention),
+// so the figure keeps the stat slot used by Explainer.astro (Inter 300 ember),
+// but the card surface, padding, hover lift and the scrubbed entrance are
+// YSCard's, copied verbatim. It is a separate component rather than a prop on
+// YSCard because that component's script reads `#ys-cycle-word` by id and
+// cycles "wuzy./us."—wrong for this section, and its selectors are global.
+//
+// Class prefix is whyhost-* so it can never collide with the homepage's ys-*.
+const reasons = [
+  {
+    n: '01',
+    t: 'Target Audience Reach',
+    d: 'We skip generic feeds and deliver your event directly to local users who share your specific vibe, ensuring you fill the room with an engaged crowd.',
+  },
+  {
+    n: '02',
+    t: 'Effortless Sales & Tracking',
+    d: 'A simple setup to monitor ticket sales, guest registrations, and attendee lists in real time.',
+  },
+  {
+    n: '03',
+    t: 'Built-In Audience Growth',
+    d: 'Convert one-time ticket buyers into a loyal community, keeping your crowd connected and ready for your next event.',
+  },
+];
+---
+
+<section id="why-host" class="relative">
+  <!-- Pinned scroll area: heading stays locked in the center while the
+       cards rise up over it one by one, exactly like the homepage #
+       "why choose" section. -->
+  <div class="whyhost-scroll relative">
+    <div class="whyhost-sticky relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-5">
+      <!-- Locked, centered heading (sits behind the rising cards) -->
+      <div class="whyhost-head relative z-0 mx-auto max-w-5xl text-center">
+        <p class="whyhost-label text-sm font-medium uppercase tracking-[0.08em] text-ember">
+          why host on wuzy
+        </p>
+        <h2 class="mt-4 font-display text-[clamp(63px,9.6vw,119px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+          <span class="block overflow-hidden">
+            {'BUILT FOR'.split(' ').map((w) => (
+              <span class="inline-block align-top">
+                <span class="inline-block will-change-transform">{w}&nbsp;</span>
+              </span>
+            ))}
+          </span>
+          <!-- Looser line box than the h2's 1.2 because this line is set in
+               Caveat and overflow-hidden (needed for the reveal mask) clips
+               anything below the baseline — "organisers." has a descender to
+               protect. Same fix Explainer.astro applies to "doors open." -->
+          <span class="block overflow-hidden leading-[1.45]">
+            <span class="inline-block will-change-transform">
+              <span class="font-control-cursive lowercase text-ember">organisers.</span>
+            </span>
+          </span>
+        </h2>
+      </div>
+
+      <!-- Cards rise one-by-one over the locked heading as the user scrolls,
+           reusing the YSCard surface, padding, radius and hover lift. -->
+      <div class="whyhost-grid relative z-10 -mt-20 grid w-full max-w-[1200px] gap-7 md:grid-cols-3 lg:-mt-32">
+        {reasons.map((r) => (
+          <div class="whyhost-card rounded-[24px] border border-white/10 bg-[#10100e]/85 p-9 shadow-card">
+            <div class="transition-transform duration-300 hover:-translate-y-2">
+              <p class="whyhost-figure font-control text-[clamp(44px,5vw,60px)] font-light leading-none tracking-[-0.02em] text-ember">
+                {r.n}
+              </p>
+              <h3 class="mt-5 font-display text-2xl font-normal tracking-[0.02em] text-charcoal">
+                {r.t}
+              </h3>
+              <p class="whyhost-body mt-3 text-[15px] font-normal leading-relaxed tracking-[-0.01em] text-charcoal/70">
+                {r.d}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { pinScale } from '../lib/scroll';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Pinned, scroll-scrubbed timeline — the exact beat YSCard runs: heading
+  // locked, cards rising one by one, a hold, then everything fades out before
+  // the pin releases so the waitlist never arrives on top of leftovers.
+  const scroller = document.querySelector<HTMLElement>('.whyhost-scroll');
+  const sticky = document.querySelector<HTMLElement>('.whyhost-sticky');
+  const cards = gsap.utils.toArray<HTMLElement>('.whyhost-card');
+
+  if (cards.length && scroller && sticky) {
+    // ~0.45 viewport per card for the build-up, then the finished stack is
+    // held for HOLD_VH — the same beat the other pinned sections hold for.
+    const buildVH = 0.35 + cards.length * 0.45;
+    const HOLD_VH = 1.2;
+
+    // Initial state for entrance animation
+    gsap.set(cards, { y: 200, x: (i) => (i % 2 === 0 ? -70 : 70), rotate: (i) => (i % 2 === 0 ? -4 : 4), autoAlpha: 0 });
+    gsap.set('.whyhost-head', { y: 50, autoAlpha: 0 });
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: scroller,
+        start: 'top top',
+        end: () => '+=' + (buildVH + HOLD_VH) * pinScale() * window.innerHeight,
+        pin: sticky,
+        scrub: true,
+        anticipatePin: 1,
+        onEnter: () => {
+          // Entrance animation when section first pins — heading only
+          gsap.to('.whyhost-head', { y: 0, autoAlpha: 1, duration: 0.3, ease: 'power3.out' });
+        },
+        onLeaveBack: () => {
+          // Reverse entrance when scrolling back up past the section
+          gsap.to('.whyhost-head', { y: 50, autoAlpha: 0, duration: 0.2, ease: 'power2.in' });
+          gsap.to(
+            cards,
+            { y: 200, x: (i) => (i % 2 === 0 ? -70 : 70), rotate: (i) => (i % 2 === 0 ? -4 : 4), autoAlpha: 0, duration: 0.3, ease: 'power2.in', stagger: 0.03 }
+          );
+        },
+      },
+    });
+
+    // Scrubbed timeline: cards rise one by one as user scrolls
+    cards.forEach((card, i) => {
+      tl.fromTo(
+        card,
+        { y: 200, x: i % 2 === 0 ? -70 : 70, rotate: i % 2 === 0 ? -4 : 4, autoAlpha: 0 },
+        { y: 0, x: 0, rotate: 0, autoAlpha: 1, duration: 0.8, ease: 'power2.out' }
+      );
+    });
+
+    // Fade out the cards and heading before pin releases, so they're gone
+    // before the next section arrives. Then a brief hold for smooth timing.
+    tl.to(cards, { y: -200, x: (i) => (i % 2 === 0 ? -70 : 70), rotate: (i) => (i % 2 === 0 ? -4 : 4), autoAlpha: 0, duration: 0.6, ease: 'power2.in', stagger: 0.04 }, '+=' + HOLD_VH)
+      .to('.whyhost-head', { y: -100, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, '<0.1')
+      .to({}, { duration: 0.3 });
+  }
+</script>
+
+<style>
+  /* ── Small screens ────────────────────────────────────────────
+     Below md the three cards stack into one column; shrink heading, card
+     padding and the overlap so the whole column fits a short phone viewport.
+     Mirrors the YSCard treatment; the figure gets its own mobile size so the
+     numbers don't squash the description the way YSCard's blanket p rule
+     would. */
+  @media (max-width: 767px) {
+    .whyhost-head h2 { font-size: clamp(38px, 11vw, 56px) !important; }
+
+    .whyhost-grid {
+      margin-top: -1rem !important;
+      gap: 1rem;
+    }
+
+    .whyhost-card { padding: 1.4rem; }
+    .whyhost-card .whyhost-figure { font-size: 28px; }
+    .whyhost-card h3 { margin-top: 0.625rem; font-size: 1.25rem; }
+    .whyhost-card .whyhost-body { font-size: 14px; margin-top: 0.5rem; }
+  }
+</style>
