@@ -1,6 +1,21 @@
 ---
 import '../styles/global.css'
 import NavBar from '../components/NavBar.astro'
+
+interface Props {
+	title?: string;
+	description?: string;
+	ogTitle?: string;
+	ogDescription?: string;
+}
+
+// Defaults are the homepage's copy, so index.astro and mock/ need no props.
+const {
+	title = 'Wuzy',
+	description = "Wuzy matches you with like-minded people, communities, and verified events, so you always show up with your crowd.",
+	ogTitle = 'Wuzy — every connection has a story.',
+	ogDescription = "Events, tickets, communities, and the connections you don't want to miss — all in one app.",
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -11,18 +26,12 @@ import NavBar from '../components/NavBar.astro'
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
 		<link rel="icon" type="image/png" href="/favicon.png?v=2" />
 
-		<title>Wuzy</title>
-		<meta
-			name="description"
-			content="Wuzy matches you with like-minded people, communities, and verified events, so you always show up with your crowd."
-		/>
+		<title>{title}</title>
+		<meta name="description" content={description} />
 
 		<meta property="og:type" content="website" />
-		<meta property="og:title" content="Wuzy — every connection has a story." />
-		<meta
-			property="og:description"
-			content="Events, tickets, communities, and the connections you don't want to miss — all in one app."
-		/>
+		<meta property="og:title" content={ogTitle} />
+		<meta property="og:description" content={ogDescription} />
 		<meta name="twitter:card" content="summary_large_image" />
 	</head>
 	<body class="page-grad min-h-screen text-charcoal">

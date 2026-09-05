@@ -1,0 +1,63 @@
+---
+// The host's Create Event form, rebuilt as real DOM.
+//
+// Laid out on the shared 390 artboard: a 32 gutter, a 326 content column, and
+// the common rhythm — 24 from the header to the first control, 16 between
+// controls in a cluster, 40 between sections.
+//
+// The export is 360 wide with a 44 gutter. It is redrawn on the 390/32/326
+// artboard rather than transcribed, because a screen on its own gutter is
+// exactly what made the same nav bar render 12% wider on Feed than Discover.
+//
+// `hollow` on a piece leaves its box in place but blanks it, which is how the
+// breakouts get a gap to fly back into.
+import EventBanner from './EventBanner.astro';
+import FieldCard from './FieldCard.astro';
+import DetailRow from './DetailRow.astro';
+import Icon from './Icon.astro';
+import { createEvent } from './content';
+
+interface Props { hollow?: string[] }
+const { hollow = [] } = Astro.props;
+const out = (slot: string) => hollow.includes(slot);
+
+const { banner, title, description, details } = createEvent;
+---
+
+{/* pt-56 is the status-bar clearance, the same on all four screens */}
+<div class="wz-screen font-app w-full bg-app-ground pt-56 pb-180 text-white antialiased select-none">
+  <!-- Header. The other screens run title-left, action-right; a screen you back
+       out of runs the other way round, but it is the same 50 chrome pill and the
+       same row, so the corner still reads the same. Flex owns the alignment —
+       nothing here is nudged into place. -->
+  <header class="flex items-center gap-16 px-32">
+    <span class="wz-chrome grid size-50 shrink-0 place-items-center rounded-full text-white">
+      <Icon name="back" u={24} />
+    </span>
+    <h1 class="text-app-display font-bold text-ember">Create Event</h1>
+  </header>
+
+  <div class="mt-24 px-32">
+    <EventBanner img={banner.img} slotName={banner.slotName} hollow={out(banner.slotName)} />
+  </div>
+
+  <!-- Title and description are one cluster: 16 apart from each other and from
+       the cover above them, not the 40 that separates sections. -->
+  <div class="mt-16 flex flex-col gap-16 px-32">
+    <FieldCard
+      label={title.label}
+      value={title.value}
+      slotName={title.slotName}
+      hollow={out(title.slotName)}
+    />
+    <FieldCard label={description.label} value={description.value} />
+  </div>
+
+  <!-- The settings. No label above them — the rows say what they are, and Feed's
+       card column and the Messages list both start a section at 40 unlabelled. -->
+  <div class="mt-40 flex flex-col gap-16 px-32">
+    {details.map((d) => (
+      <DetailRow label={d.label} value={d.value} toggle={d.toggle} />
+    ))}
+  </div>
+</div>

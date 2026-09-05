@@ -18,12 +18,15 @@ const socials = [
 
 ];
 
+// Root-relative, like the nav — the footer renders on /enterprise too, where a
+// bare "#features" would look for a section that isn't on the page.
 const links = [
-  { label: 'Features', href: '#features' },
-  { label: 'Community', href: '#community' },
-  { label: 'Why Wuzy', href: '#why' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Waitlist', href: '#waitlist' },
+  { label: 'Features', href: '/#features' },
+  { label: 'Community', href: '/#community' },
+  { label: 'Why Wuzy', href: '/#why' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Waitlist', href: '/#waitlist' },
+  { label: 'Enterprise', href: '/enterprise' },
 ];
 
 // TODO: these need real destinations before launch. As bare '#' they just

@@ -14,6 +14,7 @@
 const feedImg = (f: string) => `/wuzy/img/feed/${f}`;
 const discoverImg = (f: string) => `/wuzy/img/discover/${f}`;
 const chatImg = (f: string) => `/wuzy/img/chat/${f}`;
+const createImg = (f: string) => `/wuzy/img/create/${f}`;
 
 export const posts = [
   { slotName: 'lana',    name: 'Lana Rae',          place: 'New York',   avatar: feedImg('lana-avatar.jpg'),    photo: feedImg('lana-photo.jpg') },
@@ -46,6 +47,72 @@ export const threads = [
   { slotName: 'c-runners', name: 'Colombo Runners Club',  preview: 'Sunday, 6am start',   time: '4d', avatar: chatImg('runners-club.jpg') },
   { slotName: 'c-studio',  name: 'The Studio',            preview: 'Doors open at eight', time: '2d', avatar: chatImg('studio.jpg') },
 ];
+
+// The host side: someone setting up the next edition of Sunset Sessions, which
+// the Discover screen already lists as an upcoming event. The two mockups are
+// meant to read as one product rather than two unrelated screenshots.
+export const createEvent = {
+  banner: {
+    slotName: 'ce-banner',
+    label: 'Event cover photo',
+    img: createImg('banner.jpg'),
+  },
+  title: {
+    slotName: 'ce-title',
+    label: 'Event Title',
+    value: 'Sunset Sessions Vol. 4',
+  },
+  description: {
+    label: 'Description',
+    value: 'Rooftop sets, street food, and the best view in Colombo.',
+  },
+  // Filled in, not the export's "select date >" placeholders — the screen is
+  // showing a host who has done the work, which is the point being sold.
+  details: [
+    { label: 'Date', value: '14 Mar 2026' },
+    { label: 'Time', value: '6:00 PM' },
+    { label: 'Location', value: 'Mount Lavinia' },
+    { label: 'Category', value: 'Music' },
+    { label: 'Private', toggle: 'off' as const },
+    { label: 'Paid', toggle: 'on' as const },
+  ],
+  publish: { slotName: 'ce-publish', label: 'Publish' },
+};
+
+// Thousands, one point a week, left to right — the export's shape: a climb, a
+// dip, the peak, a fall and a late recovery.
+const incomePoints = [3.2, 4.1, 5.8, 5.1, 7.4, 6.3, 3.9, 5.2];
+const thousands = (n: number) => `${Number(n.toFixed(1))}K`;
+
+// The other half of the host story: the event created above, now selling. The
+// export names a different event here; two names side by side would break the
+// one thing these two screens are for, so the name and cover come straight from
+// createEvent and cannot drift. The figures are the export's.
+export const dashboard = {
+  event: {
+    name: createEvent.title.value,
+    kicker: '14 MAR · MOUNT LAVINIA',
+    img: createEvent.banner.img,
+  },
+  stats: [
+    { slotName: 'db-registered', label: 'Registered Attendees', value: '230' },
+    { slotName: 'db-sold', label: 'Tickets Sold', value: '150' },
+  ],
+  income: {
+    slotName: 'db-chart',
+    label: 'Income Trend',
+    range: 'This Month',
+    points: incomePoints,
+    axis: ['8K', '6K', '4K', '2K', '0'],
+    max: 8,
+    // Both derived, never typed. The export labelled its peak 12K while drawing
+    // it at 33 on a 40 axis, and headlined a total its own points could not add
+    // up to. On the one screen whose whole pitch is reporting your money back to
+    // you, the three numbers have to agree.
+    total: `$${(incomePoints.reduce((a, b) => a + b, 0) * 1000).toLocaleString('en-US')}`,
+    peak: thousands(Math.max(...incomePoints)),
+  },
+};
 
 export const byName = <T extends { slotName: string }>(list: T[], slot: string): T => {
   const found = list.find((i) => i.slotName === slot);

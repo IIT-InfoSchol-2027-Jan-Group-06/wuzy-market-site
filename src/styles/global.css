@@ -206,7 +206,8 @@ body::before {
    why-choose cards share the surface — they keep an opaque-ish fill of their
    own, since they sit over the locked heading and have to occlude it. */
 .pricing-card,
-.ys-card {
+.ys-card,
+.whyhost-card {
   background-image:
     linear-gradient(
       145deg,
@@ -222,10 +223,17 @@ body::before {
    has them pinned (anticipatePin + fixed transforms), so we don't force
    permanent layers here — a lingering `will-change` keeps a GPU texture
    alive forever and Chrome drops it to white tiles on fast scroll. Only
-   the 3D-flicker guard is kept. */
+   the 3D-flicker guard is kept.
+
+   Every pinned `.X-sticky` belongs here. The two enterprise ones were added
+   after the fact, which is the failure mode of a hand-kept list — if a sixth
+   pinned section appears, it needs a line too. `.ent-sticky` matters most of
+   the set: it contains `.wz-stage`, which carries a real 3D transform. */
 .feature-sticky,
 .ys-sticky,
-.community-sticky {
+.community-sticky,
+.ent-sticky,
+.whyhost-sticky {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
@@ -288,7 +296,8 @@ h1, h2, h3, .font-script {
   background-color: rgba(255, 231, 131, 0.2);
 }
 
-.nav-cta[aria-current='true'] {
+.nav-cta[aria-current='true'],
+.nav-cta[aria-current='page'] {
   border-color: var(--color-ember);
   background-color: var(--color-ember);
   color: var(--color-bone);

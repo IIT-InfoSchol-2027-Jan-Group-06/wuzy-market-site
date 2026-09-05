@@ -1,0 +1,93 @@
+---
+// Enterprise slide 02 — "Track Ticket Sales & Registrations". The host's
+// dashboard for the event created on slide 01.
+//
+// The three pieces that fly out are the same components the screen renders,
+// from the same content — the screen just draws them hollow, leaving the gap
+// they return to.
+//
+// Composition: a mirrored pair at mid height with the chart hanging low. Slide
+// 01 is a diagonal cascade, and these two sit next to each other, so they had to
+// read differently.
+import WuzyFrame from './WuzyFrame.astro';
+import DashboardScreen from './screens/DashboardScreen.astro';
+import StatCard from './screens/StatCard.astro';
+import IncomeChart from './screens/IncomeChart.astro';
+import { dashboard, byName } from './screens/content';
+import { float } from './screens/motion';
+
+const { stats, income } = dashboard;
+// byName, not positional: it throws on a missing slot where an index
+// fails silently. Same reason the other frames use it.
+const registered = byName(stats, 'db-registered');
+const sold = byName(stats, 'db-sold');
+
+const lifted = [registered.slotName, sold.slotName, income.slotName];
+
+// Opposed tilt on the pair: same speed, mirrored rock, so they read as two
+// cards rather than one rigid object drifting.
+const left = float({ x: -2, y: 34, parallax: -20, speed: 'mid', tilt: 2 }, 0);
+const right = float({ x: 102, y: 34, parallax: 20, speed: 'mid', tilt: -2 }, 1);
+const chart = float({ x: 34, y: 90, parallax: -14, speed: 'heavy', tilt: 1.5 }, 2);
+---
+
+<WuzyFrame wellLabel="Event dashboard screen, scrollable">
+  <DashboardScreen slot="screen" hollow={lifted} />
+
+  {/* No chrome. Back rides in the screen's own header, the way Create Event
+      carries it — and like Event, this is a screen you arrive at, not a tab, so
+      there is no nav and no compose. */}
+
+  <Fragment slot="outs">
+    <div
+      class="wz-out"
+      style={left.style}
+      data-home={registered.slotName}
+      {...left.data}
+      role="img"
+      aria-label={`${registered.label}, ${registered.value}`}
+    >
+      <div class="wz-out-e" style={left.enter}>
+        <div class="wz-out-f" style={left.rock}>
+          <StatCard label={registered.label} value={registered.value} floating />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out"
+      style={right.style}
+      data-home={sold.slotName}
+      {...right.data}
+      role="img"
+      aria-label={`${sold.label}, ${sold.value}`}
+    >
+      <div class="wz-out-e" style={right.enter}>
+        <div class="wz-out-f" style={right.rock}>
+          <StatCard label={sold.label} value={sold.value} floating />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out"
+      style={chart.style}
+      data-home={income.slotName}
+      {...chart.data}
+      role="img"
+      aria-label={`${income.label}, ${income.total} ${income.range.toLowerCase()}, peaking at ${income.peak}`}
+    >
+      <div class="wz-out-e" style={chart.enter}>
+        <div class="wz-out-f" style={chart.rock}>
+          <IncomeChart
+            points={income.points}
+            axis={income.axis}
+            max={income.max}
+            peak={income.peak}
+            floating
+          />
+        </div>
+      </div>
+    </div>
+  </Fragment>
+</WuzyFrame>

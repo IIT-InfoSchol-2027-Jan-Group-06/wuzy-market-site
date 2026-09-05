@@ -1,0 +1,34 @@
+---
+// A filled form field: its name over the value you gave it.
+//
+// Same surface as the search fields on Discover and Messages (`bg-app-surface`,
+// `rounded-app-md`, `px-16`), because it is the same family of control — the
+// difference is that this one has an answer in it.
+//
+// The label uses the section-label recipe verbatim and the value uses the
+// FeedCard place-line recipe, so nothing here invents a type combination. Height
+// is left to the content: `invisible` keeps the box, so the hollow twin still
+// holds the gap even though nothing is measured.
+interface Props {
+  label: string;
+  value: string;
+  slotName?: string;
+  hollow?: boolean;
+  floating?: boolean;
+}
+const { label, value, slotName, hollow = false, floating = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    'flex w-326 flex-col gap-4 rounded-app-md bg-app-surface px-16 py-12',
+    // Lifted, it gets the same hairline and elevation the search pill carries.
+    // It has a fill of its own, so wz-lifted rather than wz-float.
+    floating && 'wz-lifted',
+    hollow && 'invisible',
+  ]}
+  data-slot={slotName}
+>
+  <span class="text-app-body font-semibold text-ember">{label}</span>
+  <span class="text-app-meta font-medium text-white/85">{value}</span>
+</div>

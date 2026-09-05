@@ -1,0 +1,27 @@
+---
+// The screen's one accent surface, and its primary action.
+//
+// The export draws it grey; in this palette that reads as disabled, and every
+// screen puts its primary action in `.wz-accent` — the Event screen's "Buy
+// ticket" is the same shape. Its 162 x 50 proportion and its centring are the
+// export's.
+//
+// Like the compose button on Messages, this is rendered twice: once hollow as
+// pinned chrome (the landing slot) and once as the floating piece.
+interface Props {
+  label: string;
+  slotName?: string;
+  hollow?: boolean;
+}
+const { label, slotName, hollow = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    'wz-accent grid h-50 w-162 shrink-0 place-items-center rounded-full text-app-title font-semibold',
+    hollow && 'invisible',
+  ]}
+  data-slot={slotName}
+>
+  {label}
+</div>

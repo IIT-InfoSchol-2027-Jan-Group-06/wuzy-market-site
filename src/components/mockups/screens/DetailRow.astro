@@ -1,0 +1,59 @@
+---
+// One line of the event's settings: a label on the left, and on the right
+// either a value that opens a picker, or a switch.
+//
+// One component for both because they are one row — same label recipe, same
+// centre line. Splitting them into two would have let the two right-hand sides
+// drift out of vertical alignment with each other.
+//
+// The "on" track is ember at 25% with the inactive chip's inset ring, not solid
+// ember: the Publish button is the screen's one accent surface and a filled
+// switch beside it would read as a second. The knob is solid, the way the
+// unread dot on a message row is.
+import Icon from './Icon.astro';
+
+interface Props {
+  label: string;
+  value?: string;
+  toggle?: 'on' | 'off';
+}
+const { label, value, toggle } = Astro.props;
+---
+
+{/* Fixed 22 so a switch row and a text row are the same height — the toggle is
+    22 and a body line is 21.6, which put a 0.4 wobble in the pitch. */}
+<div class="flex h-22 items-center justify-between">
+  <span class="text-app-body font-semibold text-ember">{label}</span>
+
+  {value && (
+    <span class="flex items-center gap-6 text-app-meta font-medium text-ember/75">
+      {value}
+      <Icon name="chevron" u={14} />
+    </span>
+  )}
+
+  {/* 40 = 16 knob + 16 travel + 4 padding each side. px-3 put the knob on a
+      1.5px inset at the frame's low clamp, where subpixel rounding walked it
+      off centre; 4 is the smallest rung the rest of the set uses.
+      role="img" because the switch is the row's entire value — without it
+      "Private" and "Paid" announce as two labels with nothing after them. */}
+  {toggle && (
+    <span
+      class:list={[
+        'flex h-22 w-40 items-center rounded-full px-4',
+        toggle === 'on'
+          ? 'justify-end bg-ember/25 ring-1 ring-ember/70 ring-inset'
+          : 'justify-start bg-white/15',
+      ]}
+      role="img"
+      aria-label={`${label}, ${toggle}`}
+    >
+      <span
+        class:list={[
+          'size-16 rounded-full',
+          toggle === 'on' ? 'bg-ember' : 'bg-white/60',
+        ]}
+      ></span>
+    </span>
+  )}
+</div>
