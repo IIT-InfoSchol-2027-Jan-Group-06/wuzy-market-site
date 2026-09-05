@@ -288,7 +288,8 @@ h1, h2, h3, .font-script {
   background-color: rgba(255, 231, 131, 0.2);
 }
 
-.nav-cta[aria-current='true'] {
+.nav-cta[aria-current='true'],
+.nav-cta[aria-current='page'] {
   border-color: var(--color-ember);
   background-color: var(--color-ember);
   color: var(--color-bone);

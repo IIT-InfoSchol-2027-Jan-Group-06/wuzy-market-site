@@ -1,0 +1,56 @@
+---
+// The /enterprise hero. Same shape as Hero.astro — Anton uppercase over a
+// lowercase Caveat ember tail, sub-copy, one glass CTA — with its own class
+// prefix and no word-cycler.
+//
+// Copied rather than made a prop on Hero.astro: that component's cycler lives in
+// a bundled <script> which cannot read Astro.props, so parameterising it would
+// mean define:vars (which breaks its `import { gsap }`) or a data-attribute —
+// both edits to a component shipping on the front page, for no gain here.
+//
+// id is "ent-hero", NOT "hero": the nav's scroll spy treats "hero" as the signal
+// to clear every highlight, which would fight the Enterprise link's own
+// aria-current="page".
+---
+
+<section id="ent-hero" class="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20">
+  <div class="w-full max-w-[1150px] text-center">
+
+    <p class="ent-hero-label text-sm font-medium uppercase tracking-[0.08em] text-ember">
+      for hosts and organisers
+    </p>
+
+    <h1 class="ent-hero-title mt-4 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] font-normal text-charcoal">
+      <span class="block uppercase">fill the room</span>
+      <span class="block uppercase">
+        with your <span class="font-control-cursive lowercase text-ember [font-size:1.15em]">crowd.</span>
+      </span>
+    </h1>
+
+    <p class="ent-hero-copy mx-auto mt-6 max-w-xl text-base font-normal leading-relaxed tracking-[-0.01em] text-charcoal/70">
+      the easiest way to host, track tickets and manage your crowd in one place.
+    </p>
+
+    <div class="ent-hero-cta mt-10 flex flex-wrap items-center justify-center gap-4">
+      <a href="#host" class="btn-glass-yellow !rounded-full px-7">
+        Start hosting
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+
+  // Entrance on load, not on scroll — this is above the fold. Mirrors
+  // Hero.astro's timing so the two pages feel like one site.
+  //
+  // Direct children only on the title: as a descendant selector it would also
+  // match the spans nested inside the second line and compound their y.
+  gsap.from('.ent-hero-label', { y: 24, opacity: 0, duration: 0.8, ease: 'power3.out' });
+  gsap.from('.ent-hero-title > span', {
+    y: 60, opacity: 0, duration: 1, stagger: 0.12, delay: 0.1, ease: 'power4.out',
+  });
+  gsap.from('.ent-hero-copy', { y: 24, opacity: 0, duration: 0.8, delay: 0.5, ease: 'power3.out' });
+  gsap.from('.ent-hero-cta a', { y: 16, opacity: 0, duration: 0.7, delay: 0.65, ease: 'power3.out' });
+</script>

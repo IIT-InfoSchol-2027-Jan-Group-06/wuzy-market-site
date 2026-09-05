@@ -1,0 +1,128 @@
+---
+// A numbered three-card explainer: eyebrow, two-line headline with the Caveat
+// ember tail, then N cards each carrying a figure, a title and a body.
+//
+// The repo had no numbered-step primitive. About.astro is the closest, but its
+// card is {figure, text} — two slots — and this needs three. The card surface is
+// the pricing card's, and the figure sits in the stat-figure slot (Inter 300
+// ember), so '01' drops in with no new CSS.
+//
+// Rendered more than once per page, so the script below is scoped per instance.
+interface Item {
+	n: string;
+	title: string;
+	body: string;
+}
+
+interface Props {
+	id: string;
+	label: string;
+	line1: string;
+	line2Prefix?: string;
+	accentWord: string;
+	items: Item[];
+}
+
+const { id, label, line1, line2Prefix, accentWord, items } = Astro.props;
+---
+
+<section id={id} data-explainer class="relative px-5 py-28">
+  <div class="mx-auto w-full max-w-[1150px]">
+    <!-- Head -->
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="explainer-label text-sm font-medium uppercase tracking-[0.08em] text-ember">
+        {label}
+      </p>
+
+      <h2 class="mt-4 font-display font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+        <span class="block overflow-hidden text-[clamp(36px,5.5vw,68px)]">
+          {line1.split(' ').map((w) => (
+            <span class="inline-block align-top">
+              <span class="explainer-word inline-block will-change-transform">{w}&nbsp;</span>
+            </span>
+          ))}
+        </span>
+        <!-- Looser line box than the h2's 1.2 because this line is set in
+             Caveat and overflow-hidden (needed for the reveal mask) clips
+             anything outside it. The site's other accent words happen to have
+             no descenders; "doors open." does, and lost the p at 1.2. -->
+        <span class="block overflow-hidden text-[clamp(36px,5.5vw,68px)] leading-[1.45]">
+          <span class="explainer-word inline-block will-change-transform">
+            {line2Prefix && <span class="uppercase">{line2Prefix}&nbsp;</span>}
+            <span class="font-control-cursive lowercase text-ember">{accentWord}</span>
+          </span>
+        </span>
+      </h2>
+    </div>
+
+    <!-- Grid items stretch, so the cards already share the tallest one's height.
+         No flex-1 mechanic here — the pricing cards need one because they have a
+         CTA to push to the bottom; these end at the body, so it earns nothing. -->
+    <div class="mt-16 grid gap-6 md:grid-cols-3">
+      {items.map((item) => (
+        <div class="explainer-card pricing-card rounded-[24px] border border-white/10 bg-white/[0.03] p-7 shadow-card">
+          <p class="font-control text-[clamp(44px,5vw,60px)] font-light leading-none tracking-[-0.02em] text-ember">
+            {item.n}
+          </p>
+          <h3 class="mt-5 font-display text-2xl font-normal tracking-[0.02em] text-charcoal">
+            {item.title}
+          </h3>
+          <p class="mt-3 text-[15px] font-normal leading-relaxed tracking-[-0.01em] text-charcoal/70">
+            {item.body}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Scoped per instance. Astro bundles this script once per page no matter how
+  // many times the component renders, so a document-wide selector would sweep
+  // every instance's cards into one stagger, and a string trigger would resolve
+  // to the first section only — the second one would play offscreen and be done
+  // by the time you reached it. Element refs as triggers, never strings.
+  document.querySelectorAll<HTMLElement>('[data-explainer]').forEach((root) => {
+    const label = root.querySelector<HTMLElement>('.explainer-label');
+    const words = Array.from(root.querySelectorAll<HTMLElement>('.explainer-word'));
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('.explainer-card'));
+
+    if (label) {
+      gsap.from(label, {
+        y: 24,
+        autoAlpha: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: label, start: 'top 85%', once: true },
+      });
+    }
+
+    if (words.length && label) {
+      gsap.from(words, {
+        yPercent: 110,
+        autoAlpha: 0,
+        rotate: 4,
+        duration: 0.9,
+        stagger: 0.09,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: label, start: 'top 80%', once: true },
+      });
+    }
+
+    if (cards.length) {
+      gsap.from(cards, {
+        y: 40,
+        autoAlpha: 0,
+        duration: 0.8,
+        stagger: 0.14,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: cards[0], start: 'top 85%', once: true },
+      });
+    }
+  });
+</script>

@@ -165,8 +165,16 @@ They share **exactly one token**: `--color-ember: #ffe783`.
 inherit straight into the product and read as the website leaking into the app.
 Never style a phone mockup with a marketing token, or vice versa.
 
-**Page order** (`src/pages/index.astro`): Hero → Features → Community → Why
-Choose → Pricing → Waitlist → Footer.
+**Routes.** Two real pages, both through `Layout.astro` (which supplies `<main>`
+— a page renders bare `<section>`s and must not nest its own):
+
+- `/` (`src/pages/index.astro`) — Hero → Features → Community → Why Choose →
+  Pricing → Waitlist → Footer. The consumer pitch.
+- `/enterprise` (`src/pages/enterprise.astro`) — EnterpriseHero → Explainer
+  ("how it works") → Explainer ("why host") → Waitlist (host variant) → Footer.
+  The host pitch.
+
+(`src/pages/mock/[...page].astro` is a dev-only bench for the phone mockups.)
 
 ---
 
@@ -545,7 +553,38 @@ One geometry, three weights:
 - Pricing badge — pill, `11px`, weight 700, uppercase, `0.1em`, solid ember
 - Eyebrow — `14px`, weight 500, uppercase, `0.08em`, ember
 
-### 8.6 In-app primitives
+### 8.6 The explainer — numbered steps
+
+`src/components/Explainer.astro` is the numbered three-card primitive. It is
+prop-driven and rendered twice on `/enterprise`. **Use it rather than building
+another numbered list.**
+
+```
+{ id, label, line1, line2Prefix?, accentWord, items: [{ n, title, body }] }
+```
+
+It is the section shell (§8.1) plus the two-line headline (§8.2), over cards that
+reuse the free-tier pricing surface — `rounded-[24px] border border-white/10
+bg-white/[0.03] p-7 shadow-card` — with the figure sitting in the `stat_figure`
+slot (Inter 300 ember), so `'01'` needs no new CSS. No `flex-1` mechanic: grid
+items already stretch to the tallest card, and unlike a pricing card there is
+nothing after the body to push down.
+
+Two rules it encodes, both worth knowing before you write another repeatable
+section:
+
+- **Its script is scoped per instance.** Astro bundles a component's `<script>`
+  once per page regardless of how many times it renders, and every selector in
+  this codebase is document-global. A second instance of a component whose
+  script says `gsap.from('.x-card', …)` will have its cards swept into the first
+  instance's stagger, and a *string* ScrollTrigger `trigger` resolves to the
+  first match only — so instance two plays offscreen and is finished before you
+  reach it. The fix is `querySelectorAll('[data-explainer]').forEach(root => …)`
+  with element references as triggers, never strings.
+- **Its accent line runs a looser line box** (`leading-[1.45]` against the h2's
+  `1.2`) — see the descender trap in §12.
+
+### 8.7 In-app primitives
 
 All in `src/components/mockups/screens/`. Every one takes the `slotName` /
 `hollow` prop pair: `hollow` blanks the contents while keeping the box (the gap a
@@ -578,7 +617,7 @@ because it is chrome; the overlapping "who's going" stack uses `ring-app-ground`
 the copy block plus its inset (`h-96` for an identity block, `h-280` for
 HeroCard's deep copy). A scrim with a floor across the whole photo is wrong.
 
-### 8.7 Icons
+### 8.8 Icons
 
 `Icon.astro` — a hand-drawn Lucide-style outline set, 14 glyphs, all on a
 `24 × 24` viewBox, `fill="none" stroke="currentColor"` with round caps and joins.
@@ -596,7 +635,7 @@ would scale with it — a 35-unit icon carried a 46% heavier line than a 24-unit
 one beside it. Dividing back out gives every glyph the same optical weight at any
 size. `u=24 → 1.70`, `u=18 → 2.27`, `u=30 → 1.36`.
 
-### 8.8 The phone frame
+### 8.9 The phone frame
 
 - Bezel is a **single ring path** with no background fill, so it overlays and the
   screen shows through the hole. No masking; the component stays transparent over
@@ -622,7 +661,7 @@ size. `u=24 → 1.70`, `u=18 → 2.27`, `u=30 → 1.36`.
 - `.wz-accent` (solid ember on app-ground) is the only place ember becomes a
   *surface*. **Exactly one per screen.**
 
-### 8.9 Rails
+### 8.10 Rails
 
 `wz-rail` — `overflow-x: auto`, `overscroll-behavior-x: contain`, scrollbar
 hidden three ways, children all `shrink-0`.
@@ -792,8 +831,36 @@ Each of these was learned the hard way. The reason matters as much as the rule.
   ground, which is what keeps pinned sections seamless.
 - **Don't add hover lifts to cards.** One card lifts, on an inner wrapper, on
   purpose.
+- **Don't put a descender in a Caveat accent word without loosening the line
+  box.** The masked word reveal needs `overflow-hidden` on the line wrapper, and
+  at the h2's `leading-[1.2]` that clips anything below the baseline. Every
+  accent word that shipped first — `create stories`, `communities.`, `main
+  character era.` — happens to have no descender, so this stayed hidden until
+  `doors open.` lost its `p`. Give the accent line `leading-[1.45]`.
+- **Don't reuse `#hero` as a section id on a new page.** The scroll spy treats
+  `hero` as the signal to clear every nav highlight. Likewise `features`, `why`,
+  `pricing` and `waitlist` — a new page using any of those ids will hijack the
+  nav. `/enterprise` uses `ent-hero`, `how-it-works`, `why-host`, `host`.
 - **Don't mix the two systems.** No Anton inside a phone, no `--color-app-ground`
   on the marketing page, no `rounded-app-*` outside a frame.
+
+### Cross-page links
+
+Now that there is more than one route, every nav and footer href is
+**root-relative** (`/#features`, not `#features`) — a bare hash resolves against
+whatever page you are on and goes nowhere from `/enterprise`.
+
+The scroll spy pairs a section id against a link's `data-target`, so that target
+must be **the hash only**. `NavBar.astro` derives it with
+`targetOf(href) = href.split('#')[1] ?? ''`. It used to be `href.slice(1)`, which
+only ever meant "strip the `#`" — on a root-relative href that yields
+`"#features"`, matches no section id, and kills the highlight on every link with
+no error and no visual clue. If you touch the nav hrefs, check this first.
+
+A link to a page rather than a section gets an empty target and never matches.
+It reports "you are here" with a server-rendered `aria-current="page"` instead,
+computed from `Astro.url.pathname`. Both `'true'` (spy) and `'page'` (page link)
+are styled — if you add a current-state rule, match both.
 
 ---
 
@@ -822,8 +889,13 @@ design task** — `AGENTS.md` forbids layout and animation changes.
   input does `outline-none` and substitutes a border-colour change. The phone
   well is the only element with a real focus ring.
 - **`formEndpoint` is `https://formspree.io/f/REPLACE_ME`** — flagged as a launch
-  blocker in `src/data/site.ts`. Every waitlist signup fails visibly until it is
-  swapped.
+  blocker in `src/data/site.ts`. Every signup fails visibly until it is swapped.
+  Both forms post there; the host form carries a hidden `type=host` so the two
+  lists can be told apart on one endpoint.
+- **`Layout.astro` sets `history.scrollRestoration = 'manual'` globally**, to
+  compensate for the homepage's pin-spacers. `/enterprise` has none, so reloading
+  it part-scrolled returns you to the top. Harmless, unfixed — that script is
+  tuned around the pinned sections and is not worth disturbing for this.
 - **`About.astro` is a fully-styled orphan** — not imported by `index.astro`. It
   is the clearest example of the section pattern, which is why it is cited above,
   but it does not ship.

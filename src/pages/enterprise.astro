@@ -1,0 +1,88 @@
+---
+import EnterpriseHero from '../components/EnterpriseHero.astro';
+import Explainer from '../components/Explainer.astro';
+import Waitlist from '../components/Waitlist.astro';
+import Footer from '../components/Footer.astro';
+
+import Layout from '../layouts/Layout.astro';
+
+// Copy lives here rather than in site.ts, matching every shipping section —
+// site.ts holds config (formEndpoint) plus drafts for sections never built.
+const howItWorks = [
+  {
+    n: '01',
+    title: 'Create Your Event',
+    body: 'Set up your event page in under two minutes with custom details and zero technical hassle.',
+  },
+  {
+    n: '02',
+    title: 'Track Ticket Sales & Registrations',
+    body: 'Monitor live sales, view guest list updates in real time, and know exactly who is pulling up before doors open.',
+  },
+  {
+    n: '03',
+    title: 'Watch Engagement Skyrocket',
+    body: 'We push your event directly to local users whose interests match your vibe, bringing you the right target audience so your crowd is active and involved.',
+  },
+];
+
+const whyHost = [
+  {
+    n: '01',
+    title: 'Target Audience Reach',
+    body: 'We skip generic feeds and deliver your event directly to local users who share your specific vibe, ensuring you fill the room with an engaged crowd.',
+  },
+  {
+    n: '02',
+    title: 'Effortless Sales & Tracking',
+    body: 'A simple setup to monitor ticket sales, guest registrations, and attendee lists in real time.',
+  },
+  {
+    n: '03',
+    title: 'Built-In Audience Growth',
+    body: 'Convert one-time ticket buyers into a loyal community, keeping your crowd connected and ready for your next event.',
+  },
+];
+---
+
+<Layout
+	title="Wuzy for hosts — host, track and fill your events"
+	description="Host on Wuzy: set up an event in two minutes, track ticket sales and registrations in real time, and reach local people whose interests match your vibe."
+	ogTitle="Wuzy — fill the room with your crowd."
+	ogDescription="The easiest way to host, track tickets and manage your crowd in one place."
+>
+	<!-- No <main> here — Layout provides it, and the scroll spy reads
+	     `main section[id]`. Section ids deliberately avoid hero/features/why/
+	     pricing/waitlist, which the spy would treat as homepage sections. -->
+	<EnterpriseHero />
+
+	<Explainer
+		id="how-it-works"
+		label="how it works"
+		line1="THREE STEPS TO"
+		accentWord="doors open."
+		items={howItWorks}
+	/>
+
+	<Explainer
+		id="why-host"
+		label="why host on Wuzy"
+		line1="BUILT FOR"
+		accentWord="organisers."
+		items={whyHost}
+	/>
+
+	<Waitlist
+		id="host"
+		label="ready to elevate your event hosting?"
+		line1="HOST YOUR"
+		accentLine="next one here."
+		desc="be the first to try Wuzy to host your event."
+		buttonLabel="join host list"
+		successTitle="you're on the host list ✓"
+		successBody="keep an eye on your inbox."
+		hiddenFields={{ type: 'host', _subject: 'New Wuzy host signup' }}
+	/>
+
+	<Footer />
+</Layout>
