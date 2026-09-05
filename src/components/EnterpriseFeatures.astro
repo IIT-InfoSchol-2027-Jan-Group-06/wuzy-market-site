@@ -88,10 +88,7 @@ const steps = [
            everything in caps, and the Caveat tail is lowercase by design. -->
       <div class="ent-outro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 text-center">
         <div class="mx-auto w-full max-w-[1150px]">
-          <p class="ent-outro-label text-sm font-medium tracking-[0.08em] text-ember">
-            community
-          </p>
-          <h2 class="mt-4 font-display leading-[1.05] font-normal tracking-[0.02em] text-charcoal">
+          <h2 class="font-display leading-[1.05] font-normal tracking-[0.02em] text-charcoal">
             <span class="block overflow-hidden text-[clamp(48px,8vw,112px)]">
               <span class="ent-outro-word block will-change-transform">WATCH IT</span>
             </span>
@@ -282,10 +279,9 @@ const steps = [
     exit(slides[slides.length - 1], '+=0.15');
 
     if (outro && outroWords.length) {
-      // Community's build, at its own timings: the label rises, the lines slide
-      // up out of their masks, the sub-copy follows.
+      // Community's build, at its own timings: the lines slide up out of their
+      // masks, the sub-copy follows.
       tl.to(outro, { autoAlpha: 1, duration: 0.2 }, '<0.35')
-        .from('.ent-outro-label', { y: 20, autoAlpha: 0, duration: 0.2, ease: 'power2.out' }, '<')
         .fromTo(
           outroWords,
           { yPercent: 120, autoAlpha: 0 },
@@ -303,8 +299,7 @@ const steps = [
       // faces first, so the heading is the last thing standing.
       tl.to(faces, { x: 0, y: 0, scale: 0.2, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 }, '+=1.2')
         .to(outroWords, { yPercent: -120, autoAlpha: 0, duration: 0.3, stagger: 0.04, ease: 'power2.in' }, '<0.1')
-        .to('.ent-outro-label', { y: -20, autoAlpha: 0, duration: 0.2, ease: 'power2.in' }, '<0.1')
-        .to('.ent-outro-desc', { y: -20, autoAlpha: 0, duration: 0.25, ease: 'power2.in' }, '<0.05');
+        .to('.ent-outro-desc', { y: -20, autoAlpha: 0, duration: 0.25, ease: 'power2.in' }, '<0.15');
     }
 
     tl.to({}, { duration: 0.3 });
