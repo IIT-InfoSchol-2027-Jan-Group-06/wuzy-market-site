@@ -1,0 +1,39 @@
+---
+// One headline number on the dashboard: what it counts, then the count.
+//
+// The export fills these with ember at 20% over the ground, which is exactly
+// what bg-app-surface resolves to — the same surface the search fields and the
+// form fields use, so nothing new is introduced.
+//
+// Label takes the section-label recipe; the figure takes the numeric step, the
+// same one the ticket price and the date badge use.
+//
+// Width is explicit, not flex-1: the floating copy is rendered outside the row,
+// where flex-1 means nothing, and it has to be the same box as the slot it lands
+// on. 155 + 16 + 155 is the 326 column exactly.
+interface Props {
+  label: string;
+  value: string;
+  slotName?: string;
+  hollow?: boolean;
+  floating?: boolean;
+}
+const { label, value, slotName, hollow = false, floating = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    // justify-between, not centred: one label wraps to two lines and the other
+    // does not, and centring each card's own stack put the two figures at
+    // different heights. Ranged top and bottom, they line up whatever the label
+    // does.
+    'flex h-126 w-155 shrink-0 flex-col items-center justify-between rounded-app-lg bg-app-surface px-16 py-20 text-center',
+    // It has a fill of its own, so wz-lifted rather than wz-float.
+    floating && 'wz-lifted',
+    hollow && 'invisible',
+  ]}
+  data-slot={slotName}
+>
+  <span class="text-app-body font-semibold text-ember">{label}</span>
+  <span class="text-app-numeric font-bold text-white">{value}</span>
+</div>

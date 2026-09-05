@@ -1,0 +1,41 @@
+---
+import EnterpriseHero from '../components/EnterpriseHero.astro';
+import EnterpriseFeatures from '../components/EnterpriseFeatures.astro';
+import WhyHost from '../components/WhyHost.astro';
+import Waitlist from '../components/Waitlist.astro';
+import Footer from '../components/Footer.astro';
+
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+	title="Wuzy for hosts — host, track and fill your events"
+	description="Host on Wuzy: set up an event in two minutes, track ticket sales and registrations in real time, and reach local people whose interests match your vibe."
+	ogTitle="Wuzy — fill the room with your crowd."
+	ogDescription="The easiest way to host, track tickets and manage your crowd in one place."
+>
+	<!-- No <main> here — Layout provides it, and the scroll spy reads
+	     `main section[id]`. Section ids deliberately avoid hero/features/why/
+	     pricing/waitlist, which the spy would treat as homepage sections. -->
+	<EnterpriseHero />
+
+	<!-- How it works: the two steps, as live mockups. -->
+	<EnterpriseFeatures />
+
+	<!-- Why host: the three reasons, on the Why Choose card treatment. -->
+	<WhyHost />
+
+	<Waitlist
+		id="host"
+		label="ready to elevate your event hosting?"
+		line1="HOST YOUR"
+		accentLine="next one here."
+		desc="be the first to try Wuzy to host your event."
+		buttonLabel="join host list"
+		successTitle="you're on the host list ✓"
+		successBody="keep an eye on your inbox."
+		hiddenFields={{ type: 'host', _subject: 'New Wuzy host signup' }}
+	/>
+
+	<Footer />
+</Layout>

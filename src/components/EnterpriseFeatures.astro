@@ -1,0 +1,238 @@
+---
+// The host pitch, as live phone mockups.
+//
+// Same machinery as Features.astro on the home page: the section pins, the
+// slides crossfade one into the next, and the same page scroll drives each
+// phone — the breakouts fly into their slots, then the screen scrolls its own
+// runway, before the slide hands off. See ./mockups/WuzyFrame.astro.
+//
+// What it does not have is Features' intro overlay. That section opens on a
+// headline that lights up word by word; this one has two steps to show and a
+// closing line, so it starts on the first mockup and spends its scroll there.
+import CreateEventFrame from './mockups/CreateEventFrame.astro';
+import DashboardFrame from './mockups/DashboardFrame.astro';
+
+// Two slides, each a pinned screen:
+//   t    → slide headline
+//   d    → slide sub-copy
+//   Mock → the live phone frame shown next to the headline
+const steps = [
+  {
+    t: 'Create Your Event',
+    d: 'Set up your event page in under two minutes with custom details and zero technical hassle.',
+    Mock: CreateEventFrame,
+  },
+  {
+    t: 'Track Ticket Sales & Registrations',
+    d: 'Monitor live sales, view guest list updates in real time, and know exactly who is pulling up before doors open.',
+    Mock: DashboardFrame,
+  },
+];
+---
+
+<section id="enterprise-features" class="relative">
+  <!-- Pinned scroll area. `uppercase` here is load-bearing: it is what puts the
+       slide headline and its sub-copy in caps, exactly as the home page does.
+       The strings themselves are sentence case. -->
+  <div class="ent-scroll relative">
+    <div class="ent-sticky flex min-h-screen items-center justify-center overflow-hidden uppercase">
+
+      <div class="mx-auto flex w-full max-w-[1150px] items-center px-5">
+        {steps.map((f) => (
+          <div class="ent-slide pointer-events-none absolute inset-x-0 mx-auto w-full max-w-[1150px] px-5">
+            {/* `1fr auto` rather than an even split: the phone's floating pieces
+                hang past both edges of the frame, so the visual column has to
+                size to its content and carry a gutter. Side-by-side starts at
+                xl — below that the copy track is too narrow and the headline
+                ran under the breakouts, so it stacks with the phone on top. */}
+            <div class="grid items-center gap-10 xl:grid-cols-[1fr_auto]">
+              <div class="ent-copy order-2 min-w-0 xl:order-1">
+                <h2 class="ent-title mt-4 font-display text-[clamp(36px,6vw,80px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+                  {f.t.split(' ').map((w) => (
+                    <span class="inline-block align-top">
+                      <span class="ent-word inline-block will-change-transform">{w}&nbsp;</span>
+                    </span>
+                  ))}
+                </h2>
+                <p class="ent-desc mt-5 max-w-md text-base font-normal leading-relaxed tracking-[-0.01em] text-charcoal/70">
+                  {f.d}
+                </p>
+              </div>
+              <div class="ent-visual order-1 flex justify-center px-[clamp(16px,5vw,92px)] xl:order-2">
+                <f.Mock />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Closing beat. The third thing a host gets is not a screen, so it is a
+           line rather than a mockup — in the Community heading's treatment,
+           held inside the same pin so it reads as the payoff to the two steps
+           instead of a new section. normal-case: the sticky above puts
+           everything in caps, and the Caveat tail is lowercase by design. -->
+      <div class="ent-outro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 text-center">
+        <div class="mx-auto w-full max-w-[1150px]">
+          <p class="ent-outro-label text-sm font-medium tracking-[0.08em] text-ember">
+            engagement
+          </p>
+          <h2 class="mt-4 font-display leading-[1.05] font-normal tracking-[0.02em] text-charcoal">
+            <span class="block overflow-hidden text-[clamp(48px,8vw,112px)]">
+              <span class="ent-outro-word block will-change-transform">WATCH IT</span>
+            </span>
+            {/* Looser line box than the 1.05 above: this line is Caveat inside
+                an overflow-hidden mask, and "skyrocket." has a descender that
+                a 1.05 box clips clean off. */}
+            <span class="block overflow-hidden text-[clamp(48px,8vw,112px)] leading-[1.45]">
+              <span class="ent-outro-word block will-change-transform">
+                <span class="font-control-cursive text-ember normal-case">skyrocket.</span>
+              </span>
+            </span>
+          </h2>
+          <p class="ent-outro-desc mx-auto mt-5 max-w-md text-base font-normal normal-case leading-relaxed tracking-[-0.01em] text-charcoal/70">
+            We push your event directly to local users whose interests match your vibe, so the room fills with people who actually want to be in it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { pinScale } from '../lib/scroll';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const slides = gsap.utils.toArray<HTMLElement>('.ent-slide');
+  const scroller = document.querySelector<HTMLElement>('.ent-scroll');
+  const sticky = document.querySelector<HTMLElement>('.ent-sticky');
+
+  if (slides.length && scroller && sticky) {
+    // A slide's hold is two beats the same page scroll drives, back to back:
+    //   homeDur   — the breakouts fly out of the page and into their slots
+    //   screenDur — then the screen itself scrolls its whole runway
+    // Only once both have finished does the slide hand off. Nobody has to find
+    // the phone and scroll it by hand.
+    const homeDur = 0.9;
+    const screenDur = 2.9;
+
+    // `.wz-well` scrolls natively on its own; here the timeline owns it, so the
+    // manual affordance comes off — otherwise a wheel over the phone and the
+    // scrub fight each other for scrollTop.
+    const drive = (s: HTMLElement) => {
+      const wz = s.querySelector<HTMLElement>('.wz');
+      const well = s.querySelector<HTMLElement>('.wz-well');
+      if (!wz || !well) return;
+      well.style.overflowY = 'hidden';
+      well.removeAttribute('tabindex');
+      well.removeAttribute('role');
+      const p = { h: 0, s: 0 };
+      // Keep the fraction rather than the pixel value: the runway changes with
+      // the frame width, and a scrub tween that has already finished never fires
+      // onUpdate again, so a resize left the screen parked against the old one.
+      const apply = () => {
+        well.scrollTop = p.s * (well.scrollHeight - well.clientHeight);
+      };
+      window.addEventListener('resize', apply);
+      tl.fromTo(
+        p,
+        { h: 0 },
+        { h: 1, duration: homeDur, ease: 'power2.inOut', onUpdate: () => (wz as any).wzHome?.(p.h) },
+        '<0.45'   // overlap the tail of the entrance, don't wait for it
+      ).fromTo(p, { s: 0 }, { s: 1, duration: screenDur, ease: 'none', onUpdate: apply });
+    };
+
+    const outro = document.querySelector<HTMLElement>('.ent-outro');
+    const outroWords = gsap.utils.toArray<HTMLElement>('.ent-outro-word');
+
+    // Hide every slide up front, so GSAP owns visibility.
+    slides.forEach((s) => {
+      gsap.set(s, { scale: 0.7, autoAlpha: 0 });
+      gsap.set(s.querySelectorAll('.ent-word'), { autoAlpha: 0, y: 70, rotate: 5 });
+      gsap.set(s.querySelector('.ent-desc'), { autoAlpha: 0, y: 45 });
+      gsap.set(s.querySelector('.ent-visual .wz'), { autoAlpha: 0, scale: 0.7 });
+    });
+
+    if (outro) gsap.set(outro, { autoAlpha: 0 });
+
+    // Budget: roughly half a viewport of entrance, then each mockup seating its
+    // breakouts and running its screen. Same 2.8 per slide the home page gives
+    // them, without an intro beat to pay for. These are the pacing knobs.
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: scroller,
+        start: 'top top',
+        // + 1.9 for the closing line: its build, then the 1.2 viewports every
+        // pinned section holds its finished state for.
+        end: () => '+=' + (0.6 + slides.length * 2.8 + 1.9) * pinScale() * window.innerHeight,
+        pin: sticky,
+        scrub: true,
+        anticipatePin: 1,
+      },
+    });
+
+    const parts = (s: HTMLElement) => ({
+      words: s.querySelectorAll<HTMLElement>('.ent-word'),
+      desc: s.querySelector<HTMLElement>('.ent-desc'),
+      img: s.querySelector<HTMLElement>('.ent-visual .wz'),
+    });
+
+    const enter = (s: HTMLElement, at: number | string) => {
+      const { words, desc, img } = parts(s);
+      tl.fromTo(s, { scale: 0.7, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'power2.out' }, at)
+        .fromTo(words, { autoAlpha: 0, y: 75, rotate: 6 }, { autoAlpha: 1, y: 0, rotate: 0, duration: 0.45, ease: 'power3.out', stagger: 0.07 }, '<0.2')
+        .fromTo(desc, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out' }, '<0.3')
+        .fromTo(img, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'power3.out' }, '<0.15');
+    };
+
+    // Children first, the container's own fade LAST — fading the container first
+    // hides the slide before its own exit has been seen.
+    const exit = (s: HTMLElement, at: string) => {
+      const { words, desc, img } = parts(s);
+      tl.to(words, { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 }, at)
+        .to(desc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.1')
+        .to(img, { scale: 0.6, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.1')
+        .to(s, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.15');
+    };
+
+    enter(slides[0], 0);
+    drive(slides[0]);
+
+    slides.forEach((s, i) => {
+      if (i === 0) return;
+      exit(slides[i - 1], '+=0.15');
+      // Overlap the tail of the exit so the hand-off crossfades instead of
+      // going blank.
+      enter(s, '<0.35');
+      drive(s);
+    });
+
+    // Clear the last slide, then hold the closing line before the pin releases,
+    // so nothing is left on screen when the host CTA arrives.
+    exit(slides[slides.length - 1], '+=0.15');
+
+    if (outro && outroWords.length) {
+      // Community's build, at its own timings: the label rises, the lines slide
+      // up out of their masks, the sub-copy follows.
+      tl.to(outro, { autoAlpha: 1, duration: 0.2 }, '<0.35')
+        .from('.ent-outro-label', { y: 20, autoAlpha: 0, duration: 0.2, ease: 'power2.out' }, '<')
+        .fromTo(
+          outroWords,
+          { yPercent: 120, autoAlpha: 0 },
+          { yPercent: 0, autoAlpha: 1, duration: 0.3, stagger: 0.08, ease: 'power2.out' },
+          '<0.05'
+        )
+        .from('.ent-outro-desc', { y: 20, autoAlpha: 0, duration: 0.25, ease: 'power2.out' }, '<0.25')
+        // The same 1.2 viewports every pinned section holds its finished state
+        // for, so this settles instead of cutting away.
+        .to(outroWords, { yPercent: -120, autoAlpha: 0, duration: 0.3, stagger: 0.04, ease: 'power2.in' }, '+=1.2')
+        .to('.ent-outro-label', { y: -20, autoAlpha: 0, duration: 0.2, ease: 'power2.in' }, '<0.1')
+        .to('.ent-outro-desc', { y: -20, autoAlpha: 0, duration: 0.25, ease: 'power2.in' }, '<0.05');
+    }
+
+    tl.to({}, { duration: 0.3 });
+  }
+</script>

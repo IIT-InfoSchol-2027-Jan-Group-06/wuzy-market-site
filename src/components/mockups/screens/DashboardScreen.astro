@@ -1,0 +1,72 @@
+---
+// The host's dashboard for the event they created on the previous screen.
+//
+// Laid out on the shared 390 artboard: a 32 gutter, a 326 content column, and
+// the common rhythm — 24 from the header to the first block, 40 between
+// sections, 20 from a label to its content.
+//
+// The export is 400 wide with a 30 gutter (the Create Event one was 360 with a
+// 44). Both are redrawn on 390/32/326 rather than transcribed, which is the
+// whole reason a number means one size across the set.
+//
+// `hollow` on a piece leaves its box in place but blanks it, which is how the
+// breakouts get a gap to fly back into.
+import EventSummary from './EventSummary.astro';
+import StatCard from './StatCard.astro';
+import IncomeChart from './IncomeChart.astro';
+import Icon from './Icon.astro';
+import { dashboard } from './content';
+
+interface Props { hollow?: string[] }
+const { hollow = [] } = Astro.props;
+const out = (slot: string) => hollow.includes(slot);
+
+const { event, stats, income } = dashboard;
+---
+
+{/* pt-56 is the status-bar clearance, the same on every screen */}
+<div class="wz-screen font-app w-full bg-app-ground pt-56 pb-180 text-white antialiased select-none">
+  <!-- Same header shape as Create Event: the control you leave by, then the
+       title. Flex owns the alignment. -->
+  <header class="flex items-center gap-16 px-32">
+    <span class="wz-chrome grid size-50 shrink-0 place-items-center rounded-full text-white">
+      <Icon name="back" u={24} />
+    </span>
+    <h1 class="text-app-display font-bold text-ember">Dashboard</h1>
+  </header>
+
+  <div class="mt-24 px-32">
+    <EventSummary img={event.img} kicker={event.kicker} name={event.name} />
+  </div>
+
+  <!-- 155 + 16 + 155 is the 326 column exactly. -->
+  <div class="mt-40 flex gap-16 px-32">
+    {stats.map((s) => (
+      <StatCard label={s.label} value={s.value} slotName={s.slotName} hollow={out(s.slotName)} />
+    ))}
+  </div>
+
+  <!-- The figure and its range selector share one centred row, so the pill is
+       ranged on the amount's centre line rather than nudged onto it. -->
+  <div class="mt-40 flex items-center justify-between px-32">
+    <div>
+      <h2 class="text-app-body font-semibold text-ember">{income.label}</h2>
+      <p class="mt-4 text-app-numeric font-bold text-white">{income.total}</p>
+    </div>
+    <span class="flex h-28 shrink-0 items-center gap-6 rounded-full bg-ember/25 px-14 text-app-meta font-semibold text-ember ring-1 ring-ember/70 ring-inset">
+      {income.range}
+      <Icon name="chevron" u={12} class="rotate-90" />
+    </span>
+  </div>
+
+  <div class="mt-20 px-32">
+    <IncomeChart
+      points={income.points}
+      axis={income.axis}
+      max={income.max}
+      peak={income.peak}
+      slotName={income.slotName}
+      hollow={out(income.slotName)}
+    />
+  </div>
+</div>

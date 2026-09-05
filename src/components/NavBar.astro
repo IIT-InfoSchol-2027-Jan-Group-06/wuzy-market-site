@@ -11,20 +11,40 @@
 // Layout: on desktop the plain links sit inline in the pill next to the CTA.
 // On mobile they collapse into a hamburger menu, while the waitlist CTA
 // stays pinned in the pill so it is always visible.
+// Hrefs are root-relative, not bare hashes. The nav renders on /enterprise too,
+// where "#features" would resolve to /enterprise#features and go nowhere.
 const links = [
-  { label: 'Features', href: '#features' },
-  { label: 'Why Wuzy', href: '#why' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Join waitlist', href: '#waitlist', cta: true },
+  { label: 'Features', href: '/#features' },
+  { label: 'Why Wuzy', href: '/#why' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Enterprise', href: '/enterprise' },
+  { label: 'Join waitlist', href: '/#waitlist', cta: true },
 ];
+
+// The scroll spy matches data-target against a section id, so it wants the hash
+// and nothing else. This used to be href.slice(1), which only ever meant "strip
+// the #" — on a root-relative href it yields "#features", which matches no
+// section id and silently kills the highlight on every link.
+//
+// A page link has no hash, so it gets an empty target and never matches. That is
+// correct: it reports "you are here" through aria-current below instead.
+const targetOf = (href: string) => href.split('#')[1] ?? '';
+
+// Server-rendered "you are here" for the page links, since the spy only ever
+// speaks for sections on the current page. setActive() would overwrite this on
+// the index page, where it is already "false" and correct.
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isCurrentPage = (href: string) => !href.includes('#') && href === path;
 
 // Shared box so every item is the same height — the CTA's border would
 // otherwise make it 2px taller than its neighbours.
 const base =
   'whitespace-nowrap rounded-full border px-2 py-1.5 text-[12px] font-medium tracking-[-0.01em] transition-colors sm:px-3 sm:text-[13px]';
 
+// Two current states to match: "true" from the scroll spy for a section on this
+// page, "page" rendered server-side for a link to the page you are already on.
 const plain =
-  'border-transparent text-charcoal/65 hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember';
+  'border-transparent text-charcoal/65 hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember aria-[current=page]:bg-ember/10 aria-[current=page]:text-ember';
 
 const cta = 'nav-cta';
 ---
@@ -63,8 +83,8 @@ const cta = 'nav-cta';
           <a
             href={l.href}
             data-nav-link
-            data-target={l.href.slice(1)}
-            aria-current="false"
+            data-target={targetOf(l.href)}
+            aria-current={isCurrentPage(l.href) ? 'page' : 'false'}
             class={`${base} ${plain}`}
           >
             {l.label}
@@ -85,8 +105,8 @@ const cta = 'nav-cta';
         <a
           href={l.href}
           data-nav-link
-          data-target={l.href.slice(1)}
-          aria-current="false"
+          data-target={targetOf(l.href)}
+          aria-current={isCurrentPage(l.href) ? 'page' : 'false'}
           class={`${base} ${cta} shrink-0`}
         >
           {l.label}
@@ -108,8 +128,8 @@ const cta = 'nav-cta';
           <a
             href={l.href}
             data-nav-link
-            data-target={l.href.slice(1)}
-            aria-current="false"
+            data-target={targetOf(l.href)}
+            aria-current={isCurrentPage(l.href) ? 'page' : 'false'}
             class="nav-panel-item"
           >
             <span class="nav-panel-index">0{i + 1}</span>
@@ -242,7 +262,8 @@ const cta = 'nav-cta';
   }
 
   .nav-panel-item:hover,
-  .nav-panel-item[aria-current='true'] {
+  .nav-panel-item[aria-current='true'],
+  .nav-panel-item[aria-current='page'] {
     background-color: rgba(255, 231, 131, 0.08);
     color: var(--color-ember);
   }
@@ -258,7 +279,8 @@ const cta = 'nav-cta';
   }
 
   .nav-panel-item:hover .nav-panel-index,
-  .nav-panel-item[aria-current='true'] .nav-panel-index {
+  .nav-panel-item[aria-current='true'] .nav-panel-index,
+  .nav-panel-item[aria-current='page'] .nav-panel-index {
     opacity: 1;
   }
 
@@ -270,7 +292,8 @@ const cta = 'nav-cta';
   }
 
   .nav-panel-item:hover .nav-panel-text,
-  .nav-panel-item[aria-current='true'] .nav-panel-text {
+  .nav-panel-item[aria-current='true'] .nav-panel-text,
+  .nav-panel-item[aria-current='page'] .nav-panel-text {
     transform: translateX(2px);
   }
 
@@ -292,7 +315,8 @@ const cta = 'nav-cta';
   }
 
   .nav-panel-item:hover .nav-panel-arrow,
-  .nav-panel-item[aria-current='true'] .nav-panel-arrow {
+  .nav-panel-item[aria-current='true'] .nav-panel-arrow,
+  .nav-panel-item[aria-current='page'] .nav-panel-arrow {
     opacity: 0.9;
     transform: translateX(0);
   }

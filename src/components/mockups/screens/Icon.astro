@@ -7,6 +7,11 @@
 // line than a 24-unit one sitting beside it on the same screen. Dividing it
 // back out gives every glyph the same optical weight at any size, which is the
 // whole reason the set reads as one family.
+//
+// Size with `u`, never with a `size-*` class. The width/height below are written
+// as an inline style, which beats a utility, so `class="size-30"` is silently
+// ignored and the glyph renders at the `u` default of 24. Two existing call
+// sites (NavBar, PlusButton) do exactly that and have been drawing 24 all along.
 interface Props { name: string; u?: number; class?: string }
 const { name, u = 24, class: cls = '' } = Astro.props;
 
@@ -116,4 +121,7 @@ const STROKE_AT_24 = 1.7;
       <path d="m15.7 15.7 3.9 3.9" />
     </>
   )}
+
+  {/* Right chevron — the affordance on a row that opens a picker */}
+  {name === 'chevron' && <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />}
 </svg>

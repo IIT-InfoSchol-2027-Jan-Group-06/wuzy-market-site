@@ -1,0 +1,88 @@
+---
+// Enterprise slide 01 — "Create Your Event". The host's Create Event form.
+//
+// The three pieces that fly out are the same components the screen renders,
+// from the same content — the screen just draws them hollow, leaving the gap
+// they return to. Nothing here declares a home position: each piece names its
+// slot and the frame measures it.
+//
+// Composition: a diagonal cascade, top-left to bottom-centre, in the order you
+// actually fill the form in. The other four are a symmetric pair, a big card
+// with two badges, a left/right/bottom spread, and a full-height ladder.
+import WuzyFrame from './WuzyFrame.astro';
+import CreateEventScreen from './screens/CreateEventScreen.astro';
+import EventBanner from './screens/EventBanner.astro';
+import FieldCard from './screens/FieldCard.astro';
+import PublishButton from './screens/PublishButton.astro';
+import { createEvent } from './screens/content';
+import { float } from './screens/motion';
+
+const { banner, title, publish } = createEvent;
+
+const lifted = [banner.slotName, title.slotName, publish.slotName];
+
+const cover = float({ x: -6, y: 28, parallax: -22, speed: 'heavy', tilt: 1.5 }, 0);
+const field = float({ x: 104, y: 54, parallax: 22, speed: 'mid', tilt: 2 }, 1);
+// tilt 0: a wide flat pill cannot show rock, the same reason the compose button
+// and the map do not carry one.
+const cta = float({ x: 44, y: 93, parallax: 14, speed: 'light', tilt: 0 }, 2);
+---
+
+<WuzyFrame wellLabel="Create event screen, scrollable">
+  <CreateEventScreen slot="screen" hollow={lifted} />
+
+  <!-- Publish. Chrome, not content: it is the primary action and stays put
+       while the form scrolls, seated against the well's own lower edge at the
+       same 36 the Event screen's buy bar uses. 114 centres its 162 on the 390
+       artboard. Hollow — the floating one lands here and locks. -->
+  <div slot="chrome" class="wz-pin wz-pin--foot" style="--sx:114;--sb:36" aria-hidden="true">
+    <PublishButton label={publish.label} slotName={publish.slotName} hollow />
+  </div>
+
+  <Fragment slot="outs">
+    <div
+      class="wz-out"
+      style={cover.style}
+      data-home={banner.slotName}
+      {...cover.data}
+      role="img"
+      aria-label={banner.label}
+    >
+      <div class="wz-out-e" style={cover.enter}>
+        <div class="wz-out-f" style={cover.rock}>
+          <EventBanner img={banner.img} floating />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out"
+      style={field.style}
+      data-home={title.slotName}
+      {...field.data}
+      role="img"
+      aria-label={`${title.label}, ${title.value}`}
+    >
+      <div class="wz-out-e" style={field.enter}>
+        <div class="wz-out-f" style={field.rock}>
+          <FieldCard label={title.label} value={title.value} floating />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="wz-out"
+      style={cta.style}
+      data-home={publish.slotName}
+      {...cta.data}
+      role="img"
+      aria-label="Publish event"
+    >
+      <div class="wz-out-e" style={cta.enter}>
+        <div class="wz-out-f" style={cta.rock}>
+          <PublishButton label={publish.label} />
+        </div>
+      </div>
+    </div>
+  </Fragment>
+</WuzyFrame>

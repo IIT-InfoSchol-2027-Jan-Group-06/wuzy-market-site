@@ -1,0 +1,41 @@
+---
+// The event a dashboard is about: its cover, with the date/place kicker and the
+// name over the bottom-left corner.
+//
+// Not a variant of EventBanner (a cover picker, no copy, 180 tall) or of
+// HeroCard (438 tall, with a price and a CTA) — the three share four classes,
+// which is not enough to be worth a conditional.
+//
+// The ring is EventBanner's, so the cover reads the same on the screen that
+// picked it and the screen that reports on it. The name takes the title step,
+// matching EventRow — the other 126-tall card that puts an event name over a
+// photo. It was on the display step, which everywhere else in the set is the
+// screen's own h1, and which wrapped a real name onto three lines in a box
+// that only fits two.
+//
+// It carries no slotName/hollow: nothing lifts this card. Add them back the day
+// something does.
+interface Props {
+  img: string;
+  kicker: string;
+  name: string;
+}
+const { img, kicker, name } = Astro.props;
+---
+
+<div class="relative h-126 w-326 shrink-0 overflow-hidden rounded-app-lg ring-1 ring-ember/45 ring-inset">
+  <img src={img} alt="" draggable="false" class="size-full object-cover" />
+
+  <!-- Full-card ramp rather than the fixed h-96 the corner-anchored blocks use.
+       The name here can run to two lines, which pushes the kicker above a
+       fixed-depth scrim and leaves it sitting on bare photo — the export covers
+       the whole card for the same reason. -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent"></div>
+
+  <!-- inset-x, not left alone: the name wraps, and with only a left inset it
+       wrapped hard against the card's right edge. -->
+  <div class="absolute inset-x-20 bottom-16">
+    <p class="text-app-meta font-semibold text-ember">{kicker}</p>
+    <p class="mt-4 text-app-title font-semibold text-white">{name}</p>
+  </div>
+</div>

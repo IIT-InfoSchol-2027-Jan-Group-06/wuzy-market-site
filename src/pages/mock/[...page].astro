@@ -12,6 +12,8 @@ import FeedFrame from '../../components/mockups/FeedFrame.astro';
 import DiscoverFrame from '../../components/mockups/DiscoverFrame.astro';
 import TicketFrame from '../../components/mockups/TicketFrame.astro';
 import ChatFrame from '../../components/mockups/ChatFrame.astro';
+import CreateEventFrame from '../../components/mockups/CreateEventFrame.astro';
+import DashboardFrame from '../../components/mockups/DashboardFrame.astro';
 
 export function getStaticPaths() {
   return import.meta.env.DEV ? [{ params: { page: undefined } }] : [];
@@ -22,6 +24,8 @@ const frames = [
   { name: 'Discover', C: DiscoverFrame },
   { name: 'Event', C: TicketFrame },
   { name: 'Messages', C: ChatFrame },
+  { name: 'Create Event', C: CreateEventFrame },
+  { name: 'Dashboard', C: DashboardFrame },
 ];
 ---
 

@@ -8,8 +8,13 @@
     <h1 class="hero-title mt-2 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] font-normal text-charcoal">
       <span class="block uppercase">every connection</span>
       <span class="block uppercase">
+        <!-- "has a" and the word share one text flow, and the gap between them
+             is the single space in the markup. The word is an inline-flex with
+             no fixed width and no margin, so it starts tight against "HAS A"
+             and grows rightward; #cycle-word tweens its own width on each swap,
+             which is what stops the centred line snapping as it reflows. -->
         has a <span class="font-control-cursive lowercase text-ember [font-size:1.15em]">
-          <span id="cycle-word" class="font-control-cursive">story.</span>
+          <span id="cycle-word" class="font-control-cursive inline-flex whitespace-nowrap will-change-transform">story.</span>
         </span>
       </span>
     </h1>
@@ -58,11 +63,18 @@
       duration: 0.3,
       ease: 'power2.in',
       onComplete: () => {
+        // The word never owns a reserved slot, so the gap after "HAS A" is
+        // always the single space in the markup, whatever word is in. Width
+        // tweens from the outgoing word's measured box to the incoming one's
+        // true content width ('auto' — GSAP measures it live), so the centred
+        // line flows instead of jumping. Landing on 'auto' leaves no px behind,
+        // so a short word like "vibe." can't strand dead space.
+        const oldW = cycleWord.offsetWidth;
         cycleWord.textContent = words[index];
         gsap.fromTo(
           cycleWord,
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }
+          { y: 30, opacity: 0, width: oldW },
+          { y: 0, opacity: 1, width: 'auto', duration: 0.4, ease: 'power2.out' }
         );
       },
     });
@@ -95,6 +107,17 @@
     },
   });
 
-  startCycle(4);
+  // The swap measures the word's width, which is wrong if Caveat hasn't landed
+  // yet — it comes in through a CSS @import, so the first measurement would be
+  // taken in the fallback face and the first transition would overshoot. Arm
+  // the first cycle only once the fonts are ready.
+  // Kill first: ScrollTrigger fires onToggle on its own initial refresh for a
+  // trigger already in view, so a chain is usually already running by the time
+  // the fonts resolve. Re-assigning cycleCall without killing left both running,
+  // which skipped words and — now that each swap tweens width — had two chains
+  // measuring a box the other was mid-tween on.
+  const arm = () => { cycleCall?.kill(); startCycle(4); };
+  if (document.fonts?.ready) document.fonts.ready.then(arm).catch(arm);
+  else arm();
   }
 </script>

@@ -1,0 +1,89 @@
+---
+// The income trend card: an axis, a line, and a tag on the peak.
+//
+// The plot is an inline SVG whose viewBox is its own box in design units, and
+// the element is sized to those same units — so one user unit is one design
+// unit and `stroke-width="6"` is a real 6 units at any frame width. Scaling the
+// box non-uniformly instead, or reaching for non-scaling-stroke, would have
+// pinned the line to CSS pixels and made it read heavy on a narrow viewport,
+// the same trap Icon.astro divides its stroke back out to avoid.
+//
+// Card fill is the export's ember at 20%, which is what bg-app-surface is.
+interface Props {
+  points: number[];
+  axis: string[];
+  max: number;
+  peak: string;
+  slotName?: string;
+  hollow?: boolean;
+  floating?: boolean;
+}
+const { points, axis, max, peak, slotName, hollow = false, floating = false } = Astro.props;
+
+// The plot box, in design units. 34 axis + 12 gap + 248 plot = 294, the card's
+// 326 less its 16 side padding.
+const W = 248;
+const H = 160;
+
+const xs = points.map((_, i) => (i / (points.length - 1)) * W);
+const ys = points.map((v) => H - (v / max) * H);
+const line = xs.map((x, i) => `${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+
+const peakIndex = points.indexOf(Math.max(...points));
+const peakLeft = ((peakIndex / (points.length - 1)) * 100).toFixed(1);
+const peakTop = ((ys[peakIndex] / H) * 100).toFixed(1);
+---
+
+<div
+  class:list={[
+    'h-280 w-326 shrink-0 rounded-app-lg bg-app-surface px-16 py-24',
+    // It has a fill of its own, so wz-lifted rather than wz-float.
+    floating && 'wz-lifted',
+    hollow && 'invisible',
+  ]}
+  data-slot={slotName}
+>
+  <div class="flex h-full items-center gap-12">
+    <!-- Axis. justify-between ranges the label BOXES, which puts each label's
+         optical centre half a line off the value it names — the top one reads
+         low, the bottom one high, and they disagreed with the peak tag, which
+         is placed at its true y. The half-line pull on the first and last puts
+         every label back on its own gridline. Hidden from the reader: out of
+         context it announces as "8K 6K 4K 2K 0". -->
+    <div
+      class="flex w-34 shrink-0 flex-col justify-between text-app-meta font-medium text-white/50 [&>span:first-child]:-mt-[0.65em] [&>span:last-child]:-mb-[0.65em]"
+      style={`height:calc(${H} * var(--spacing))`}
+      aria-hidden="true"
+    >
+      {axis.map((a) => <span>{a}</span>)}
+    </div>
+
+    <!-- Sized from the same constants the viewBox uses, so one user unit stays
+         one design unit. Written as classes, these were a third copy of W and H
+         that had to be kept in step by hand. -->
+    <div class="relative shrink-0" style={`width:calc(${W} * var(--spacing));height:calc(${H} * var(--spacing))`}>
+      <svg viewBox={`0 0 ${W} ${H}`} class="h-full w-full overflow-visible" aria-hidden="true">
+        <polyline
+          points={line}
+          fill="none"
+          stroke="var(--color-ember)"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+
+      <!-- Peak tag, placed as a percentage of the plot box so it tracks the line
+           at any frame width. White on app-ground, the date badge's pairing. -->
+      <span
+        class="absolute -translate-x-1/2 -translate-y-full rounded-full bg-white px-8 text-app-meta font-bold text-app-ground"
+        style={`left:${peakLeft}%;top:${peakTop}%`}
+        aria-hidden="true"
+      >
+        {peak}
+      </span>
+
+      <div class="absolute inset-x-0 bottom-0 h-px bg-white/15"></div>
+    </div>
+  </div>
+</div>

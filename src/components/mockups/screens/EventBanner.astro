@@ -1,0 +1,32 @@
+---
+// The event's cover photo on the Create Event screen.
+//
+// Photo cards elsewhere (FeedCard, Poster, HeroCard, MapCard) carry no ring.
+// This one does, at the same ember/45 inset the "Selling fast" chip uses,
+// because here the photo is a *field* — the cover you picked — not content.
+// The ring is what ties it to the two field cards under it.
+// The ring and the lift are mutually exclusive, and that is not cosmetic.
+// Tailwind's `ring-1` sets the box-shadow PROPERTY at class specificity, so it
+// beats the frame's `:where(.wz-out .wz-out-f) > *` elevation, which is
+// zero-specificity on purpose — a ringed piece would fly with a hairline and no
+// drop at all. `wz-lifted` carries its own ember hairline plus the drop, so
+// floating swaps to it rather than stacking.
+interface Props {
+  img: string;
+  slotName?: string;
+  hollow?: boolean;
+  floating?: boolean;
+}
+const { img, slotName, hollow = false, floating = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    'relative h-180 w-326 shrink-0 overflow-hidden rounded-app-lg',
+    floating ? 'wz-lifted' : 'ring-1 ring-ember/45 ring-inset',
+    hollow && 'invisible',
+  ]}
+  data-slot={slotName}
+>
+  <img src={img} alt="" draggable="false" class="size-full object-cover" />
+</div>
