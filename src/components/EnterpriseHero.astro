@@ -24,12 +24,20 @@
     <h1 class="ent-hero-title mt-4 font-display text-[clamp(48px,7.5vw,96px)] leading-[1.13] tracking-[0.01em] font-normal text-charcoal">
       <span class="block uppercase">fill the room</span>
       <span class="block uppercase">
-        <!-- "with your" and the word share one text flow, gap is the single
-             space in the markup. The word is an inline-flex with NO fixed
-             width and NO margin, anchored left so it starts tight against
-             "YOUR" and expands rightward; #ent-cycle-word tweens its own
-             width per swap so "crowd." -> "community." flows smoothly. -->
-        with your <span class="font-control-cursive lowercase text-ember [font-size:1.15em]">
+        <!-- "with your" takes its own line below sm. Sharing one text flow with
+             the word meant the longest words ("community.", "audience.")
+             wrapped the line in two on a phone, which grew the h1 by a line and
+             — inside a min-h-screen items-center hero — shoved everything down,
+             then back up when a short word came round. Broken onto its own
+             line, the word always starts fresh and its length cannot change the
+             line count. Above sm the whole line fits and it reads as one.
+
+             The word itself is an inline-flex with NO fixed width and NO
+             margin, so the gap after "YOUR" is always the single space in the
+             markup; #ent-cycle-word tweens its own width per swap so the line
+             flows rather than jumping. -->
+        <span class="block sm:inline">with your</span>
+        <span class="font-control-cursive lowercase text-ember [font-size:1.15em]">
           <span id="ent-cycle-word" class="inline-flex whitespace-nowrap will-change-transform">crowd.</span>
         </span>
       </span>
