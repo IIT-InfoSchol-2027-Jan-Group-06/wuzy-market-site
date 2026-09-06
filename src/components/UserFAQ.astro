@@ -1,0 +1,176 @@
+---
+// User FAQ — the questions consumers ask most, placed directly above the
+// waitlist CTA on the home page.
+const faqs = [
+  {
+    q: 'How does Wuzy help me find people to go to events with?',
+    a: 'Wuzy uses an interest-matching algorithm to recommend local events and connect you with individuals or small groups (typically 10–20 people) who share your specific preferences. This removes the friction of attending events alone.',
+  },
+  {
+    q: 'What features are available on the Free Plan versus the Paid Plan?',
+    a: 'The Free Plan allows event discovery, basic matching (up to 10 connections/day, 1 event join/day), messaging, profile posts, and ticket purchases. Upgrading to the Paid Plan ($10/month, adjusted regionally) removes all ads, provides unlimited connections and event joins, and unlocks full attendee list visibility and complete interest matching.',
+  },
+  {
+    q: 'How do ticket purchases and event entries work on Wuzy?',
+    a: 'You can purchase event tickets directly on Wuzy via secure payment processing. Once purchased, a unique QR ticket is generated within your profile. At the event, the host or organizer scans your QR code at the door for quick, contactless entry.',
+  },
+];
+---
+
+<section id="faq" class="relative px-5 py-28">
+  <div class="mx-auto w-full max-w-[760px]">
+    <!-- Label -->
+    <p class="faq-label text-center text-sm font-medium uppercase tracking-[0.08em] text-ember">
+      FAQ
+    </p>
+
+    <!-- Headline (words reveal one-by-one, matching the other sections) -->
+    <h2 class="mt-4 text-center font-display font-normal leading-[1.2] tracking-[0.02em] uppercase text-charcoal">
+      <span class="block overflow-hidden text-[clamp(38px,6vw,68px)]">
+        {'still curious?'.split(' ').map((w) => (
+          <span class="inline-block align-top">
+            <span class="faq-word inline-block will-change-transform">{w}&nbsp;</span>
+          </span>
+        ))}
+      </span>
+      <span class="block overflow-hidden text-[clamp(38px,6vw,68px)] leading-[1.45]">
+        <span class="faq-word inline-block will-change-transform">
+          <span class="font-control-cursive lowercase text-ember">we're here.</span>
+        </span>
+      </span>
+    </h2>
+
+    <!-- Sub copy -->
+    <p class="faq-desc mx-auto mt-5 max-w-md text-center text-base font-normal leading-relaxed tracking-normal text-charcoal/70">
+      the answers users ask most before their first event. can't find yours? drop us a line.
+    </p>
+
+    <!-- Accordion — native <details>/<summary>. The shared `name` makes the
+         browser enforce "one open at a time", and toggling (mouse or keyboard)
+         needs no script at all. The answer animates open AND closed through
+         CSS transition of ::details-content height (interpolate-size). -->
+    <div class="mt-14 space-y-3">
+      {faqs.map((item, i) => (
+        <details
+          name="wuzy-faq"
+          open={i === 0}
+          class="faq-item overflow-hidden rounded-[24px] border shadow-card"
+        >
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left text-charcoal transition-colors hover:text-ember focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ember/70 [&::-webkit-details-marker]:hidden">
+            <span class="text-base font-medium leading-snug sm:text-lg">{item.q}</span>
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden="true"
+              class="faq-chev h-5 w-5 shrink-0 text-ember"
+            >
+              <path
+                d="M5 8l5 5 5-5"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </summary>
+
+          <p class="px-6 pb-6 text-[15px] font-normal leading-relaxed text-charcoal/70">
+            {item.a}
+          </p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Card surface — hairline → ember hairline when open, painted-glass fill */
+  .faq-item {
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.03);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+  .faq-item[open] {
+    border-color: rgba(255, 231, 131, 0.4);
+    background-color: rgba(255, 231, 131, 0.05);
+  }
+
+  /* Answer reveal — animates in BOTH directions, natively. Height animates
+     between 0 and auto (interpolate-size), and content-visibility hides the
+     closed answer from the accessibility tree. Browsers without
+     interpolate-size support fall back to an instant, still-accessible toggle. */
+  .faq-item {
+    interpolate-size: allow-keywords;
+  }
+  .faq-item::details-content {
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
+    content-visibility: hidden;
+    transition:
+      height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-behavior: allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    height: auto;
+    opacity: 1;
+    content-visibility: visible;
+  }
+  @starting-style {
+    .faq-item[open]::details-content {
+      height: 0;
+      opacity: 0;
+    }
+  }
+
+  /* Chevron */
+  .faq-chev {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .faq-item[open] .faq-chev {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Entrance — the standard section rhythm: label fades, words rise, body staggers.
+  gsap.from('.faq-label', {
+    y: 24,
+    autoAlpha: 0,
+    duration: 0.7,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.faq-label', start: 'top 85%', once: true },
+  });
+
+  const words = gsap.utils.toArray<HTMLElement>('.faq-word');
+  if (words.length) {
+    gsap.from(words, {
+      yPercent: 110,
+      autoAlpha: 0,
+      rotate: 4,
+      duration: 0.9,
+      stagger: 0.09,
+      ease: 'power4.out',
+      scrollTrigger: {
+        trigger: '.faq-label',
+        start: 'top 80%',
+        once: true,
+      },
+    });
+  }
+
+  gsap.from('.faq-desc, .faq-item', {
+    y: 30,
+    autoAlpha: 0,
+    duration: 0.8,
+    stagger: 0.12,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.faq-desc', start: 'top 88%', once: true },
+  });
+</script>
