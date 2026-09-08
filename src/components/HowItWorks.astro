@@ -1,0 +1,297 @@
+---
+// ── The 5 step journey, told as a zig-zag timeline ─────────────────────────
+// Alternating left/right cards down a central glowing axis. As the page
+// scrolls, the ember line draws downward and each node on it ignites when the
+// line reaches it, then the card it belongs to picks up an ember glow while it
+// sits in the viewport.
+const steps = [
+  {
+    num: '01',
+    tag: 'profile',
+    title: 'Choose Your Niche',
+    desc: 'Pick your favorite activities, music, and event types so our algorithm tailors matches specifically to your energy.',
+    icon: 'sparkles',
+  },
+  {
+    num: '02',
+    tag: 'discover',
+    title: 'Browse Matched Events',
+    desc: 'Explore local gatherings and preview attendee profiles ahead of time so you never have to walk into a room full of strangers.',
+    icon: 'compass',
+  },
+  {
+    num: '03',
+    tag: 'connect',
+    title: 'Join Micro-Groups',
+    desc: 'Chat in low-stakes groups (10–20 people) using end-to-end encrypted messaging before the event even starts.',
+    icon: 'message',
+  },
+  {
+    num: '04',
+    tag: 'ticket',
+    title: 'Get Your QR Pass',
+    desc: 'Secure your spot inside the app and save your instant QR pass directly to your phone for rapid door check-in.',
+    icon: 'qr',
+  },
+  {
+    num: '05',
+    tag: 'rewards',
+    title: 'Show Up & Earn',
+    desc: 'Make authentic friends, post recap photos to the social feed, and earn reward coins and achievement badges.',
+    icon: 'award',
+  },
+];
+---
+
+<section id="how-it-works" class="relative px-5 py-8 md:py-12">
+  <div class="mx-auto w-full max-w-[1150px]">
+    <!-- Eyebrow -->
+    <p class="hiw-label text-center text-sm font-medium uppercase tracking-[0.08em] text-ember">
+      FOR ATTENDEES
+    </p>
+
+    <!-- Headline -->
+    <h2 class="mt-4 text-center font-display font-normal leading-[1.2] tracking-[0.02em] uppercase text-charcoal">
+      <span class="block overflow-hidden text-[clamp(36px,5.5vw,68px)]">
+        {'HOW WUZY WORKS'.split(' ').map((w) => (
+          <span class="inline-block align-top">
+            <span class="hiw-word inline-block will-change-transform">{w}&nbsp;</span>
+          </span>
+        ))}
+      </span>
+      <span class="block overflow-hidden text-[clamp(36px,5.5vw,68px)] leading-[1.45]">
+        <span class="hiw-word inline-block will-change-transform">
+          <span class="font-control-cursive lowercase text-ember">for you.</span>
+        </span>
+      </span>
+    </h2>
+
+    <!-- Subheadline -->
+    <p class="hiw-desc mx-auto mt-5 max-w-lg text-center text-base font-normal leading-relaxed text-charcoal/70">
+      Go from matching online to making real memories offline in 5 simple steps.
+    </p>
+
+    <!-- ── Timeline ──────────────────────────────────────────────────────
+         One central axis (track + fill), one row per step. On desktop the
+         rows alternate sides of the line; on mobile everything sits to the
+         right of it. The fill height and node ignition are scrubbed scroll
+         animations. -->
+    <div class="hiw-axis-wrap relative mt-8 md:mt-10">
+      <!-- Axis track + glowing fill -->
+      <div class="hiw-axis absolute bottom-0 left-[21px] top-0 w-0.5 bg-white/10 md:left-1/2 md:-translate-x-1/2">
+        <div
+          class="hiw-fill absolute inset-y-0 left-0 right-0 scale-y-0 bg-gradient-to-b from-ember/80 via-ember/40 to-ember/80 shadow-[0_0_14px_1px_rgba(255,231,131,0.35)]"
+          style="transform-origin: top;"
+        ></div>
+      </div>
+
+      <!-- Steps -->
+      <ol class="hiw-timeline relative flex flex-col -space-y-3 md:-space-y-4">
+        {steps.map((s, i) => (
+          <li class={`hiw-row relative my-0 flex flex-col ${i % 2 === 0 ? 'md:flex' : 'md:flex-row-reverse'}`}>
+            <!-- Node on the axis -->
+            <span
+              class="hiw-node absolute left-[21px] top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-charcoal/40 ring-1 ring-white/25 md:left-1/2"
+              style="width: 14px; height: 14px;"
+              aria-hidden="true"
+            ></span>
+
+            <!-- Card -->
+            <div class="hiw-card relative ml-12 rounded-[24px] border border-white/10 bg-white/[0.03] p-4 shadow-card md:ml-0 md:w-[calc(50%-4rem)] md:p-5">
+              <!-- Ghost step number watermark -->
+              <span class="hiw-num pointer-events-none absolute right-4 top-3 font-control text-[clamp(34px,3.5vw,46px)] font-light leading-none tracking-[-0.03em] text-ember/10">
+                {s.num}
+              </span>
+
+              <!-- Floating accent badge -->
+              <span class="hiw-badge inline-flex items-center gap-1.5 rounded-full border border-ember/40 bg-bone/70 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-ember">
+                {s.icon === 'sparkles' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5" aria-hidden="true">
+                    <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z" />
+                    <path d="M18 14l.75 2.25L21 17l-2.25.75L18 20l-.75-2.25L15 17l2.25-.75z" />
+                    <path d="M5 17l.5 1.5L7 19l-1.5.5L5 21l-.5-1.5L3 19l1.5-.5z" />
+                  </svg>
+                )}
+                {s.icon === 'compass' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88" fill="currentColor" stroke="none" />
+                  </svg>
+                )}
+                {s.icon === 'message' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5" aria-hidden="true">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                )}
+                {s.icon === 'qr' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="3" height="3" />
+                    <line x1="21" y1="14" x2="21" y2="14.01" />
+                    <line x1="14" y1="21" x2="14" y2="21.01" />
+                    <line x1="21" y1="21" x2="21.01" y2="21" />
+                  </svg>
+                )}
+                {s.icon === 'award' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5" aria-hidden="true">
+                    <circle cx="12" cy="9" r="6" />
+                    <circle cx="12" cy="9" r="2.5" />
+                    <path d="M8.5 14.5L7 21l5-2.5L17 21l-1.5-6.5" />
+                  </svg>
+                )}
+                step {s.tag}
+              </span>
+
+              <!-- Title -->
+              <h3 class="mt-3 font-display text-2xl font-normal tracking-[0.02em] text-charcoal">
+                {s.title}
+              </h3>
+
+              <!-- Description -->
+              <p class="mt-1.5 text-[15px] font-normal leading-relaxed tracking-[-0.01em] text-charcoal/70">
+                {s.desc}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* The card that is currently in the viewport picks up an ember hairline and
+     a soft warm glow — the same premium surface the pricing card uses, kept
+     subtle so only one step reads as "now". */
+  .hiw-card {
+    transition:
+      border-color 0.3s ease,
+      background-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .hiw-card.hiw-active {
+    border-color: rgba(255, 231, 131, 0.4);
+    background-color: rgba(255, 231, 131, 0.05);
+    box-shadow:
+      0 0 0 1px rgba(255, 231, 131, 0.12),
+      0 0 44px -10px rgba(255, 231, 131, 0.28),
+      0 24px 48px -20px rgba(0, 0, 0, 0.9);
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Label fades in.
+  gsap.from('.hiw-label', {
+    y: 24,
+    autoAlpha: 0,
+    duration: 0.7,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.hiw-label', start: 'top 85%', once: true },
+  });
+
+  // Headline words rise into place.
+  const words = gsap.utils.toArray<HTMLElement>('.hiw-word');
+  if (words.length) {
+    gsap.from(words, {
+      yPercent: 110,
+      autoAlpha: 0,
+      rotate: 4,
+      duration: 0.9,
+      stagger: 0.09,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: '.hiw-label', start: 'top 80%', once: true },
+    });
+  }
+
+  // Sub-copy fades up.
+  gsap.from('.hiw-desc', {
+    y: 30,
+    autoAlpha: 0,
+    duration: 0.8,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.hiw-desc', start: 'top 88%', once: true },
+  });
+
+  // ── Rows fade in as they enter the viewport (once) ────────────────────
+  // Mirror of the framer-motion spec: left cards x: -50 → 0, right cards
+  // x: 50 → 0, opacity 0 → 1, duration 0.5 ease-out, triggered when the card
+  // is ~50px inside the viewport.
+  const rows = gsap.utils.toArray<HTMLElement>('.hiw-row');
+  rows.forEach((row, i) => {
+    const card = row.querySelector<HTMLElement>('.hiw-card');
+    if (!card) return;
+    const side = i % 2 === 0 ? -50 : 50;
+    gsap.from(card, {
+      x: side,
+      autoAlpha: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+      scrollTrigger: { trigger: row, start: 'top bottom-=50', once: true },
+    });
+  });
+
+  // ── The active-card glow: whichever step sits in the viewport is "now" ─
+  const cards = gsap.utils.toArray<HTMLElement>('.hiw-card');
+  cards.forEach((card) => {
+    ScrollTrigger.create({
+      trigger: card,
+      start: 'top 80%',
+      end: 'bottom 20%',
+      onToggle: (self: { isActive: boolean }) =>
+        card.classList.toggle('hiw-active', self.isActive),
+    });
+  });
+
+  // ── The drawing line + igniting nodes, scrubbed to scroll ─────────────
+  const timelineEl = document.querySelector<HTMLElement>('.hiw-timeline');
+  const fillEl = document.querySelector<HTMLElement>('.hiw-fill');
+  const nodes = gsap.utils.toArray<HTMLElement>('.hiw-node');
+
+  if (timelineEl && fillEl && nodes.length) {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: timelineEl,
+        start: 'top 75%',
+        end: 'bottom 62%',
+        scrub: true,
+      },
+    });
+
+    // The line draws from the first step down to the last.
+    tl.fromTo(
+      fillEl,
+      { scaleY: 0 },
+      { scaleY: 1, ease: 'none', duration: 1 },
+      0
+    );
+
+    // Each node ignites as the line reaches it. The last 8% of the scrub is
+    // left free so the final node stays lit a beat before the section ends.
+    const span = 0.92;
+    nodes.forEach((node, i) => {
+      tl.fromTo(
+        node,
+        {
+          backgroundColor: 'rgba(244,239,212,0.4)',
+          boxShadow: '0 0 0 0 rgba(255,231,131,0)',
+          scale: 1,
+        },
+        {
+          backgroundColor: '#ffe783',
+          boxShadow: '0 0 16px 4px rgba(255,231,131,0.55)',
+          scale: 1.25,
+          duration: 0.2,
+          ease: 'none',
+        },
+        (i / Math.max(1, nodes.length - 1)) * span
+      );
+    });
+  }
+</script>
