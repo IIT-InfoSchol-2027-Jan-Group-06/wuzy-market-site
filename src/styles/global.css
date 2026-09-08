@@ -185,13 +185,11 @@ body::before {
   inset: 0;
   z-index: -2;
   pointer-events: none;
+  /* Clean, deep tone — no ember light flares. Structure kept as a single
+     fixed vertical so pinned sections stay seamless (a per-section
+     background would seam every time GSAP pins one). */
   background:
-    radial-gradient(1200px 720px at 50% -12%, rgba(255, 231, 131, 0.08), transparent 62%),
-    radial-gradient(900px 560px at 100% 104%, rgba(255, 231, 131, 0.06), transparent 60%),
-    radial-gradient(760px 480px at 0% 60%, rgba(255, 231, 131, 0.035), transparent 60%),
-    radial-gradient(1000px 560px at 50% -6%, rgba(255, 231, 131, 0.095), transparent 62%),
-    radial-gradient(760px 420px at 90% 110%, rgba(255, 231, 131, 0.06), transparent 60%),
-    linear-gradient(180deg, #000000 0%, #060606 45%, #000000 100%);
+    linear-gradient(180deg, #0b0b0b 0%, #121212 45%, #0b0b0b 100%);
 }
 
 /* Page canvas class (applied to <body>) — the locked layer above carries
