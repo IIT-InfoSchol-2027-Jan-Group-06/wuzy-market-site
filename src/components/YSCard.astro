@@ -156,7 +156,15 @@ const reasons = [
 
     // Initial state for entrance animation
     gsap.set(cards, { y: 200, x: (i) => i % 2 === 0 ? -70 : 70, rotate: (i) => i % 2 === 0 ? -4 : 4, autoAlpha: 0 });
-    gsap.set('.ys-head', { y: 50, autoAlpha: 0 });
+
+    // The heading rises while the section scrolls into view under Community,
+    // so it pins with the heading already up instead of arriving blank.
+    gsap.from('.ys-head', {
+      y: 50,
+      autoAlpha: 0,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: scroller, start: 'top bottom', end: 'top center', scrub: true },
+    });
 
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
@@ -175,15 +183,6 @@ const reasons = [
           if (self.progress >= freezeAt) freezeWordToUs();
           else resumeCycling();
         },
-        onEnter: () => {
-          // Entrance animation when section first pins - title only
-          gsap.to('.ys-head', { y: 0, autoAlpha: 1, duration: 0.3, ease: 'power3.out' });
-        },
-        onLeaveBack: () => {
-          // Reverse entrance when scrolling back up past the section
-          gsap.to('.ys-head', { y: 50, autoAlpha: 0, duration: 0.2, ease: 'power2.in' });
-          gsap.to(cards, { y: 200, x: (i) => i % 2 === 0 ? -70 : 70, rotate: (i) => i % 2 === 0 ? -4 : 4, autoAlpha: 0, duration: 0.3, ease: 'power2.in', stagger: 0.03 }, 0.05);
-        },
       },
     });
 
@@ -196,11 +195,9 @@ const reasons = [
       );
     });
 
-    // Fade out the cards and heading before pin releases, so they're gone before
-    // the next section arrives. Then a brief hold for smooth timing.
-    tl.to(cards, { y: -200, x: (i) => i % 2 === 0 ? -70 : 70, rotate: (i) => i % 2 === 0 ? -4 : 4, autoAlpha: 0, duration: 0.6, ease: 'power2.in', stagger: 0.04 }, '+=' + HOLD_VH)
-      .to('.ys-head', { y: -100, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, '<0.1')
-      .to({}, { duration: 0.3 });
+    // Hold the finished stack, then let it scroll off under Pricing. No
+    // fade-out: fading while pinned left a blank screen before Pricing arrived.
+    tl.to({}, { duration: HOLD_VH });
   }
 </script>
 

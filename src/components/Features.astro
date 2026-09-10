@@ -193,8 +193,10 @@ const features = [
     // Scrub splits the distance by timeline time, so the budget alone does
     // not set the split — wordStep, homeDur and screenDur above are what keep
     // the intro, the transitions and the phone beats at those shares.
-    // With default pinSpacing the spacer equals the pin distance, so the pin
-    // releases with Community's top exactly at the viewport top — no gap.
+    // The spacer is the sticky's height plus the pin distance, so after the
+    // pin releases the sticky still scrolls off over one viewport while
+    // Community scrolls in beneath it — that hand-off is why nothing here
+    // fades out at the end.
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
@@ -311,25 +313,9 @@ const features = [
       drive(s);
     });
 
-    // Phase 5 — fade out the LAST slide before the pin releases, so it's gone
-    // before Community arrives. Then a brief hold to keep timing smooth.
-    const last = slides[slides.length - 1];
-    const lastWords = last.querySelectorAll<HTMLElement>('.feature-word');
-    const lastDesc = last.querySelector<HTMLElement>('.feature-desc');
-    const lastImg = last.querySelector<HTMLElement>('.feature-visual .wz');
-
-    tl.to(
-      lastWords,
-      { y: -70, rotate: -5, autoAlpha: 0, duration: 0.45, ease: 'power2.in', stagger: 0.04 },
-      '+=0.15'
-    )
-      .to(lastDesc, { y: -45, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.1')
-      .to(
-        lastImg,
-        { scale: 0.6, autoAlpha: 0, duration: 0.45, ease: 'power2.in' },
-        '<0.1'
-      )
-      .to(last, { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, '<0.15')
-      .to({}, { duration: 0.3 });
+    // No exit for the last slide: it used to fade out while still pinned and
+    // then scroll off as an empty screen, which read as a blank gap before
+    // Community. It now stays up until the pin releases and scrolls away
+    // under Community's incoming heading.
   }
 </script>

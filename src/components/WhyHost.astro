@@ -31,11 +31,10 @@ const reasons = [
        "why choose" section. -->
   <div class="whyhost-scroll relative">
     <div class="whyhost-sticky relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-5">
-      <!-- Inner wrapper: lifted slightly so the locked heading sits higher in
-           the viewport and the empty space piles up less at the very top.
-           GSAP animates the heading and cards, not this wrapper, so its static
-           transform never collides with the scrubbed tweens. -->
-      <div class="whyhost-inner flex w-full flex-col items-center justify-center -translate-y-[18vh] md:-translate-y-[30vh]">
+      <!-- Centered like YSCard. It used to be lifted 30vh with a negative
+           margin under the grid, which just moved the slack to the bottom and
+           read as a blank band before the host waitlist. -->
+      <div class="whyhost-inner flex w-full flex-col items-center justify-center">
       <!-- Locked, centered heading — kept on top of the rising cards so the
          title always stays readable. -->
       <div class="whyhost-head relative z-20 mx-auto max-w-5xl text-center">
@@ -46,7 +45,7 @@ const reasons = [
 
       <!-- Cards rise one-by-one below the heading as the user scrolls, reusing
              the YSCard surface, padding, radius and hover lift. -->
-      <div class="whyhost-grid relative z-10 mt-16 grid w-full max-w-[1200px] -mb-36 gap-7 md:grid-cols-2 md:-mb-72 lg:mt-20">
+      <div class="whyhost-grid relative z-10 mt-16 grid w-full max-w-[1200px] gap-7 md:grid-cols-2 lg:mt-20">
         {reasons.map((r) => (
           <div class="whyhost-card rounded-[24px] border border-white/10 bg-[#10100e]/85 p-9 shadow-card">
             <div class="transition-transform duration-300 hover:-translate-y-2">
@@ -87,7 +86,15 @@ const reasons = [
 
     // Initial state for entrance animation
     gsap.set(cards, { y: 200, x: (i) => (i % 2 === 0 ? -70 : 70), rotate: (i) => (i % 2 === 0 ? -4 : 4), autoAlpha: 0 });
-    gsap.set('.whyhost-head', { y: 50, autoAlpha: 0 });
+
+    // The heading rises while the section scrolls into view, so it pins with
+    // the heading already up instead of arriving blank.
+    gsap.from('.whyhost-head', {
+      y: 50,
+      autoAlpha: 0,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: scroller, start: 'top bottom', end: 'top center', scrub: true },
+    });
 
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
@@ -98,18 +105,6 @@ const reasons = [
         pin: sticky,
         scrub: true,
         anticipatePin: 1,
-        onEnter: () => {
-          // Entrance animation when section first pins — heading only
-          gsap.to('.whyhost-head', { y: 0, autoAlpha: 1, duration: 0.3, ease: 'power3.out' });
-        },
-        onLeaveBack: () => {
-          // Reverse entrance when scrolling back up past the section
-          gsap.to('.whyhost-head', { y: 50, autoAlpha: 0, duration: 0.2, ease: 'power2.in' });
-          gsap.to(
-            cards,
-            { y: 200, x: (i) => (i % 2 === 0 ? -70 : 70), rotate: (i) => (i % 2 === 0 ? -4 : 4), autoAlpha: 0, duration: 0.3, ease: 'power2.in', stagger: 0.03 }
-          );
-        },
       },
     });
 
@@ -122,11 +117,9 @@ const reasons = [
       );
     });
 
-    // Fade out the cards and heading before pin releases, so they're gone
-    // before the next section arrives. Then a brief hold for smooth timing.
-    tl.to(cards, { y: -200, x: (i) => (i % 2 === 0 ? -70 : 70), rotate: (i) => (i % 2 === 0 ? -4 : 4), autoAlpha: 0, duration: 0.6, ease: 'power2.in', stagger: 0.04 }, '+=' + HOLD_VH)
-      .to('.whyhost-head', { y: -100, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, '<0.1')
-      .to({}, { duration: 0.3 });
+    // Hold the finished stack, then let it scroll off under the host waitlist.
+    // No fade-out: fading while pinned left a blank screen before it arrived.
+    tl.to({}, { duration: HOLD_VH });
   }
 </script>
 
