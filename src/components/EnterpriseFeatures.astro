@@ -71,44 +71,7 @@ const steps = [
            held inside the same pin so it reads as the payoff to the two steps
            instead of a new section. normal-case: the sticky above puts
            everything in caps, and the Caveat tail is lowercase by design. -->
-      <div class="ent-outro pointer-events-none absolute inset-0 z-10 flex items-center px-5">
-        <div class="grid w-full max-w-[1150px] grid-cols-1 items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <div class="pl-16 md:pl-24 lg:pl-10 lg:pr-8">
-            <h2 class="mt-4 font-display leading-[1.05] font-normal tracking-[0.02em] text-charcoal">
-              <span class="block overflow-hidden text-[clamp(48px,8vw,112px)]">
-                <span class="ent-outro-word block will-change-transform">WATCH IT</span>
-              </span>
-              <span class="block overflow-hidden text-[clamp(48px,8vw,112px)] leading-[1.45]">
-                <span class="ent-outro-word block will-change-transform">
-                  <span class="font-control-cursive text-ember normal-case">skyrocket.</span>
-                </span>
-              </span>
-            </h2>
-            <p class="ent-outro-desc mt-5 max-w-md text-base font-normal normal-case leading-relaxed tracking-[-0.01em] text-charcoal/70">
-              We push your event directly to local users whose interests match your vibe, so the room fills with people who actually want to be in it.
-            </p>
-          </div>
 
-          <div class="ent-outro-media relative mx-auto hidden w-full max-w-md will-change-transform lg:block">
-            <div class="relative overflow-hidden rounded-[2rem] border border-white/10 shadow-elevated">
-              <img
-                src="/wuzy/img/discover/row-party.jpg"
-                alt="The room filling as invites go out"
-                class="aspect-[4/5] w-full object-cover"
-                loading="lazy"
-              />
-              <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-            </div>
-            <span class="ent-outro-media-tag absolute -left-4 -top-4 inline-flex items-center gap-1.5 rounded-full bg-ember px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-bone shadow-[0_0_0_1px_rgba(244,239,212,0.14),0_18px_40px_-18px_rgba(0,0,0,0.85)] will-change-transform">
-              <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 14l6-6 4 4 6-8" />
-                <path d="M20 4v6h-6" />
-              </svg>
-              trending
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -159,9 +122,6 @@ const steps = [
       ).fromTo(p, { s: 0 }, { s: 1, duration: screenDur, ease: 'none', onUpdate: apply });
     };
 
-    const outro = document.querySelector<HTMLElement>('.ent-outro');
-    const outroWords = gsap.utils.toArray<HTMLElement>('.ent-outro-word');
-
     // Hide every slide up front, so GSAP owns visibility.
     slides.forEach((s) => {
       gsap.set(s, { scale: 0.7, autoAlpha: 0 });
@@ -169,8 +129,6 @@ const steps = [
       gsap.set(s.querySelector('.ent-desc'), { autoAlpha: 0, y: 45 });
       gsap.set(s.querySelector('.ent-visual .wz'), { autoAlpha: 0, scale: 0.7 });
     });
-
-    if (outro) gsap.set(outro, { autoAlpha: 0 });
 
     // Budget: roughly half a viewport of entrance, then each mockup seating its
     // breakouts and running its screen. Same 2.8 per slide the home page gives
@@ -180,9 +138,7 @@ const steps = [
       scrollTrigger: {
         trigger: scroller,
         start: 'top top',
-        // + 2.4 for the closing line: its build, then the
-        // 1.2 viewports every pinned section holds its finished state for.
-        end: () => '+=' + (0.6 + slides.length * 2.8 + 2.4) * pinScale() * window.innerHeight,
+        end: () => '+=' + (0.6 + slides.length * 2.8) * pinScale() * window.innerHeight,
         pin: sticky,
         scrub: true,
         anticipatePin: 1,
@@ -226,54 +182,9 @@ const steps = [
       drive(s);
     });
 
-    // Clear the last slide, then hold the closing line before the pin releases,
-    // so nothing is left on screen when the host CTA arrives.
+    // Clear the last slide before the pin releases.
     exit(slides[slides.length - 1], '+=0.15');
-
-    if (outro && outroWords.length) {
-      // Community's build, at its own timings: the label rises, the lines slide
-      // up out of their masks, the sub-copy follows.
-      tl.to(outro, { autoAlpha: 1, duration: 0.2 }, '<0.35')
-        .fromTo(
-          outroWords,
-          { yPercent: 120, autoAlpha: 0 },
-          { yPercent: 0, autoAlpha: 1, duration: 0.3, stagger: 0.08, ease: 'power2.out' },
-          '<0.05'
-        )
-        .from('.ent-outro-desc', { y: 20, autoAlpha: 0, duration: 0.25, ease: 'power2.out' }, '<0.25')
-        .from('.ent-outro-media', { y: 40, autoAlpha: 0, scale: 0.96, duration: 0.3, ease: 'power3.out' }, '<0.2')
-        .from('.ent-outro-media-tag', { y: -12, autoAlpha: 0, scale: 0.8, duration: 0.2, ease: 'back.out(1.6)' }, '<0.15');
-
-      // Continuous life while the closing line holds: the image floats gently
-      // (marketing motion is GSAP only — never CSS keyframes). Scrubbed by the
-      // pin, so it lives once the image is in and is killed as it leaves.
-      const mediaFloat = gsap.to('.ent-outro-media', {
-        y: -10,
-        duration: 3.4,
-        yoyo: true,
-        repeat: -1,
-        ease: 'sine.inOut',
-        delay: 1.4,
-      });
-
-      // Then the hold every pinned section gives its finished state, and out —
-      // the heading is the last thing standing.
-      tl.to(outroWords, { yPercent: -120, autoAlpha: 0, duration: 0.3, stagger: 0.04, ease: 'power2.in' }, '+=1.2')
-        .to('.ent-outro-desc', { y: -20, autoAlpha: 0, duration: 0.25, ease: 'power2.in' }, '<0.05')
-        .to('.ent-outro-media-tag', { y: -14, autoAlpha: 0, scale: 0.8, duration: 0.2, ease: 'power2.in', onComplete: () => mediaFloat.kill() }, '<0.05')
-        .to('.ent-outro-media', { y: -30, autoAlpha: 0, scale: 0.98, duration: 0.3, ease: 'power2.in' }, '<0.05');
-    }
 
     tl.to({}, { duration: 0.3 });
   }
 </script>
-
-<style>
-  /* ── Small screens ──────────────────────────────────────────── */
-  @media (max-width: 1023px) {
-    /* The size lives on the line spans, not the h2 — a child's own font-size
-       beats an inherited one, so targeting the h2 here would do nothing. */
-    .ent-outro h2 > span { font-size: clamp(32px, 10vw, 48px) !important; }
-    .ent-outro-desc { font-size: 0.875rem; }
-  }
-</style>
