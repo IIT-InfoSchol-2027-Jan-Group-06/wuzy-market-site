@@ -1,5 +1,5 @@
 ---
-// ── The 5 step journey, told as a zig-zag timeline ─────────────────────────
+// ── The 4 step journey, told as a zig-zag timeline ─────────────────────────
 // Alternating left/right cards down a central glowing axis. As the page
 // scrolls, the ember line draws downward and each node on it ignites when the
 // line reaches it, then the card it belongs to picks up an ember glow while it
@@ -7,38 +7,31 @@
 const steps = [
   {
     num: '01',
-    tag: 'profile',
-    title: 'Set Up Your Profile & Interests',
-    desc: 'Register securely with OTP verification. Input your hobbies, preferences, and interests, then personalize your profile with a photo and custom fields.',
+    tag: 'vibe',
+    title: 'Set Your Vibe',
+    desc: 'Set up your profile in seconds by choosing what you\'re into.',
     icon: 'sparkles',
   },
   {
     num: '02',
-    tag: 'discover',
-    title: 'Discover Events & Get Matched',
-    desc: 'Browse personalized local recommendations filtered to your interests. Explore events on an interactive map and preview who else is going before you decide.',
+    tag: 'match',
+    title: 'Find Match & Discover',
+    desc: 'Get matched with like-minded people and discover events tailored to you.',
     icon: 'compass',
   },
   {
     num: '03',
-    tag: 'ticket',
-    title: 'Secure Your Pass & Invite Friends',
-    desc: 'Reserve tickets in-app via a secure payment gateway. Receive an instant QR pass for check-in and use referral links to bring friends along.',
-    icon: 'qr',
+    tag: 'levelup',
+    title: 'Show Up & Level Up',
+    desc: 'Show up, make real connections, and level up your status as you hang out.',
+    icon: 'award',
   },
   {
     num: '04',
-    tag: 'connect',
-    title: 'Connect & Chat',
-    desc: 'Chat with recommended local peers who share your niche interests. Coordinate meetups using built-in end-to-end encrypted direct or group messaging.',
-    icon: 'message',
-  },
-  {
-    num: '05',
-    tag: 'rewards',
-    title: 'Attend, Engage & Earn Rewards',
-    desc: 'Show up to small curated gatherings (10–20 people) without the pressure of huge crowds. Earn badges for verified meetups and post to the social feed.',
-    icon: 'award',
+    tag: 'journey',
+    title: 'Flex Your Journey',
+    desc: 'Unlock badges, share moments to the feed, and build a lasting community around what you love.',
+    icon: 'badge',
   },
 ];
 ---
@@ -68,7 +61,7 @@ const steps = [
 
     <!-- Subheadline -->
     <p class="hiw-desc mx-auto mt-5 max-w-lg text-center text-base font-normal leading-relaxed text-charcoal/70">
-      Go from matching online to making real memories offline in 5 simple steps.
+      Go from matching online to making real memories offline in 4 simple steps.
     </p>
 
     <!-- ── Timeline ──────────────────────────────────────────────────────
@@ -139,6 +132,11 @@ const steps = [
                     <circle cx="12" cy="9" r="6" />
                     <circle cx="12" cy="9" r="2.5" />
                     <path d="M8.5 14.5L7 21l5-2.5L17 21l-1.5-6.5" />
+                  </svg>
+                )}
+                {s.icon === 'badge' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5" aria-hidden="true">
+                    <path d="M12 15l-2 5l9-13h-6l2-5-9 13h6z" />
                   </svg>
                 )}
                 step {s.tag}
