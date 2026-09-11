@@ -27,13 +27,22 @@ const features = [
        crossfade one into the next. -->
   <div class="feature-scroll relative">
     <!-- svh, not screen: on a phone 100vh is the viewport with the browser bars
-         hidden, so a slide centred in it ran under Brave's bottom bar. -->
-    <div class="feature-sticky flex min-h-svh items-center justify-center overflow-hidden uppercase">
+         hidden, so a slide centred in it ran under Brave's bottom bar.
+         The top padding is the fixed nav's height (54px mobile bar, 68px
+         desktop pill): the slide centres in the space *below* the nav, so
+         the phone can grow until it nearly fills the height and its top
+         edge still cannot reach the nav. Centred in the full viewport it
+         wasted as much room below as it kept clear above. -->
+    <div class="feature-sticky flex min-h-svh items-center justify-center overflow-hidden pt-[54px] uppercase sm:pt-[68px]">
 
       <!-- ── Intro overlay: "Everything your crew needs…" ──────────────────
            Absolutely positioned over the slides. Words start grey and are
-           lit up white one-by-one as you scroll (.intro-lit is animated). -->
-      <div class="feature-intro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 pb-16">
+           lit up white one-by-one as you scroll (.intro-lit is animated).
+           Same top padding as the sticky: inset-0 spans the sticky's whole
+           box, so without it the headline centred in the full viewport
+           (and a stray pb-16 pushed it a further 32px up) while the slides
+           centre below the nav — it read as sitting too high. -->
+      <div class="feature-intro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 pt-[54px] sm:pt-[68px]">
         <div class="mx-auto w-full max-w-[1150px] text-center">
           <h2 class="mx-auto max-w-3xl font-display text-h2 font-normal leading-[1.2] tracking-[0.02em] text-charcoal uppercase">
             <!-- Split the headline into per-word spans so each word can animate
@@ -91,19 +100,21 @@ const features = [
               <!-- Right: the live phone. No perspective here — .wz sets its
                    own, and the breakouts need the gutter more than the depth.
                    --wz-fit caps the phone's width by the height it has to fit
-                   in (the frame is 2× taller than wide). The phone is centred
-                   in the sticky, so its top edge sits at 50svh − width:
-                   stacked, that has to clear the nav plus the headline and
-                   copy (~280px at the base tier, ~360px once md's 56px title
-                   wraps to three lines); side by side, the desktop nav pill
-                   (bottom at ~72px) plus 16px, which is what keeps the corner
-                   from tucking under "Join waitlist" on a zoomed 1280×615.
+                   in (the frame is 2× taller than wide). The slide is centred
+                   in the sticky below its nav-height padding, so the phone
+                   fits when 2 × width ≤ svh − nav − copy − a little air, i.e.
+                   width ≤ 50svh − (nav + air + copy) / 2:
+                     stacked, base   54 + 8 + ~330 (40px title over 4 lines)
+                     stacked, md     68 + 8 + ~390 (64px title over 3 lines)
+                     side by side    68 + 20, no copy in the column
+                   The last is what keeps the corner from tucking under "Join
+                   waitlist" on a zoomed 1280×615.
                    The lg/2xl gutters are the measured overhang of the floating
                    pieces — 0.46 of the frame on the left, 0.40 on the right —
                    at that tier's --phone-w, so nothing lands on the headline
                    or gets clipped at the viewport edge; at 2xl the 1150px
                    slide already has 190px+ of page margin on the right. -->
-              <div class="feature-visual order-1 flex justify-center px-4 [--wz-fit:calc(50svh_-_170px)] md:px-8 md:[--wz-fit:calc(50svh_-_220px)] lg:order-2 lg:pl-[120px] lg:pr-[84px] lg:[--wz-fit:calc(50svh_-_88px)] 2xl:pl-[148px] 2xl:pr-[64px]">
+              <div class="feature-visual order-1 flex justify-center px-4 [--wz-fit:calc(50svh_-_195px)] md:px-8 md:[--wz-fit:calc(50svh_-_232px)] lg:order-2 lg:pl-[132px] lg:pr-[92px] lg:[--wz-fit:calc(50svh_-_44px)] 2xl:pl-[156px] 2xl:pr-[64px]">
                 <f.Mock />
               </div>
             </div>
