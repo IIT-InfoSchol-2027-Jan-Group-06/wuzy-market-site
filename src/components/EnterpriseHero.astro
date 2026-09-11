@@ -9,9 +9,7 @@
 // mean define:vars (which breaks its `import { gsap }`) or a data-attribute —
 // both edits to a component shipping on the front page, for no gain here.
 //
-// id is "ent-hero", NOT "hero": the nav's scroll spy treats "hero" as the signal
-// to clear every highlight, which would fight the Enterprise link's own
-// aria-current="page".
+// id is "ent-hero", NOT "hero", so the two pages' anchors never collide.
 ---
 
 <section id="ent-hero" class="relative flex min-h-svh items-center justify-center overflow-hidden px-5 pt-24 pb-20">

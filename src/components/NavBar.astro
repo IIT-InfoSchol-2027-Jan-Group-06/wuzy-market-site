@@ -1,6 +1,9 @@
 ---
 // Header nav. Every destination takes part in the scroll spy, including the
-// waitlist, so any of them can show as current.
+// waitlist, so any of them can show as current — but only while its own
+// section is on screen. A section with no link (Community, How Wuzy Works)
+// lights nothing, and a link to another page is never marked: the old
+// "you are here" tint on Enterprise looked like the spy misfiring.
 //
 // The waitlist link is the CTA and needs to read as one at rest, but an
 // always-ember pill would leave the ember "current" state with nothing to
@@ -26,25 +29,16 @@ const links = [
 // the #" — on a root-relative href it yields "#features", which matches no
 // section id and silently kills the highlight on every link.
 //
-// A page link has no hash, so it gets an empty target and never matches. That is
-// correct: it reports "you are here" through aria-current below instead.
+// A page link has no hash, so it gets an empty target and never matches.
 const targetOf = (href: string) => href.split('#')[1] ?? '';
-
-// Server-rendered "you are here" for the page links, since the spy only ever
-// speaks for sections on the current page. setActive() would overwrite this on
-// the index page, where it is already "false" and correct.
-const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
-const isCurrentPage = (href: string) => !href.includes('#') && href === path;
 
 // Shared box so every item is the same height — the CTA's border would
 // otherwise make it 2px taller than its neighbours.
 const base =
   'whitespace-nowrap rounded-full border px-2 py-1.5 text-[12px] font-medium tracking-[-0.01em] transition-colors sm:px-3 sm:text-[13px]';
 
-// Two current states to match: "true" from the scroll spy for a section on this
-// page, "page" rendered server-side for a link to the page you are already on.
 const plain =
-  'border-transparent text-charcoal/65 hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember aria-[current=page]:bg-ember/10 aria-[current=page]:text-ember';
+  'border-transparent text-charcoal/65 hover:text-charcoal aria-[current=true]:bg-ember/10 aria-[current=true]:text-ember';
 
 const cta = 'nav-cta';
 ---
@@ -84,7 +78,6 @@ const cta = 'nav-cta';
             href={l.href}
             data-nav-link
             data-target={targetOf(l.href)}
-            aria-current={isCurrentPage(l.href) ? 'page' : 'false'}
             class={`${base} ${plain}`}
           >
             {l.label}
@@ -106,7 +99,6 @@ const cta = 'nav-cta';
           href={l.href}
           data-nav-link
           data-target={targetOf(l.href)}
-          aria-current={isCurrentPage(l.href) ? 'page' : 'false'}
           class={`${base} ${cta} shrink-0`}
         >
           {l.label}
@@ -129,7 +121,6 @@ const cta = 'nav-cta';
             href={l.href}
             data-nav-link
             data-target={targetOf(l.href)}
-            aria-current={isCurrentPage(l.href) ? 'page' : 'false'}
             class="nav-panel-item"
           >
             <span class="nav-panel-index">0{i + 1}</span>
@@ -262,8 +253,7 @@ const cta = 'nav-cta';
   }
 
   .nav-panel-item:hover,
-  .nav-panel-item[aria-current='true'],
-  .nav-panel-item[aria-current='page'] {
+  .nav-panel-item[aria-current='true'] {
     background-color: rgba(255, 231, 131, 0.08);
     color: var(--color-ember);
   }
@@ -279,8 +269,7 @@ const cta = 'nav-cta';
   }
 
   .nav-panel-item:hover .nav-panel-index,
-  .nav-panel-item[aria-current='true'] .nav-panel-index,
-  .nav-panel-item[aria-current='page'] .nav-panel-index {
+  .nav-panel-item[aria-current='true'] .nav-panel-index {
     opacity: 1;
   }
 
@@ -292,8 +281,7 @@ const cta = 'nav-cta';
   }
 
   .nav-panel-item:hover .nav-panel-text,
-  .nav-panel-item[aria-current='true'] .nav-panel-text,
-  .nav-panel-item[aria-current='page'] .nav-panel-text {
+  .nav-panel-item[aria-current='true'] .nav-panel-text {
     transform: translateX(2px);
   }
 
@@ -315,8 +303,7 @@ const cta = 'nav-cta';
   }
 
   .nav-panel-item:hover .nav-panel-arrow,
-  .nav-panel-item[aria-current='true'] .nav-panel-arrow,
-  .nav-panel-item[aria-current='page'] .nav-panel-arrow {
+  .nav-panel-item[aria-current='true'] .nav-panel-arrow {
     opacity: 0.9;
     transform: translateX(0);
   }
@@ -335,13 +322,11 @@ const cta = 'nav-cta';
   // middle, so exactly one section is "current" at a time and it flips at
   // the point the reader would call the changeover.
   //
-  // Every section is observed, but only some may change the highlight.
-  // #community has no link by design, and it is four-plus viewports tall —
-  // letting it set the current section dimmed every item for that whole
-  // stretch, which reads as the scroll spy breaking. Link-less sections
-  // therefore leave the previous link lit. The hero is the exception: it sits
-  // above the first link, so it clears the highlight instead of leaving one
-  // stuck on.
+  // Every section sets the highlight, including the ones with no link
+  // (hero, Community, How Wuzy Works): they match nothing, so the nav goes
+  // quiet while they are on screen. It used to leave the previous link lit
+  // through them, which read as "Why Wuzy" while you were on How Wuzy Works.
+  // It also means a new section needs no nav change to behave correctly.
   const links = Array.from(
     document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')
   );
@@ -353,15 +338,10 @@ const cta = 'nav-cta';
       );
     };
 
-    const changesHighlight = (id: string) =>
-      id === 'hero' || links.some((l) => l.dataset.target === id);
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && changesHighlight(entry.target.id)) {
-            setActive(entry.target.id);
-          }
+          if (entry.isIntersecting) setActive(entry.target.id);
         });
       },
       { rootMargin: '-45% 0px -45% 0px' }
