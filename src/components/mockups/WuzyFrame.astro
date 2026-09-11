@@ -15,8 +15,16 @@ interface Props {
 
 const {
   wellLabel,
-  // The demo hardcodes 318px; the site needs it to survive a phone viewport.
-  fw = 'clamp(208px, 23vw, 318px)',
+  // The demo hardcodes 318px. --phone-w is the page's per-tier width from
+  // global.css, so the phone steps with the type instead of tracking the
+  // viewport (it used to be 23vw, which on a small laptop read as scaled up
+  // along with the fluid headlines). Width alone is not enough: the frame is
+  // twice as tall as it is wide, so a 1366×768 laptop at 125% (1093×614 CSS
+  // px) got a phone that, stacked over its headline, overflowed the pinned
+  // viewport at both ends — under the nav and past the fold. A caller that
+  // knows how much vertical room the phone actually has says so through
+  // --wz-fit; the 120px floor is where the bezel stops reading as a phone.
+  fw = 'max(120px, min(var(--phone-w, 318px), var(--wz-fit, 9999px)))',
 } = Astro.props;
 
 // One artboard for all four screens. They are four different screens of one

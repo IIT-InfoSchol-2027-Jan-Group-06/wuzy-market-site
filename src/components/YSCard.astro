@@ -22,10 +22,10 @@ const reasons = [
        cards rise up over it one by one. The section stays pinned until
        every card has appeared, then normal scrolling resumes. -->
   <div class="ys-scroll relative">
-    <div class="ys-sticky relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-5">
+    <div class="ys-sticky relative flex min-h-svh w-full flex-col items-center justify-center overflow-hidden px-5">
       <!-- Locked, centered heading (sits behind the rising cards) -->
       <div class="ys-head relative z-0 mx-auto max-w-5xl text-center">
-        <h2 class="mt-4 font-display text-[clamp(63px,9.6vw,119px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+        <h2 class="mt-4 font-display text-display font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
           <span class="block overflow-hidden">
             {'WHY CHOOSE'.split(' ').map((w) => (
               <span class="inline-block align-top">
@@ -204,14 +204,13 @@ const reasons = [
 <style>
   /* ── Small screens ────────────────────────────────────────────
      Below md the three cards stack into one column, and at the desktop sizes
-     the stack plus the heading came to ~770px inside a min-h-screen frame that
+     the stack plus the heading came to ~770px inside a min-h-svh frame that
      is `justify-center overflow-hidden` AND pinned — so it clipped the top of
      "WHY CHOOSE" and the bottom of the third card, with no way to scroll them
-     into view. Shrink the heading, the card padding and the overlap so the
-     whole column fits a short phone viewport. */
+     into view. Shrink the card padding and the overlap so the whole column
+     fits a short phone viewport; the heading steps down with the type tiers
+     in global.css. */
   @media (max-width: 767px) {
-    .ys-head h2 { font-size: clamp(38px, 11vw, 56px) !important; }
-
     .ys-grid {
       margin-top: -1rem !important;
       gap: 1rem;

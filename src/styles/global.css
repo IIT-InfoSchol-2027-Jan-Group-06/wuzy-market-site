@@ -123,6 +123,50 @@
   &::-webkit-scrollbar { display: none; }
 }
 
+/* ── The marketing page's type scale ──────────────────────────────────────
+   Fixed sizes at three width tiers, not vw clamps. Fluid type made the
+   headlines take a bigger share of a small laptop (1366×768 at 125% is 1093
+   CSS px) than of a desktop monitor, which read as the whole site being
+   "scaled up". The tiers are Tailwind's md (48rem) and 2xl (96rem): phones,
+   then tablets and every laptop, then desktop monitors.
+
+   Four roles, because four sizes were in use once the clamps were lined up:
+     hero     the two page h1s
+     display  the locked headings a pinned section builds around
+     title    a feature slide's headline, and the waitlist's
+     h2       every other section heading, and the About stat numbers
+   --phone-w is the mockup frame's width and lives here so the phone steps
+   with the type instead of tracking the viewport on its own. */
+:root {
+  --fs-hero: 44px;
+  --fs-display: 48px;
+  --fs-title: 36px;
+  --fs-h2: 32px;
+  --phone-w: 208px;
+}
+@media (width >= 48rem) {
+  :root {
+    --fs-hero: 64px;
+    --fs-display: 80px;
+    --fs-title: 56px;
+    --fs-h2: 44px;
+    --phone-w: 260px;
+  }
+}
+@media (width >= 96rem) {
+  :root {
+    --fs-hero: 96px;
+    --fs-display: 112px;
+    --fs-title: 80px;
+    --fs-h2: 60px;
+    --phone-w: 318px;
+  }
+}
+@utility text-hero    { font-size: var(--fs-hero); }
+@utility text-display { font-size: var(--fs-display); }
+@utility text-title   { font-size: var(--fs-title); }
+@utility text-h2      { font-size: var(--fs-h2); }
+
 html {
   /* No `scroll-behavior: smooth`. Three sections are pinned with scrub:true,
      and the browser's smooth-scroll animation drives their timelines at fling

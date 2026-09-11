@@ -43,14 +43,14 @@ const {
 
     <!-- Headline (words reveal one-by-one) -->
     <h2 class="mt-4 font-display font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
-      <span class="block overflow-hidden text-[clamp(48px,7.5vw,84px)]">
+      <span class="block overflow-hidden text-title">
         {line1.split(' ').map((w) => (
           <span class="inline-block align-top">
             <span class="waitlist-word inline-block will-change-transform">{w}&nbsp;</span>
           </span>
         ))}
       </span>
-      <span class="block overflow-hidden text-[clamp(48px,7.5vw,84px)]">
+      <span class="block overflow-hidden text-title">
         <span class="waitlist-word inline-block will-change-transform">
           <span class="font-control-cursive lowercase text-ember">{accentLine}</span>
         </span>

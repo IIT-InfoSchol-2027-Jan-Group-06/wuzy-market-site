@@ -26,14 +26,16 @@ const features = [
        while you scroll. The intro text fades out, then the 4 slides
        crossfade one into the next. -->
   <div class="feature-scroll relative">
-    <div class="feature-sticky flex min-h-screen items-center justify-center overflow-hidden uppercase">
+    <!-- svh, not screen: on a phone 100vh is the viewport with the browser bars
+         hidden, so a slide centred in it ran under Brave's bottom bar. -->
+    <div class="feature-sticky flex min-h-svh items-center justify-center overflow-hidden uppercase">
 
       <!-- ── Intro overlay: "Everything your crew needs…" ──────────────────
            Absolutely positioned over the slides. Words start grey and are
            lit up white one-by-one as you scroll (.intro-lit is animated). -->
       <div class="feature-intro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 pb-16">
         <div class="mx-auto w-full max-w-[1150px] text-center">
-          <h2 class="mx-auto max-w-3xl font-display text-[clamp(30px,4.5vw,56px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal uppercase">
+          <h2 class="mx-auto max-w-3xl font-display text-h2 font-normal leading-[1.2] tracking-[0.02em] text-charcoal uppercase">
             <!-- Split the headline into per-word spans so each word can animate
                  independently. No will-change here: these only ever receive a
                  colour tween, and seventeen permanently-promoted layers is the
@@ -65,13 +67,16 @@ const features = [
                pieces hang past both edges of the frame (--x runs -9% … 103%),
                so the visual column has to size to its content and carry a
                gutter, or the left-hand floats land on the headline.
-               Side-by-side starts at xl, not lg: with a 318px phone plus its
-               gutters the copy track is only ~600px at 1024, and the headline
-               ran straight under the breakouts. Below that, stacked. -->
-          <div class="grid items-center gap-10 xl:grid-cols-[1fr_auto]">
+               Side-by-side from lg. It used to start at xl, and between 1024
+               and 1279 the phone stacked over the headline — taller than a
+               short laptop viewport (1093×614 at 125% scaling), so the phone
+               sat under the nav and the description fell past the fold. The
+               left gutter on the visual is what keeps the headline clear of
+               the breakouts at this width. Below lg, stacked. -->
+          <div class="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
               <!-- Left: headline + description (moves below visual on mobile) -->
-              <div class="feature-copy order-2 min-w-0 xl:order-1">
-                <h3 class="feature-title mt-4 font-display text-[clamp(36px,6vw,80px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+              <div class="feature-copy order-2 min-w-0 lg:order-1">
+                <h3 class="feature-title mt-4 font-display text-title font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
                   <!-- Split headline into words so GSAP can stagger them in -->
                   {f.t.split(' ').map((w) => (
                     <span class="inline-block align-top">
@@ -84,8 +89,21 @@ const features = [
                 </p>
               </div>
               <!-- Right: the live phone. No perspective here — .wz sets its
-                   own, and the breakouts need the gutter more than the depth. -->
-              <div class="feature-visual order-1 flex justify-center px-[clamp(16px,5vw,92px)] xl:order-2">
+                   own, and the breakouts need the gutter more than the depth.
+                   --wz-fit caps the phone's width by the height it has to fit
+                   in (the frame is 2× taller than wide). The phone is centred
+                   in the sticky, so its top edge sits at 50svh − width:
+                   stacked, that has to clear the nav plus the headline and
+                   copy (~280px at the base tier, ~360px once md's 56px title
+                   wraps to three lines); side by side, the desktop nav pill
+                   (bottom at ~72px) plus 16px, which is what keeps the corner
+                   from tucking under "Join waitlist" on a zoomed 1280×615.
+                   The lg/2xl gutters are the measured overhang of the floating
+                   pieces — 0.46 of the frame on the left, 0.40 on the right —
+                   at that tier's --phone-w, so nothing lands on the headline
+                   or gets clipped at the viewport edge; at 2xl the 1150px
+                   slide already has 190px+ of page margin on the right. -->
+              <div class="feature-visual order-1 flex justify-center px-4 [--wz-fit:calc(50svh_-_170px)] md:px-8 md:[--wz-fit:calc(50svh_-_220px)] lg:order-2 lg:pl-[120px] lg:pr-[84px] lg:[--wz-fit:calc(50svh_-_88px)] 2xl:pl-[148px] 2xl:pr-[64px]">
                 <f.Mock />
               </div>
             </div>

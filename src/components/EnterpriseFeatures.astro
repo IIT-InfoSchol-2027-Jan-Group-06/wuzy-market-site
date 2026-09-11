@@ -50,19 +50,19 @@ const steps = [
        slide headline and its sub-copy in caps, exactly as the home page does.
        The strings themselves are sentence case. -->
   <div class="ent-scroll relative">
-    <div class="ent-sticky flex min-h-screen items-center justify-center overflow-hidden uppercase">
+    <div class="ent-sticky flex min-h-svh items-center justify-center overflow-hidden uppercase">
 
       <div class="mx-auto flex w-full max-w-[1150px] items-center px-5">
         {steps.map((f) => (
           <div class="ent-slide pointer-events-none absolute inset-x-0 mx-auto w-full max-w-[1150px] px-5">
             {/* `1fr auto` rather than an even split: the phone's floating pieces
                 hang past both edges of the frame, so the visual column has to
-                size to its content and carry a gutter. Side-by-side starts at
-                xl — below that the copy track is too narrow and the headline
-                ran under the breakouts, so it stacks with the phone on top. */}
-            <div class="grid items-center gap-10 xl:grid-cols-[1fr_auto]">
-              <div class="ent-copy order-2 min-w-0 xl:order-1">
-                <h2 class="ent-title mt-4 font-display text-[clamp(36px,6vw,80px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+                size to its content and carry a gutter. Breakpoint, gutters and
+                --wz-fit are the same as Features.astro, for the same reasons
+                — see the notes there. */}
+            <div class="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+              <div class="ent-copy order-2 min-w-0 lg:order-1">
+                <h2 class="ent-title mt-4 font-display text-title font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
                   {f.t.split(' ').map((w) => (
                     <span class="inline-block align-top">
                       <span class="ent-word inline-block will-change-transform">{w}&nbsp;</span>
@@ -73,7 +73,7 @@ const steps = [
                   {f.d}
                 </p>
               </div>
-              <div class="ent-visual order-1 flex justify-center px-[clamp(16px,5vw,92px)] xl:order-2">
+              <div class="ent-visual order-1 flex justify-center px-4 [--wz-fit:calc(50svh_-_170px)] md:px-8 md:[--wz-fit:calc(50svh_-_220px)] lg:order-2 lg:pl-[120px] lg:pr-[84px] lg:[--wz-fit:calc(50svh_-_88px)] 2xl:pl-[148px] 2xl:pr-[64px]">
                 <f.Mock />
               </div>
             </div>
@@ -89,13 +89,13 @@ const steps = [
       <div class="ent-outro pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 text-center">
         <div class="mx-auto w-full max-w-[1150px]">
           <h2 class="font-display leading-[1.05] font-normal tracking-[0.02em] text-charcoal">
-            <span class="block overflow-hidden text-[clamp(48px,8vw,112px)]">
+            <span class="block overflow-hidden text-display">
               <span class="ent-outro-word block will-change-transform">WATCH IT</span>
             </span>
             {/* Looser line box than the 1.05 above: this line is Caveat inside
                 an overflow-hidden mask, and "skyrocket." has a descender that
                 a 1.05 box clips clean off. */}
-            <span class="block overflow-hidden text-[clamp(48px,8vw,112px)] leading-[1.45]">
+            <span class="block overflow-hidden text-display leading-[1.45]">
               <span class="ent-outro-word block will-change-transform">
                 <span class="font-control-cursive text-ember normal-case">skyrocket.</span>
               </span>
@@ -118,12 +118,12 @@ const steps = [
           <div
             class={`ent-face-inner size-${a.s} overflow-hidden rounded-full border border-white/25 shadow-[0_0_0_3px_rgba(0,0,0,0.35),0_14px_34px_-10px_rgba(0,0,0,0.85)] ${
               a.s === 'xxl'
-                ? 'h-[clamp(84px,10vw,136px)] w-[clamp(84px,10vw,136px)]'
+                ? 'size-14 md:size-24 2xl:size-34'
                 : a.s === 'lg'
-                  ? 'h-[clamp(50px,5.5vw,80px)] w-[clamp(50px,5.5vw,80px)]'
+                  ? 'size-10 md:size-15 2xl:size-20'
                   : a.s === 'md'
-                    ? 'h-[clamp(38px,4vw,60px)] w-[clamp(38px,4vw,60px)]'
-                    : 'h-[clamp(26px,2.8vw,42px)] w-[clamp(26px,2.8vw,42px)]'
+                    ? 'size-8 md:size-[46px] 2xl:size-15'
+                    : 'size-6 md:size-8 2xl:size-[42px]'
             }`}
           >
             <img src={a.img} alt={a.n} class="h-full w-full object-cover" loading="lazy" draggable="false" />
@@ -325,14 +325,8 @@ const steps = [
     .ent-face-7 { left: 33% !important; top: 10% !important; }
     .ent-face-8 { left: 92% !important; top: 32% !important; }
 
-    .ent-face-inner.size-xxl { height: clamp(44px, 12vw, 72px) !important; width: clamp(44px, 12vw, 72px) !important; }
-    .ent-face-inner.size-lg  { height: clamp(36px, 10vw, 60px) !important; width: clamp(36px, 10vw, 60px) !important; }
-    .ent-face-inner.size-md  { height: clamp(30px, 8vw, 48px) !important;  width: clamp(30px, 8vw, 48px) !important; }
-    .ent-face-inner.size-sm  { height: clamp(24px, 6vw, 36px) !important;  width: clamp(24px, 6vw, 36px) !important; }
-
-    /* The size lives on the line spans, not the h2 — a child's own font-size
-       beats an inherited one, so targeting the h2 here would do nothing. */
-    .ent-outro h2 > span { font-size: clamp(32px, 10vw, 48px) !important; }
+    /* Face sizes and the heading's size step with the type tiers in
+       global.css; only the positions are the small-screen layout. */
     .ent-outro-desc { font-size: 0.875rem; }
   }
 </style>

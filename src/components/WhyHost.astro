@@ -30,7 +30,7 @@ const reasons = [
        cards rise up over it one by one, exactly like the homepage #
        "why choose" section. -->
   <div class="whyhost-scroll relative">
-    <div class="whyhost-sticky relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-5">
+    <div class="whyhost-sticky relative flex min-h-svh w-full flex-col items-center justify-center overflow-hidden px-5">
       <!-- Centered like YSCard. It used to be lifted 30vh with a negative
            margin under the grid, which just moved the slack to the bottom and
            read as a blank band before the host waitlist. -->
@@ -38,7 +38,7 @@ const reasons = [
       <!-- Locked, centered heading — kept on top of the rising cards so the
          title always stays readable. -->
       <div class="whyhost-head relative z-20 mx-auto max-w-5xl text-center">
-        <h2 class="font-display uppercase text-[clamp(63px,9.6vw,119px)] font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
+        <h2 class="font-display uppercase text-display font-normal leading-[1.2] tracking-[0.02em] text-charcoal">
           why host on wuzy
         </h2>
       </div>
@@ -125,13 +125,11 @@ const reasons = [
 
 <style>
   /* ── Small screens ────────────────────────────────────────────
-     Below md the two cards stack into one column; shrink heading, card
-     padding and keep the gap so the whole column fits a short phone viewport.
-     Mirrors the YSCard treatment, scoped to .whyhost-body so the rule cannot
-     reach the heading. */
+     Below md the two cards stack into one column; shrink card padding and
+     keep the gap so the whole column fits a short phone viewport (the heading
+     steps down with the type tiers in global.css). Mirrors the YSCard
+     treatment, scoped to .whyhost-body so the rule cannot reach the heading. */
   @media (max-width: 767px) {
-    .whyhost-head h2 { font-size: clamp(38px, 11vw, 56px) !important; }
-
     .whyhost-grid {
       margin-top: 1.25rem !important;
       gap: 1rem;
