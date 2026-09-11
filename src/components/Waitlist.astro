@@ -109,10 +109,19 @@ const {
 
   gsap.registerPlugin(ScrollTrigger);
 
+  // lazy: false on every from() here. GSAP queues a from() tween's hidden
+  // start state for the next tick; on /enterprise a pinned section's
+  // ScrollTrigger refresh fires first (DOMContentLoaded) and reverts its own
+  // timeline, which flushes that queue while GSAP is in "revert" mode — so the
+  // start state was wiped instead of applied, the headline sat visible, and
+  // then snapped hidden and replayed the moment the trigger hit. Rendering the
+  // start state synchronously keeps it out of that queue.
+  //
   // Label fades in.
   gsap.from('.waitlist-label', {
     y: 24,
     autoAlpha: 0,
+    lazy: false,
     duration: 0.7,
     ease: 'power3.out',
     scrollTrigger: { trigger: '.waitlist-label', start: 'top 85%', once: true },
@@ -124,6 +133,7 @@ const {
     gsap.from(words, {
       yPercent: 110,
       autoAlpha: 0,
+      lazy: false,
       rotate: 4,
       duration: 0.9,
       stagger: 0.09,
@@ -140,6 +150,7 @@ const {
   gsap.from('.waitlist-desc, .waitlist-form', {
     y: 30,
     autoAlpha: 0,
+    lazy: false,
     duration: 0.8,
     stagger: 0.12,
     ease: 'power3.out',
