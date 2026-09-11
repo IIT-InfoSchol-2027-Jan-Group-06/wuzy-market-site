@@ -203,7 +203,8 @@ body {
 body::after {
   content: '';
   position: fixed;
-  inset: 0;
+  inset: 0 0 auto 0;
+  height: 100lvh;   /* see body::before */
   z-index: 60;
   pointer-events: none;
   opacity: 0.05;
@@ -222,11 +223,19 @@ body::after {
    vertical gradient that anchors the whole page.
 
    A fixed pseudo-element rather than `background-attachment: fixed`,
-   which iOS Safari ignores. Same technique as the grain layer below. */
+   which iOS Safari ignores. Same technique as the grain layer above.
+
+   Sized to 100lvh, not `inset: 0`. On Android the URL bar collapses as you
+   scroll and the viewport grows, but a fixed box that fills the viewport is
+   only re-laid-out once the scroll settles — so for the duration of the
+   scroll the gradient stopped short and the body's flat black showed as a
+   strip along the bottom. lvh is the bars-hidden height, the most the
+   viewport can ever become, and it does not change mid-scroll. */
 body::before {
   content: '';
   position: fixed;
-  inset: 0;
+  inset: 0 0 auto 0;
+  height: 100lvh;
   z-index: -2;
   pointer-events: none;
   background:
