@@ -24,6 +24,13 @@ Two things it settles that come up constantly:
 ## Dont changes
 Dont change the layout or the animations of the website , just change other thing on design aspects
 
+## Commits
+
+- Always commit with `git commit -s` (adds the `Signed-off-by` trailer).
+- Never append the `Co-Authored-By: Claude ...` or `Claude-Session: ...`
+  trailers. The message ends at the last body paragraph, followed only by the
+  `Signed-off-by` line that `-s` adds.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
