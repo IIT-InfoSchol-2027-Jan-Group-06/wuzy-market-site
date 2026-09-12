@@ -38,13 +38,8 @@ const steps = [
 
 <section id="how-it-works" class="relative px-5 py-8 md:py-12">
   <div class="mx-auto w-full max-w-[1150px]">
-    <!-- Eyebrow -->
-    <p class="hiw-label text-center text-sm font-medium uppercase tracking-[0.08em] text-ember">
-      FOR ATTENDEES
-    </p>
-
     <!-- Headline -->
-    <h2 class="mt-4 text-center font-display font-normal leading-[1.2] tracking-[0.02em] uppercase text-charcoal">
+    <h2 class="text-center font-display font-normal leading-[1.2] tracking-[0.02em] uppercase text-charcoal">
       <span class="block overflow-hidden text-[clamp(36px,5.5vw,68px)]">
         {'HOW WUZY WORKS'.split(' ').map((w) => (
           <span class="inline-block align-top">
@@ -185,15 +180,6 @@ const steps = [
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // Label fades in.
-  gsap.from('.hiw-label', {
-    y: 24,
-    autoAlpha: 0,
-    duration: 0.7,
-    ease: 'power3.out',
-    scrollTrigger: { trigger: '.hiw-label', start: 'top 85%', once: true },
-  });
-
   // Headline words rise into place.
   const words = gsap.utils.toArray<HTMLElement>('.hiw-word');
   if (words.length) {
@@ -204,7 +190,7 @@ const steps = [
       duration: 0.9,
       stagger: 0.09,
       ease: 'power4.out',
-      scrollTrigger: { trigger: '.hiw-label', start: 'top 80%', once: true },
+      scrollTrigger: { trigger: '#how-it-works h2', start: 'top 80%', once: true },
     });
   }
 
